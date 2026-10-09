@@ -31,7 +31,7 @@ python tools/agentkit.py install <project-dir> --tools claude,codex,copilot
 
 This copies the kit payload (`core/`, `tools/agentkit.py`, `VERSION`, `CHANGELOG.md`, `LICENSE`) into `<project>/.ai/kit/` with an integrity manifest, creates `.ai/project/` from templates, adds `.ai/tasks/` and the worktree root (`policy.worktree_root`) to `.gitignore`, and runs `sync`. Commit `.ai/kit/`, `.ai/project/`, `.ai/generated/`, and the generated entry and tool files, so every collaborator and hosted agent sees the same setup.
 
-Add `python .ai/kit/tools/agentkit.py check` to the project's CI so a hand-edited generated file, a local kit edit, or a broken link fails the build.
+On a hosted repository, apply the settings in «Repository Settings» in [issues-and-prs.md](../workflows/issues-and-prs.md) after the user confirms them. Add `python .ai/kit/tools/agentkit.py check` to the project's CI so a hand-edited generated file, a local kit edit, or a broken link fails the build.
 
 The kit is copied, not linked as a Git submodule: tools load instruction files found in subdirectories they read, so a nested kit repository's own entry files would leak into the project's sessions.
 

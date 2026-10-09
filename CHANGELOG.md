@@ -6,6 +6,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ### Added
 - Translation policy (`core/wiki/workflows/translation.md`): one source language, every target translated directly from it (Chinese script variants excepted), content profiling by genre and tone, localization over literal translation, glossary-enforced terminology, protected content, and verification. (minor)
+- Repository settings policy (`issues-and-prs.md` «Repository Settings»): integration branch as the default branch and automatic deletion of merged head branches; `kit-install` proposes them. (minor)
 - `translate` skill in the new `localization` category, the `localization-specialist` role, a project glossary template, and profile keys `docs.source_locale` and `docs.glossary`. (minor)
 
 ### Changed
@@ -14,6 +15,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 ### Migration
 1. If the project keeps localized docs, enable `localization-specialist` and the `translate` skill in `.ai/project/profile.toml` (`@documentation` and `@localization` include them).
 2. Set `docs.source_locale` when the docs' source language differs from `project.language`, and create the glossary at `docs.glossary` from `.ai/kit/core/templates/project/wiki/glossary.md` if it does not exist.
+3. On a hosted repository, apply «Repository Settings» in `issues-and-prs.md` (default branch = integration branch, delete head branches on merge) after confirming with the user.
 
 ## [0.1.0] - 2026-10-09
 

@@ -1,5 +1,5 @@
 ---
-owns: "Hosting-platform conventions: issue bodies, labels, blocked issues, triage and closing, leftovers, pull request bodies, issue linking, mergeability, and review feedback"
+owns: "Hosting-platform conventions: repository settings, issue bodies, labels, blocked issues, triage and closing, leftovers, pull request bodies, issue linking, mergeability, and review feedback"
 volatility: evolving
 reviewed: 2026-10-09
 ---
@@ -21,6 +21,18 @@ Applies when `hosting.platform` is `github`; the `github-*` skills walk these ru
 ## Platform Preflight
 
 Before the first `gh` command of a task, confirm `gh auth status` passes and `gh repo view --json nameWithOwner` names the repository in scope. Stop on either failure; never fall back to another account or repository.
+
+## Repository Settings
+
+The workflow assumes these hosting settings. Changing them affects everyone using the repository, so confirm with the user before applying them; `kit-install` proposes them.
+
+| Setting | Value | Why |
+|---|---|---|
+| Branches | `policy.integration_branch` and `policy.release_branch` exist on the remote | Units start from and return to the integration branch; promotion targets the release branch |
+| Default branch | `policy.integration_branch` | New pull requests target it, and closing keywords close issues when a unit merges |
+| Delete head branches after merge | on | A merged task branch disappears, so every unit starts fresh from the latest integration branch instead of reusing an old branch |
+
+On GitHub: `gh repo edit --default-branch <integration_branch> --delete-branch-on-merge`; confirm with `gh repo view --json defaultBranchRef,deleteBranchOnMerge`. When the integration branch is missing, create it from the release branch and push it, after confirmation. Branch protection rules (required reviews or checks) are the user's decision.
 
 ## Issue Body
 
@@ -78,7 +90,7 @@ No other combination. A pull request from a task branch into the release branch 
 
 ## Linking Issues
 
-Use a closing keyword (`Closes #<n>`) for issues the pull request completes and a plain reference (`Refs #<n>`) otherwise. A closing keyword closes the issue only when the change reaches the platform's default branch: when that is the release branch, the issue stays open after the unit merges into the integration branch and closes with the promotion. That is expected; do not close it by hand.
+Use a closing keyword (`Closes #<n>`) for issues the pull request completes and a plain reference (`Refs #<n>`) otherwise. A closing keyword closes the issue when the pull request merges into the platform's default branch, which is the integration branch under «Repository Settings». When a project keeps the release branch as its default, the issue closes only with the promotion; that is expected, do not close it by hand.
 
 ## Mergeability Check
 
