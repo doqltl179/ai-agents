@@ -287,6 +287,19 @@ class InstallTests(unittest.TestCase):
         self.assertIn("unknown placeholder(s) lang", out)
         self.assertIn("tag_pattern must contain {version}", out)
 
+    def test_unfilled_scaffolds_are_reported(self) -> None:
+        self.install()
+        for args in (["agent", "one", "--extends", "game-tools-engineer"], ["agent", "two", "--department", "release"],
+                     ["page", "rules/packages"]):
+            self.assertEqual(run(self.script, "new", *args, cwd=self.project).returncode, 0)
+        page = self.project / ".ai" / "project" / "wiki" / "rules" / "packages.md"
+        self.assertIn("applies_to: []", page.read_text(encoding="utf-8"))
+        out = run(self.script, "check", cwd=self.project).stdout
+        self.assertIn(".ai/project/agents/one.md: unfilled scaffold placeholder(s)", out)
+        self.assertIn(".ai/project/agents/two.md: unfilled scaffold placeholder(s)", out)
+        self.assertIn("rules page without 'applies_to' globs never loads", out)
+        self.assertNotIn("possible SSOT duplicate", out)
+
     def test_new_scaffolds_into_overlay(self) -> None:
         self.install()
         result = run(self.script, "new", "agent", "editor-tools", "--extends", "game-tools-engineer", cwd=self.project)
