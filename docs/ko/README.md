@@ -81,10 +81,10 @@ AI 도구로 프로젝트를 열고 **`kit-install` 스킬을 실행해 달라�
 ### 6. 업데이트
 
 ```bash
-python .ai/kit/tools/agentkit.py update --from https://github.com/doqltl179/ai-agents --ref main
+python .ai/kit/tools/agentkit.py update
 ```
 
-`.ai/kit/`를 새 버전으로 교체하고, 현재 버전 이후의 변경 사항과 필요한 마이그레이션 절차를 보여 준 뒤 파일을 다시 생성합니다. 키트 파일이 로컬에서 수정되어 있으면 실행을 거부합니다. 키트는 프로젝트 안에서 읽기 전용이며, 개선 사항은 `kit-upstream-propose` 스킬로 이 저장소에 제안합니다.
+기본적으로 프로필의 `evolution.upstream`(이 저장소)에서 최신 릴리스(`vX.Y.Z` 태그)를 받습니다. 다른 버전은 `--ref <태그 또는 브랜치>`로, 다른 출처는 `--from <URL 또는 경로>`로 지정합니다. `.ai/kit/`를 새 버전으로 교체하고, 현재 버전 이후의 변경 사항과 필요한 마이그레이션 절차를 보여 준 뒤 파일을 다시 생성합니다. 키트 파일이 로컬에서 수정되어 있으면 실행을 거부합니다. 키트는 프로젝트 안에서 읽기 전용이며, 개선 사항은 `kit-upstream-propose` 스킬로 이 저장소에 제안합니다.
 
 ## 저장소 구조
 

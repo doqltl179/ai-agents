@@ -81,10 +81,10 @@ Ask your AI tool for work as usual: the agent reads `AGENTS.md` and follows [How
 ### 6. Update
 
 ```bash
-python .ai/kit/tools/agentkit.py update --from https://github.com/doqltl179/ai-agents --ref main
+python .ai/kit/tools/agentkit.py update
 ```
 
-The update replaces `.ai/kit/`, prints what changed since your version together with any migration steps, and regenerates the files. It refuses to run when kit files were edited locally: the kit is read-only inside projects, and improvements go to this repository through the `kit-upstream-propose` skill.
+By default the update installs the latest release (`vX.Y.Z` tag) from `evolution.upstream` in the profile, which is this repository. Pass `--ref <tag-or-branch>` to choose another version, or `--from <url-or-path>` for another source. The update replaces `.ai/kit/`, prints what changed since your version together with any migration steps, and regenerates the files. It refuses to run when kit files were edited locally: the kit is read-only inside projects, and improvements go to this repository through the `kit-upstream-propose` skill.
 
 ## Repository Layout
 
