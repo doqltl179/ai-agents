@@ -1,0 +1,6 @@
+# Working records (plans, scratch) are local, per agentkit planning policy.
+.ai/tasks/
+# One worktree per work unit (policy.worktree_root).
+.worktrees/
+__pycache__/
+*.pyc
