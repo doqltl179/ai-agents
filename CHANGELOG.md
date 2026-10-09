@@ -4,6 +4,8 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-09
+
 ### Added
 - `check` warns about template placeholders left unfilled in agents, skills, stack packs, and pages, and about rules pages without `applies_to`; `new page rules/<name>` scaffolds an empty `applies_to`. (minor)
 
