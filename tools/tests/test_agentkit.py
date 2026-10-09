@@ -230,6 +230,41 @@ class InstallTests(unittest.TestCase):
         self.assertIn("kit updated", result.stdout)
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
 
+    def test_project_rules_commands_and_extends(self) -> None:
+        self.install()
+        profile = self.project / ".ai" / "project" / "profile.toml"
+        profile.write_text(profile.read_text(encoding="utf-8").replace(
+            'language = "en"', 'language = "en"\nguardrails = ["Features live in the packages."]') +
+            '\n[agents]\nenabled = ["@governance", "@quality", "game-tools-engineer"]\n'
+            '\n[commands]\ntest_editmode = "unity -runTests -testPlatform EditMode"\n'
+            '\n[bindings.editor-tools]\npaths = ["Packages/x/Editor/**"]\ncommands = ["test_editmode"]\n', encoding="utf-8")
+        rules = self.project / ".ai" / "project" / "wiki" / "rules"
+        rules.mkdir(parents=True)
+        (rules / "packages.md").write_text('---\nowns: "Rules for package code"\nvolatility: evolving\nreviewed: 2026-10-09\n'
+                                           'applies_to: ["Packages/**"]\n---\n\n# Packages\n\nKeep runtime code free of editor APIs.\n',
+                                           encoding="utf-8")
+        self.assertEqual(run(self.script, "new", "agent", "editor-tools", "--extends", "game-tools-engineer",
+                             cwd=self.project).returncode, 0)
+        card = self.project / ".ai" / "project" / "agents" / "editor-tools.md"
+        card.write_text(card.read_text(encoding="utf-8").replace(
+            'description: "<What it does, in one sentence>. Use when <dominant concern>; not for <neighbor concerns>."',
+            'description: "Builds the package editor windows. Use when editor windows change; not for runtime code."'), encoding="utf-8")
+        result = run(self.script, "sync", cwd=self.project)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
+        self.assertIn("### Project Rules\n\n- Features live in the packages.", agents_md)
+        rule = (self.project / ".claude" / "rules" / "project-packages.md").read_text(encoding="utf-8")
+        self.assertIn('  - "Packages/**"', rule)
+        self.assertIn("Keep runtime code free of editor APIs.", rule)
+        agent = (self.project / ".claude" / "agents" / "editor-tools.md").read_text(encoding="utf-8")
+        self.assertLess(agent.index("## Scope"), agent.index("## Base Role:"))
+        self.assertIn("### Owns", agent[agent.index("## Base Role:"):])
+        self.assertIn("`commands.test_editmode` (`unity -runTests -testPlatform EditMode`)", agent)
+        self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+        profile.write_text(profile.read_text(encoding="utf-8").replace('commands = ["test_editmode"]', 'commands = ["nope"]'),
+                           encoding="utf-8")
+        self.assertIn("unknown command 'nope'", run(self.script, "check", cwd=self.project).stdout)
+
     def test_new_scaffolds_into_overlay(self) -> None:
         self.install()
         result = run(self.script, "new", "agent", "editor-tools", "--extends", "game-tools-engineer", cwd=self.project)
