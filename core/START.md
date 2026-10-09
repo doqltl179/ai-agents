@@ -30,6 +30,7 @@ This project uses agentkit: a shared wiki of rules, agent roles, skills, and sta
 | Verify a change | [verification.md](wiki/workflows/verification.md) |
 | Review a change | [review.md](wiki/workflows/review.md) |
 | Change human-facing docs | [documentation.md](wiki/workflows/documentation.md) |
+| Translate text into another language | [translation.md](wiki/workflows/translation.md) |
 | Release, or promote the integration branch to the release branch | [release.md](wiki/workflows/release.md) |
 | Edit agent docs (kit or overlay) | [authoring/README.md](wiki/authoring/README.md) |
 | Store a fact, lesson, or decision | [memory-policy.md](wiki/operating-model/memory-policy.md) |

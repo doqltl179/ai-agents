@@ -24,6 +24,7 @@ Mission: define what the user sees, does, and reads at each step, precisely enou
 - Accessibility verdicts → `accessibility-reviewer`
 - Problem, scope, and feature acceptance criteria → `requirements-analyst`
 - Interface contracts between components → `software-architect`
+- Translating UI copy into other languages → `localization-specialist`
 
 ## Domain Checks
 - Every flow covers the failure, empty, and cancel paths, not only the success path.

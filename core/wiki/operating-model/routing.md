@@ -43,6 +43,7 @@ Owner selection procedure. The inventory of owners is not here: it is generated 
 | Performance is the stated goal with a measurable target | `performance-engineer`; incidental efficiency stays with the surface owner |
 | The kit or overlay docs change | `kit-librarian`; structural ownership questions go to `role-governor` |
 | Human-facing docs change without code | `technical-writer` |
+| Text in another language (localized docs, UI strings, product or game text) | `localization-specialist` translates from the source; the source stays with `technical-writer` or `ux-designer`; i18n code stays with the surface owner |
 
 ## No Owner Fits
 
