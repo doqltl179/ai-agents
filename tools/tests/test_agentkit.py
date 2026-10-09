@@ -75,6 +75,29 @@ class ReleaseTagTests(unittest.TestCase):
         self.assertIsNone(agentkit.latest_release_tag(""))
 
 
+class CapacityTests(unittest.TestCase):
+    CLASSES = [("light", 0.5, 1.0), ("standard", 2.0, 0.5), ("heavy", 6.0, 0.25)]
+
+    def test_small_machine_is_limited_by_memory(self) -> None:
+        reserve, result = agentkit.recommend_concurrency(8, 4, 8, self.CLASSES, 0.25, 2, 0)
+        self.assertEqual(reserve, 2)
+        self.assertEqual(result["light"], (4, "memory", False))
+        self.assertEqual(result["standard"], (1, "memory", False))
+        self.assertEqual(result["heavy"], (1, "memory", True))
+
+    def test_policy_cap_and_unknown_memory(self) -> None:
+        _, capped = agentkit.recommend_concurrency(64, 40, 16, self.CLASSES, 0.25, 2, 2)
+        self.assertEqual(capped["light"], (2, "policy.max_parallel_units", False))
+        reserve, unknown = agentkit.recommend_concurrency(None, None, 4, self.CLASSES, 0.25, 2, 0)
+        self.assertIsNone(reserve)
+        self.assertEqual(unknown["heavy"], (1, "CPU", False))
+
+    def test_capacity_command_runs(self) -> None:
+        result = run(TOOLS / "agentkit.py", "capacity", cwd=agentkit.KIT_ROOT)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("recommended concurrent units", result.stdout)
+
+
 class KitRepositoryTests(unittest.TestCase):
     def test_kit_repository_is_consistent(self) -> None:
         result = run(TOOLS / "agentkit.py", "check", cwd=agentkit.KIT_ROOT)
