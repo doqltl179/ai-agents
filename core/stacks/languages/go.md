@@ -6,7 +6,7 @@ applies_to: ["**/*.go"]
 related: []
 volatility: volatile
 reviewed: 2026-10-09
-sources: ["https://go.dev/doc/", "https://go.dev/doc/effective_go", "https://go.dev/ref/mod", "https://go.dev/doc/toolchain", "https://go.dev/doc/devel/release"]
+sources: ["https://go.dev/doc/", "https://go.dev/doc/effective_go", "https://go.dev/ref/mod", "https://go.dev/doc/toolchain", "https://go.dev/doc/devel/release", "https://go.dev/wiki/Go-Release-Cycle", "https://go.dev/doc/go1.26", "https://go.dev/doc/go1.27"]
 ---
 
 # Go
@@ -47,6 +47,8 @@ sources: ["https://go.dev/doc/", "https://go.dev/doc/effective_go", "https://go.
 - Map iteration order is random; sort keys when order matters.
 
 ## Version Notes
-- Each major release is supported until two newer major releases exist (as of 2026-10, per go.dev/doc/devel/release).
-- Check the `go` directive before using: `min`/`max`/`clear` built-ins and `slices`/`maps` packages (1.21); per-iteration loop variables (1.22); range-over-func iterators (1.23); `tool` directives (1.24); `sync.WaitGroup.Go` and `testing/synctest` (1.25) (as of 2026-10, per go.dev release notes).
-- A `go` directive newer than the local toolchain triggers an automatic toolchain download unless `GOTOOLCHAIN=local` (1.21+) (as of 2026-10, per go.dev/doc/toolchain).
+- Go 1.27 (2026-08-19) is the latest major release, so 1.27 and 1.26 are supported: each major release is supported until two newer major releases exist, and a major release ships every six months (as of 2026-10, per go.dev/doc/devel/release and the Go release cycle wiki).
+- Check the `go` directive before using: `min`/`max`/`clear` built-ins and `slices`/`maps` packages (1.21); per-iteration loop variables (1.22); range-over-func iterators (1.23); `tool` directives (1.24); `sync.WaitGroup.Go` and `testing/synctest` (1.25); `new(expr)` and `errors.AsType` (1.26); generic methods, `encoding/json/v2`, and the `uuid` package (1.27) (as of 2026-10, per go.dev release notes).
+- From 1.27, `go test` runs the `stdversion` vet check, which reports standard library symbols newer than the file's `go` version (as of 2026-10, per go.dev/doc/go1.27).
+- From 1.26, `go mod init` writes `go 1.(N-1).0` for toolchain 1.N; run `go get go@<version>` to raise it before using newer features. `go fix ./...` applies modernizers that rewrite code to newer idioms; run it only as a separate change (as of 2026-10, per go.dev/doc/go1.26).
+- A `go` or `toolchain` line newer than the local toolchain makes the default `GOTOOLCHAIN=auto` find or download that toolchain; with `GOTOOLCHAIN=local` the go command refuses to run instead (1.21+) (as of 2026-10, per go.dev/doc/toolchain).

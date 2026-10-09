@@ -6,7 +6,7 @@ applies_to: ["**/*.sh", "**/*.bash", "**/*.ps1", "**/*.psm1"]
 related: [docker, github-actions]
 volatility: volatile
 reviewed: 2026-10-09
-sources: ["https://www.gnu.org/software/bash/manual/", "https://pubs.opengroup.org/onlinepubs/9799919799/", "https://github.com/koalaman/shellcheck/wiki", "https://learn.microsoft.com/en-us/powershell/scripting/overview", "https://learn.microsoft.com/en-us/powershell/scripting/developer/cmdlet/approved-verbs-for-windows-powershell-commands"]
+sources: ["https://www.gnu.org/software/bash/manual/", "https://tiswww.case.edu/php/chet/bash/NEWS", "https://github.com/apple-oss-distributions/bash", "https://pubs.opengroup.org/onlinepubs/9799919799/", "https://git.kernel.org/pub/scm/utils/dash/dash.git", "https://github.com/koalaman/shellcheck/wiki", "https://learn.microsoft.com/en-us/powershell/scripting/overview", "https://learn.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-70", "https://learn.microsoft.com/en-us/powershell/scripting/install/powershell-support-lifecycle", "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_character_encoding", "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_preference_variables", "https://learn.microsoft.com/en-us/powershell/scripting/developer/cmdlet/approved-verbs-for-windows-powershell-commands"]
 ---
 
 # Shell (Bash, sh, PowerShell)
@@ -18,7 +18,7 @@ sources: ["https://www.gnu.org/software/bash/manual/", "https://pubs.opengroup.o
 - Lint and format config: `.shellcheckrc`, shfmt settings in `.editorconfig`, `PSScriptAnalyzerSettings.psd1`; Pester tests (`*.Tests.ps1`).
 
 ## Conventions
-- Bash: start with `set -euo pipefail`. POSIX `sh`: `set -eu`, and add `pipefail` only when every target shell supports it.
+- Bash: start with `set -euo pipefail`. POSIX `sh`: `set -eu`, and add `pipefail` only when every target shell supports it (see «Version Notes»).
 - Quote every expansion: `"$var"`, `"$@"`, `"$(cmd)"`. Build argument lists as bash arrays, not strings.
 - Use `$(...)` not backticks; `[[ ]]` in bash and `[ ]` in `sh`; `printf` instead of `echo` for arbitrary data; `read -r`; `command -v` instead of `which`.
 - Declare function variables `local` in bash; handle `cd` failure (`cd "$dir" || exit 1`).
@@ -41,7 +41,10 @@ sources: ["https://www.gnu.org/software/bash/manual/", "https://pubs.opengroup.o
 - PowerShell: put `$null` on the left (`$null -eq $x`); with a collection on the left, the comparison filters elements instead.
 
 ## Version Notes
-- macOS ships bash 3.2 as `/bin/bash`: associative arrays, `mapfile`/`readarray`, and `${var,,}` need bash 4+ (as of 2026-10, per gnu.org bash manual).
-- Pipeline chains (`&&`, `||`), the ternary `? :`, and `??` require PowerShell 7+; Windows PowerShell 5.1 rejects them (as of 2026-10, per learn.microsoft.com).
-- PowerShell 7 writes UTF-8 without BOM by default; Windows PowerShell 5.1 does not, so pass `-Encoding` explicitly when 5.1 writes files (as of 2026-10, per learn.microsoft.com about_Character_Encoding).
-- PowerShell 7.4+ honors `$PSNativeCommandUseErrorActionPreference = $true` to stop on non-zero native exit codes; elsewhere check `$LASTEXITCODE` (as of 2026-10, per learn.microsoft.com).
+- macOS `/bin/bash` is bash 3.2: associative arrays, `mapfile`/`readarray`, and `${var,,}` need bash 4.0+ (as of 2026-10, per Apple's open-source bash distribution and the bash NEWS file).
+- POSIX.1-2024 standardizes `set -o pipefail`, but older `/bin/sh` implementations reject it, for example dash before 0.5.13; confirm the target image's `sh` before using it in `sh` scripts (as of 2026-10, per pubs.opengroup.org and the dash repository).
+- Pipeline chains (`&&`, `||`), the ternary `? :`, and `??` require PowerShell 7.0+; Windows PowerShell 5.1 rejects them (as of 2026-10, per learn.microsoft.com What's New in PowerShell 7.0).
+- PowerShell 7 writes `utf8NoBOM` by default. Windows PowerShell 5.1 writes UTF-16LE from `Out-File` and `>`, the ANSI code page from `Set-Content`, and always adds a BOM with `-Encoding UTF8`; pass `-Encoding` explicitly whenever 5.1 writes files (as of 2026-10, per learn.microsoft.com about_Character_Encoding).
+- Windows PowerShell 5.1 reads BOM-less script files as ANSI; save a `.ps1` that contains non-ASCII characters as UTF-8 with BOM when 5.1 must run it (as of 2026-10, per learn.microsoft.com about_Character_Encoding).
+- PowerShell 7.4+ supports `$PSNativeCommandUseErrorActionPreference = $true` (default `$false`), which turns non-zero native exit codes into errors handled by `$ErrorActionPreference`; elsewhere check `$LASTEXITCODE` (as of 2026-10, per learn.microsoft.com about_Preference_Variables).
+- PowerShell 7.6 is the current LTS (supported until 2028-11-14); 7.4 and 7.5 reach end of support on 2026-11-10, so target 7.6 in new CI images and installers (as of 2026-10, per learn.microsoft.com PowerShell Support Lifecycle).

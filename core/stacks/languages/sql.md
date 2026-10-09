@@ -6,7 +6,7 @@ applies_to: ["**/*.sql"]
 related: [dbt]
 volatility: volatile
 reviewed: 2026-10-09
-sources: ["https://www.postgresql.org/docs/current/", "https://dev.mysql.com/doc/refman/8.4/en/", "https://www.sqlite.org/docs.html", "https://learn.microsoft.com/en-us/sql/t-sql/language-reference"]
+sources: ["https://www.postgresql.org/docs/current/", "https://www.postgresql.org/docs/release/", "https://dev.mysql.com/doc/refman/9.7/en/", "https://dev.mysql.com/doc/refman/8.4/en/", "https://www.sqlite.org/docs.html", "https://www.sqlite.org/changes.html", "https://learn.microsoft.com/en-us/sql/t-sql/language-reference"]
 ---
 
 # SQL
@@ -23,7 +23,7 @@ sources: ["https://www.postgresql.org/docs/current/", "https://dev.mysql.com/doc
 - List columns explicitly in `SELECT` and `INSERT`; `SELECT *` over-fetches and breaks when columns change.
 - Use explicit `JOIN ... ON` with table aliases; qualify every column in multi-table queries.
 - Add `ORDER BY` whenever order matters, including with row limits; paginate large tables by key (`WHERE id > ?`), not by large offsets.
-- Run statements that must succeed together in one transaction. Default isolation: PostgreSQL and SQL Server `READ COMMITTED`, MySQL InnoDB `REPEATABLE READ`, SQLite serializable.
+- Run statements that must succeed together in one transaction. Default isolation: PostgreSQL and SQL Server `READ COMMITTED`, MySQL InnoDB `REPEATABLE READ`, SQLite serializable (as of 2026-10, per each vendor's documentation).
 - Back new filters, joins, and foreign keys with indexes; confirm each with `EXPLAIN`.
 - Use the dialect's precise types (for example `timestamptz` in PostgreSQL, `DECIMAL` for money).
 
@@ -33,7 +33,7 @@ sources: ["https://www.postgresql.org/docs/current/", "https://dev.mysql.com/doc
 - Lint: `commands.lint` (for example `sqlfluff lint`); tests: `commands.test`.
 
 ## Pitfalls
-- `x = NULL` is never true; use `IS NULL`, or the dialect's null-safe comparison (`IS NOT DISTINCT FROM`, MySQL `<=>`).
+- `x = NULL` is never true; use `IS NULL`, or the dialect's null-safe comparison: `IS NOT DISTINCT FROM` (PostgreSQL, SQL Server, SQLite; see «Version Notes») or MySQL `<=>`.
 - `NOT IN (subquery)` returns no rows when the subquery yields a NULL; use `NOT EXISTS`. `COUNT(col)` skips NULLs; `COUNT(*)` does not.
 - `UPDATE`/`DELETE` without `WHERE`, or with a wrong join, changes every row; run the matching `SELECT` first.
 - `EXPLAIN ANALYZE` executes the statement; wrap data-modifying statements in a transaction and roll back.
@@ -44,4 +44,6 @@ sources: ["https://www.postgresql.org/docs/current/", "https://dev.mysql.com/doc
 - Integer division truncates in PostgreSQL, SQL Server, and SQLite (`1/2 = 0`); cast to a decimal type first.
 
 ## Version Notes
-- Check the server version before using: PostgreSQL `MERGE` (15+); MySQL CTEs and window functions (8.0+); SQLite `RETURNING` (3.35+) and `STRICT` tables (3.37+) (as of 2026-10, per postgresql.org, dev.mysql.com, and sqlite.org).
+- Check the server version before using: PostgreSQL `MERGE` (15+) and `MERGE ... RETURNING` (17+); MySQL CTEs and window functions (8.0+); SQLite `RETURNING` (3.35+) and `STRICT` tables (3.37+) (as of 2026-10, per postgresql.org, dev.mysql.com, and sqlite.org).
+- `IS [NOT] DISTINCT FROM` needs SQL Server 2022+ and SQLite 3.39+; older SQLite accepts the equivalent `IS`/`IS NOT`; MySQL (through 9.7) documents only `<=>` (as of 2026-10, per learn.microsoft.com, sqlite.org, and dev.mysql.com).
+- MySQL deprecates `VALUES(col)` inside `ON DUPLICATE KEY UPDATE` since 8.0.20; reference the new row through a row alias instead (8.0.19+), for example `INSERT INTO t (a, b) VALUES (?, ?) AS new ON DUPLICATE KEY UPDATE b = new.b` (as of 2026-10, per dev.mysql.com).
