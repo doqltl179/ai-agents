@@ -1219,9 +1219,22 @@ def changelog_between(path: Path, old: str, new: str) -> str:
     return "\n".join(out).strip()
 
 
-def cmd_update(kit: Kit, source: str, ref: str | None) -> int:
+RELEASE_TAG_RE = re.compile(r"refs/tags/(v\d+\.\d+\.\d+)$")
+
+
+def latest_release_tag(ls_remote_output: str) -> str | None:
+    """Pick the highest `vX.Y.Z` tag from `git ls-remote --tags --refs` output."""
+    tags = [m.group(1) for line in ls_remote_output.splitlines() if (m := RELEASE_TAG_RE.search(line.strip()))]
+    return max(tags, key=parse_version) if tags else None
+
+
+def cmd_update(kit: Kit, source: str | None, ref: str | None) -> int:
     if kit.kit_repo:
         print("error: update runs in an installed project, not in the kit repository")
+        return 1
+    source = source or kit.profile.get("evolution", {}).get("upstream", "")
+    if not source:
+        print("error: no source; pass --from <kit-repo-url-or-path> or set evolution.upstream in the profile")
         return 1
     report = Report()
     check_integrity(kit, report)
@@ -1231,8 +1244,19 @@ def cmd_update(kit: Kit, source: str, ref: str | None) -> int:
         return 1
     with tempfile.TemporaryDirectory() as tmp:
         src = Path(source)
+        if src.is_dir() and ref:
+            print("error: --ref applies to a git URL; check out the wanted ref in the local kit checkout instead")
+            return 1
         if not src.is_dir():
-            cmd = ["git", "clone", "--depth", "1"] + (["--branch", ref] if ref else []) + [source, tmp]
+            if not ref:
+                listed = subprocess.run(["git", "ls-remote", "--tags", "--refs", source],
+                                        capture_output=True, text=True)
+                ref = latest_release_tag(listed.stdout) if listed.returncode == 0 else None
+                if not ref:
+                    print(f"error: no release tag (vX.Y.Z) found at {source}; pass --ref <tag-or-branch> explicitly")
+                    return 1
+                print(f"using the latest release: {ref}")
+            cmd = ["git", "clone", "--depth", "1", "--branch", ref, source, tmp]
             if subprocess.run(cmd).returncode != 0:
                 print("error: git clone failed")
                 return 1
@@ -1291,8 +1315,8 @@ def main(argv: list[str] | None = None) -> int:
     inst.add_argument("target")
     inst.add_argument("--tools", help="comma-separated tool targets, e.g. claude,codex,copilot")
     upd = sub.add_parser("update", help="replace the installed kit with a newer version")
-    upd.add_argument("--from", dest="source", required=True, help="kit repository path or git URL")
-    upd.add_argument("--ref", help="tag or branch to install")
+    upd.add_argument("--from", dest="source", help="kit repository git URL or local checkout (default: evolution.upstream)")
+    upd.add_argument("--ref", help="tag or branch to install from a git URL (default: the latest vX.Y.Z release tag)")
     args = parser.parse_args(argv)
 
     if args.command == "install":

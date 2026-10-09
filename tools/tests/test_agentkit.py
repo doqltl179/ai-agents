@@ -64,6 +64,17 @@ class GlobTests(unittest.TestCase):
         self.assertFalse(agentkit.glob_re("core/*.md").match("core/wiki/a.md"))
 
 
+class ReleaseTagTests(unittest.TestCase):
+    def test_picks_highest_semver_tag(self) -> None:
+        output = ("a1\trefs/tags/v0.9.0\nb2\trefs/tags/v0.10.0\nc3\trefs/tags/v0.2.1\n"
+                  "d4\trefs/tags/nightly\ne5\trefs/tags/v1.0.0-rc.1\n")
+        self.assertEqual(agentkit.latest_release_tag(output), "v0.10.0")
+
+    def test_no_release_tag(self) -> None:
+        self.assertIsNone(agentkit.latest_release_tag("a1\trefs/tags/nightly\n"))
+        self.assertIsNone(agentkit.latest_release_tag(""))
+
+
 class KitRepositoryTests(unittest.TestCase):
     def test_kit_repository_is_consistent(self) -> None:
         result = run(TOOLS / "agentkit.py", "check", cwd=agentkit.KIT_ROOT)
@@ -149,6 +160,16 @@ class InstallTests(unittest.TestCase):
                            .split("[bindings.web-frontend-engineer]")[0], encoding="utf-8")
         run(self.script, "sync", cwd=self.project)
         self.assertFalse((self.project / ".claude" / "agents" / "web-frontend-engineer.md").exists())
+        self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+
+    def test_update_from_local_checkout(self) -> None:
+        self.install()
+        refused = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), "--ref", "main", cwd=self.project)
+        self.assertEqual(refused.returncode, 1)
+        self.assertIn("--ref applies to a git URL", refused.stdout)
+        result = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), cwd=self.project)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("kit updated", result.stdout)
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
 
     def test_new_scaffolds_into_overlay(self) -> None:

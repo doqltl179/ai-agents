@@ -10,6 +10,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 - `translate` skill in the new `localization` category, the `localization-specialist` role, a project glossary template, and profile keys `docs.source_locale` and `docs.glossary`. (minor)
 
 ### Changed
+- `agentkit.py update`: `--from` defaults to `evolution.upstream`, and without `--ref` a git source installs the latest `vX.Y.Z` release tag instead of the repository's default branch; `--ref` with a local checkout is refused. (minor)
 - `technical-writer` owns source-language docs only; localized variants move to `localization-specialist`. (minor)
 - README (English, Korean, Japanese): a step-by-step guide to using the kit in another project, covering why not to clone it into the project, install, what gets created, configuration with `kit-install`, commit, daily use, and update. (patch)
 
