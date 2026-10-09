@@ -25,10 +25,11 @@ description: "Remove a finished unit's worktree and task branch after its pull r
    - `git -C <worktree> status --short` prints nothing.
    - `gh pr list --base <branch> --state open` prints nothing.
 3. If any condition fails, stop and report which one; never force-remove.
-4. Remove the worktree: `git worktree remove <worktree>`, then `git worktree prune`.
-5. Delete the branch: `git branch -d <branch>` (use `-D` only after step 2 proved a squash merge), and `git push origin --delete <branch>` only when the remote branch still exists (with head-branch deletion on, the platform already removed it).
-6. Update the main checkout: `git switch <integration_branch>` and `git pull --ff-only`.
-7. Confirm with `git worktree list` and `git branch -a --list "*<branch>*"`.
+4. Make sure nothing is using the worktree: run every command from the main checkout (move your own shell there first), and ask the user to close terminals or editor windows opened in it. A process whose current directory is inside the worktree blocks deleting it, notably on Windows.
+5. Remove the worktree: `git worktree remove <worktree>`, then `git worktree prune`. If it reports `Permission denied` after `git worktree list` no longer shows the worktree, Git already removed its files and only the empty directory is held by a process: once that process has left, delete the empty directory (`rmdir <worktree>`).
+6. Delete the branch: `git branch -d <branch>` (use `-D` only after step 2 proved a squash merge), and `git push origin --delete <branch>` only when the remote branch still exists (with head-branch deletion on, the platform already removed it).
+7. Update the main checkout: `git switch <integration_branch>` and `git pull --ff-only`.
+8. Confirm with `git worktree list` and `git branch -a --list "*<branch>*"`.
 
 ## Output
 - The removed worktree path and deleted branches, or the condition that stopped the cleanup.
