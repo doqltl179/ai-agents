@@ -1,5 +1,5 @@
 ---
-owns: "Human-facing project documentation policy: doc sync with behavior, changelog entries, localized variants, specifications, and decision records"
+owns: "Human-facing project documentation policy: doc sync with behavior, changelog entries, which localized variants exist and when they are updated, specifications, and decision records"
 volatility: evolving
 reviewed: 2026-10-09
 ---
@@ -32,8 +32,8 @@ Human-facing project docs: README, guides, API references, changelog, specificat
 
 ## Localized Variants
 
-- For every locale in `docs.locales`, the localized copy at `docs.locale_pattern` is updated in the same unit as its primary doc.
-- Keep the same section structure across languages, not only the same text.
+- For every locale in `docs.locales`, the localized copy at `docs.locale_pattern` is updated in the same unit as its primary doc, translated per [translation.md](translation.md). `localization-specialist` owns the localized copies.
+- Keep the same section structure across languages, not only the same text, and link each copy to the others.
 - When a translation cannot be produced, mark the localized section as outdated with a visible note rather than leaving it silently stale.
 
 ## Specifications

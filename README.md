@@ -14,7 +14,7 @@ A portable **documentation kit for AI coding agents**, installed into many proje
 | **Written for agents** | Every page opens with `When` / `Route Away When`, so an agent on the wrong page leaves at once. Answers are reached in at most three hops: entry point → section index → owning page. Line budgets per file type are enforced. |
 | **An organization, like a large company** | Governance, execution, quality, and evolution planes, organized into departments. Every role states what it `Owns` and what it does not, naming the neighbor that does, so roles never overlap. |
 | **Fine-grained roles** | Roles are defined by **surface**, not language; language and framework knowledge comes from stack packs: `role card × stack pack × project binding` → for example a Next.js frontend specialist, a FastAPI backend specialist, or a Unity editor-tooling specialist. Projects narrow roles further with `extends`. |
-| **Skills** | Procedures for issues and pull requests, worktrees, refactoring, code/dependency/schema migration, review lenses, documentation, and installing and evolving the kit. Skills hold only the order; rules stay in the wiki. |
+| **Skills** | Procedures for issues and pull requests, worktrees, refactoring, code/dependency/schema migration, review lenses, documentation, translation, and installing and evolving the kit. Skills hold only the order; rules stay in the wiki. |
 | **Never stuck in the past** | Every file carries `volatility` and `reviewed` metadata and is re-verified on a cadence; a tech radar watches tools, models, and standards; a change-intake flow absorbs what changes; `[scaffold]` rules are retired as models improve; versioned releases with migration notes reach every project. |
 
 ## How Work Flows

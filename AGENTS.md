@@ -26,6 +26,7 @@ This project uses agentkit: a shared wiki of rules, agent roles, skills, and sta
 | Verify a change | [verification.md](core/wiki/workflows/verification.md) |
 | Review a change | [review.md](core/wiki/workflows/review.md) |
 | Change human-facing docs | [documentation.md](core/wiki/workflows/documentation.md) |
+| Translate text into another language | [translation.md](core/wiki/workflows/translation.md) |
 | Release, or promote the integration branch to the release branch | [release.md](core/wiki/workflows/release.md) |
 | Edit agent docs (kit or overlay) | [authoring/README.md](core/wiki/authoring/README.md) |
 | Store a fact, lesson, or decision | [memory-policy.md](core/wiki/operating-model/memory-policy.md) |
@@ -82,7 +83,9 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `hosting.area_labels` | core, tooling |
 | `docs.readme` | README.md |
 | `docs.changelog` | CHANGELOG.md |
+| `docs.source_locale` | en |
 | `docs.locales` | ko, ja |
 | `docs.locale_pattern` | docs/{locale}/{name} |
 | `docs.specs_dir` | .ai/project/wiki |
 | `docs.adr_dir` | .ai/project/wiki/decisions |
+| `docs.glossary` | docs/glossary.md |

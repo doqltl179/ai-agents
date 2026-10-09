@@ -44,10 +44,12 @@ run = ""
 [docs]
 readme = "README.md"
 changelog = "CHANGELOG.md"      # Empty when the project keeps no changelog.
-locales = []                    # Localized variants kept in sync with the primary docs, for example ["ko", "ja"].
+source_locale = ""              # Source language every translation starts from (BCP 47); empty means project.language.
+locales = []                    # Target languages of localized docs, kept in sync with the primary docs, for example ["ko", "ja"].
 locale_pattern = "docs/{locale}/{name}"   # Path of a localized copy; {name} is the primary file name.
 specs_dir = "docs/specs"        # Requirements specifications.
 adr_dir = "docs/adr"            # Architecture decision records.
+glossary = ".ai/project/wiki/glossary.md"   # Terms and their approved rendering per locale, plus per-locale style notes.
 
 [agents]
 # Active core agents. Tokens: "*" (all), "@<department>", or "<agent-name>".

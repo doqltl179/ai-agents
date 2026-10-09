@@ -39,6 +39,7 @@ A skill links to the policy it applies instead of restating it. Example: `git-co
 | `code-change` | Procedures that change code safely: refactor, migrate, upgrade, diagnose, test, optimize |
 | `review` | Review procedures for each review lens |
 | `docs` | Project documentation and decision records |
+| `localization` | Translation and localization into other languages |
 | `kit` | Creating, auditing, installing, updating, and evolving the kit and its overlay |
 | `planning` | Decomposition, plans, onboarding to a codebase |
 | `product` | Requirements and specification work |
