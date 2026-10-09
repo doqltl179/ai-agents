@@ -12,6 +12,12 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 ### Changed
 - `technical-writer` owns source-language docs only; localized variants move to `localization-specialist`. (minor)
 
+### Fixed
+- Stack packs: `spring-boot` said `@MockBean`/`@SpyBean` were only deprecated (Boot 4.0 removed them) and named the old web starter in Detect; `django` named the wrong current release (6.1 is current, 5.2 remains the LTS). (patch)
+
+### Reviewed
+- Stack packs updated for releases as of 2026-10, each fact with an official source: `react` (19.3), `spring-boot` (4.0 baseline, 4.1), `kubernetes` (1.36, 1.37, support window), `django` (6.0, 6.1), `react-native` (0.87, Expo SDK 57), `csharp` and `aspnet-core` (.NET 11 RC, .NET 8 and 9 end of support). (patch)
+
 ### Migration
 1. If the project keeps localized docs, enable `localization-specialist` and the `translate` skill in `.ai/project/profile.toml` (`@documentation` and `@localization` include them).
 2. Set `docs.source_locale` when the docs' source language differs from `project.language`, and create the glossary at `docs.glossary` from `.ai/kit/core/templates/project/wiki/glossary.md` if it does not exist.

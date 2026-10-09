@@ -6,7 +6,7 @@ applies_to: ["**/k8s/**/*.y*ml", "**/charts/**", "**/Chart.yaml", "**/kustomizat
 related: [docker, terraform, github-actions]
 volatility: volatile
 reviewed: 2026-10-09
-sources: ["https://kubernetes.io/docs/home/", "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/", "https://kubernetes.io/docs/concepts/security/pod-security-standards/", "https://kubernetes.io/docs/reference/using-api/deprecation-guide/", "https://kubernetes.io/releases/", "https://helm.sh/docs/", "https://kubectl.docs.kubernetes.io/references/kustomize/"]
+sources: ["https://kubernetes.io/docs/home/", "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/", "https://kubernetes.io/docs/concepts/security/pod-security-standards/", "https://kubernetes.io/docs/reference/using-api/deprecation-guide/", "https://kubernetes.io/releases/", "https://kubernetes.io/blog/2026/04/22/kubernetes-v1-36-release/", "https://kubernetes.io/blog/2026/08/26/kubernetes-v1-37-release/", "https://helm.sh/docs/", "https://kubectl.docs.kubernetes.io/references/kustomize/"]
 ---
 
 # Kubernetes
@@ -48,6 +48,9 @@ sources: ["https://kubernetes.io/docs/home/", "https://kubernetes.io/docs/concep
 - Helm: `toYaml` output needs `nindent` matching the surrounding indentation; wrong indentation can render valid but wrong YAML.
 
 ## Version Notes
-- Kubernetes maintains release branches for the three most recent minor versions; check target cluster versions before using new fields (as of 2026-10, per kubernetes.io/releases).
+- Kubernetes maintains release branches for the three most recent minor versions: 1.37 (latest), 1.36, and 1.35; 1.34 reaches end of life on 2026-10-27. Check target cluster versions before using new fields (as of 2026-10, per kubernetes.io/releases).
+- From 1.36, `gitRepo` volumes are permanently disabled (use an init container or a git-sync style tool), and Service `.spec.externalIPs` is deprecated with removal planned for 1.43 (use `LoadBalancer`, `NodePort`, or Gateway API) (as of 2026-10, per kubernetes.io/blog v1.36 release).
+- In 1.37, HorizontalPodAutoscaler scale to zero (`minReplicas: 0`) is beta and on by default, for `Object` or `External` metrics only; `metrics.k8s.io/v1` and `storagemigration.k8s.io/v1` `StorageVersionMigration` are stable; static Pods can no longer reference Secrets or ConfigMaps (as of 2026-10, per kubernetes.io/blog v1.37 release).
+- In 1.37, kube-proxy `ipvs` mode is deprecated (default-off planned for 1.40); since 1.35 the kubelet refuses to start on cgroup v1 nodes unless `failCgroupV1: false`. Clients and controllers must handle HTTP 429 with `Retry-After` and backoff (as of 2026-10, per kubernetes.io/blog v1.37 release).
 - PodSecurityPolicy was removed in 1.25; use Pod Security Admission or a policy engine (as of 2026-10, per Kubernetes deprecation guide).
 - Native sidecars (`initContainers` with `restartPolicy: Always`) are enabled by default from 1.29 and stable from 1.33; check the cluster version first (as of 2026-10, per Kubernetes release notes).

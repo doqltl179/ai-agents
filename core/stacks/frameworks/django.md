@@ -6,7 +6,7 @@ applies_to: ["**/models.py", "**/views.py", "**/serializers.py", "**/urls.py", "
 related: [python, sql]
 volatility: volatile
 reviewed: 2026-10-09
-sources: ["https://docs.djangoproject.com/en/stable/", "https://docs.djangoproject.com/en/stable/releases/", "https://www.djangoproject.com/download/", "https://www.django-rest-framework.org/"]
+sources: ["https://docs.djangoproject.com/en/stable/", "https://docs.djangoproject.com/en/stable/releases/", "https://www.djangoproject.com/download/", "https://docs.djangoproject.com/en/6.1/releases/6.0/", "https://docs.djangoproject.com/en/6.1/releases/6.1/", "https://www.django-rest-framework.org/"]
 ---
 
 # Django
@@ -46,5 +46,8 @@ sources: ["https://docs.djangoproject.com/en/stable/", "https://docs.djangoproje
 - Business logic hidden in signals runs implicitly and is hard to trace; call services explicitly.
 
 ## Version Notes
-- Django 5.2 is an LTS release; check the supported versions table at djangoproject.com/download before upgrading (as of 2026-10).
+- Django 6.1 is the latest release and 5.2 is the current LTS (extended support until April 2028); 6.0 gets security fixes until April 2027. 6.2 LTS is planned for April 2027; later feature releases use calendar versions (Django 2028 in January 2028), each with three years of support. Check the supported versions table before upgrading (as of 2026-10, per djangoproject.com/download).
+- Django 6.0 requires Python 3.12+ (5.2 is the last series for 3.10 and 3.11). `DEFAULT_AUTO_FIELD` now defaults to `BigAutoField`; a project that relied on the old default must set `DEFAULT_AUTO_FIELD = "django.db.models.AutoField"` to keep it (as of 2026-10, per docs.djangoproject.com 6.0 release notes).
+- Django 6.0 adds `django.tasks` (`@task`, `.enqueue()`, the `TASKS` setting) without a worker, and its built-in backends are for development and testing; keep the project's existing task queue unless it already uses `django.tasks`. It also adds CSP (`ContentSecurityPolicyMiddleware`, `SECURE_CSP`) and template partials (`{% partialdef %}`, `{% partial %}`) (as of 2026-10, per docs.djangoproject.com 6.0 release notes).
+- Django 6.1 adds `QuerySet.fetch_mode()`: `FETCH_PEERS` loads a missing field for all instances from the same QuerySet, `FETCH_RAISE` raises `FieldFetchBlocked`. `on_delete=DB_CASCADE`, `DB_SET_NULL`, or `DB_SET_DEFAULT` act in SQL (`ON DELETE`), and `DB_CASCADE` does not trigger `pre_delete`/`post_delete` signals. The `MAILERS` setting deprecates `EMAIL_BACKEND`, the other `EMAIL_*` settings, and the `connection` and `fail_silently` mail arguments. Minimums: PostgreSQL 15, MySQL 8.4, MariaDB 10.11, SQLite 3.37 (as of 2026-10, per docs.djangoproject.com 6.1 release notes).
 - The `STORAGES` setting replaces `DEFAULT_FILE_STORAGE` and `STATICFILES_STORAGE` (deprecated in 4.2, removed in 5.1); the async QuerySet API exists since 4.1 (as of 2026-10, per docs.djangoproject.com release notes).
