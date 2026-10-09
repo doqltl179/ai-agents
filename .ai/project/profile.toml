@@ -1,18 +1,12 @@
 # Profile of the agentkit repository itself: the kit is maintained with the kit.
-# Schema and defaults: core/templates/project/profile.toml.
+# Only keys that differ from the kit defaults; schema and defaults: core/templates/project/profile.toml.
 
 [project]
 name = "agentkit"
 summary = "Portable, single-source-of-truth agent documentation kit (rules, roles, skills, stack packs, and a renderer) installed into other projects."
 language = "ko"
 
-[tools]
-targets = ["claude", "codex", "copilot"]
-
 [policy]
-integration_branch = "develop"
-release_branch = "main"
-protected_branches = ["develop", "main"]
 commit_language = "ko"
 
 [commands]
@@ -24,24 +18,19 @@ build = "python tools/agentkit.py sync"
 area_labels = ["core", "tooling", "repo"]
 
 [docs]
-readme = "README.md"
-changelog = "CHANGELOG.md"
 source_locale = "en"
 locales = ["ko", "ja"]
-locale_pattern = "docs/{locale}/{name}"
 specs_dir = ".ai/project/wiki"
 adr_dir = ".ai/project/wiki/decisions"
 glossary = "docs/glossary.md"
 
 [agents]
 enabled = ["@governance", "@documentation", "@quality", "@release", "@evolution", "devtools-engineer", "ci-cd-engineer"]
+disabled = ["accessibility-reviewer"]   # The kit has no user interface.
 
 [skills]
-enabled = ["@kit", "@git", "@github", "@planning", "@docs", "@localization", "@review", "release-cut", "ci-failure-triage"]
-disabled = ["accessibility-review-perform", "codebase-onboard"]
-
-[stacks]
-active = []
+enabled = ["@kit", "@git", "@github", "@planning", "@docs", "@localization", "@review", "@code-change", "release-cut", "ci-failure-triage"]
+disabled = ["accessibility-review-perform"]
 
 [bindings.kit-librarian]
 paths = ["core/**", ".ai/project/**"]
@@ -70,6 +59,3 @@ stacks = ["github-actions"]
 [bindings.release-manager]
 paths = ["VERSION", "CHANGELOG.md"]
 notes = "Kit releases follow core/wiki/evolution/versioning.md, not the project release page."
-
-[evolution]
-upstream = "https://github.com/doqltl179/ai-agents"

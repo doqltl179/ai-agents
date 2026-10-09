@@ -96,6 +96,7 @@ class CapacityTests(unittest.TestCase):
         result = run(TOOLS / "agentkit.py", "capacity", cwd=agentkit.KIT_ROOT)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("recommended concurrent units", result.stdout)
+        self.assertIn("free disk", result.stdout)
 
 
 class KitRepositoryTests(unittest.TestCase):
@@ -109,6 +110,7 @@ class InstallTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.project = Path(self.tmp.name) / "demo"
         self.project.mkdir()
+        subprocess.run(["git", "init", "-q"], cwd=self.project, check=True)
         self.script = self.project / ".ai" / "kit" / "tools" / "agentkit.py"
 
     def tearDown(self) -> None:
@@ -120,9 +122,8 @@ class InstallTests(unittest.TestCase):
     def bind(self) -> None:
         profile = self.project / ".ai" / "project" / "profile.toml"
         text = profile.read_text(encoding="utf-8")
-        text = text.replace('enabled = ["@governance", "@quality", "@documentation", "@release"]',
-                            'enabled = ["@governance", "@quality", "@documentation", "@release", "web-frontend-engineer"]')
-        text += '\n[bindings.web-frontend-engineer]\npaths = ["web/**"]\nstacks = ["typescript", "react"]\n'
+        text += ('\n[agents]\nenabled = ["@governance", "@quality", "@documentation", "@release", "web-frontend-engineer"]\n'
+                 '\n[bindings.web-frontend-engineer]\npaths = ["web/**"]\nstacks = ["typescript", "react"]\n')
         profile.write_text(text, encoding="utf-8")
 
     def test_install_sync_and_check(self) -> None:
@@ -170,8 +171,43 @@ class InstallTests(unittest.TestCase):
     def test_refuses_to_overwrite_hand_written_entry(self) -> None:
         (self.project / "AGENTS.md").write_text("# Hand-written rules\n", encoding="utf-8")
         result = self.install()
-        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn("installed, adoption needed", result.stdout)
         self.assertEqual((self.project / "AGENTS.md").read_text(encoding="utf-8"), "# Hand-written rules\n")
+
+    def test_minimal_profile_takes_defaults(self) -> None:
+        self.install()
+        profile = (self.project / ".ai" / "project" / "profile.toml").read_text(encoding="utf-8")
+        self.assertNotIn("[policy]", profile)
+        self.assertIn('name = "demo"', profile)
+        self.assertIn("| `policy.integration_branch` | develop |", (self.project / "AGENTS.md").read_text(encoding="utf-8"))
+        path = self.project / ".ai" / "project" / "profile.toml"
+        path.write_text(profile + '\n[policy]\nintegration_branch = "develop"\n', encoding="utf-8")
+        self.assertIn("profile repeats 1 kit default(s): policy.integration_branch", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_unmanaged_instruction_files_are_reported(self) -> None:
+        self.install()
+        for relpath in (".github/prompts/old.prompt.md", ".claude/commands/legacy.md", "docs/AGENTS.md"):
+            (self.project / relpath).parent.mkdir(parents=True, exist_ok=True)
+            (self.project / relpath).write_text("old rules\n", encoding="utf-8")
+        out = run(self.script, "check", cwd=self.project).stdout
+        for relpath in (".github/prompts/old.prompt.md", ".claude/commands/legacy.md", "docs/AGENTS.md"):
+            self.assertIn(f"unmanaged instruction file {relpath}", out)
+        self.assertNotIn("unmanaged instruction file .claude/agents/", out)
+        path = self.project / ".ai" / "project" / "profile.toml"
+        path.write_text(path.read_text(encoding="utf-8") + '\n[tools]\nkeep_unmanaged = [".claude/commands/**"]\n', encoding="utf-8")
+        self.assertNotIn(".claude/commands/legacy.md", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_byte_order_marks_are_tolerated(self) -> None:
+        (self.project / ".editorconfig").write_text("root = true\n\n[*.md]\ncharset = utf-8-bom\n", encoding="utf-8")
+        self.install()
+        self.assertIn("# agentkit:", (self.project / ".editorconfig").read_text(encoding="utf-8"))
+        page = self.project / ".ai" / "project" / "wiki" / "README.md"
+        page.write_bytes(b"\xef\xbb\xbf" + page.read_bytes())
+        result = run(self.script, "check", cwd=self.project)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn("missing frontmatter", result.stdout)
+        self.assertNotIn(".editorconfig forces utf-8-bom", result.stdout)
 
     def test_stale_generated_files_are_removed(self) -> None:
         self.install()
@@ -194,6 +230,62 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("kit updated", result.stdout)
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+
+    def test_project_rules_commands_and_extends(self) -> None:
+        self.install()
+        profile = self.project / ".ai" / "project" / "profile.toml"
+        profile.write_text(profile.read_text(encoding="utf-8").replace(
+            'language = "en"', 'language = "en"\nguardrails = ["Features live in the packages."]') +
+            '\n[agents]\nenabled = ["@governance", "@quality", "game-tools-engineer"]\n'
+            '\n[commands]\ntest_editmode = "unity -runTests -testPlatform EditMode"\n'
+            '\n[bindings.editor-tools]\npaths = ["Packages/x/Editor/**"]\ncommands = ["test_editmode"]\n', encoding="utf-8")
+        rules = self.project / ".ai" / "project" / "wiki" / "rules"
+        rules.mkdir(parents=True)
+        (rules / "packages.md").write_text('---\nowns: "Rules for package code"\nvolatility: evolving\nreviewed: 2026-10-09\n'
+                                           'applies_to: ["Packages/**"]\n---\n\n# Packages\n\nKeep runtime code free of editor APIs.\n',
+                                           encoding="utf-8")
+        self.assertEqual(run(self.script, "new", "agent", "editor-tools", "--extends", "game-tools-engineer",
+                             cwd=self.project).returncode, 0)
+        card = self.project / ".ai" / "project" / "agents" / "editor-tools.md"
+        card.write_text(card.read_text(encoding="utf-8").replace(
+            'description: "<What it does, in one sentence>. Use when <dominant concern>; not for <neighbor concerns>."',
+            'description: "Builds the package editor windows. Use when editor windows change; not for runtime code."'), encoding="utf-8")
+        result = run(self.script, "sync", cwd=self.project)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
+        self.assertIn("### Project Rules\n\n- Features live in the packages.", agents_md)
+        rule = (self.project / ".claude" / "rules" / "project-packages.md").read_text(encoding="utf-8")
+        self.assertIn('  - "Packages/**"', rule)
+        self.assertIn("Keep runtime code free of editor APIs.", rule)
+        agent = (self.project / ".claude" / "agents" / "editor-tools.md").read_text(encoding="utf-8")
+        self.assertLess(agent.index("## Scope"), agent.index("## Base Role:"))
+        self.assertIn("### Owns", agent[agent.index("## Base Role:"):])
+        self.assertIn("`commands.test_editmode` (`unity -runTests -testPlatform EditMode`)", agent)
+        self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+        profile.write_text(profile.read_text(encoding="utf-8").replace('commands = ["test_editmode"]', 'commands = ["nope"]'),
+                           encoding="utf-8")
+        self.assertIn("unknown command 'nope'", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_locale_paths_and_release_packages(self) -> None:
+        self.install()
+        profile = self.project / ".ai" / "project" / "profile.toml"
+        base = profile.read_text(encoding="utf-8")
+        profile.write_text(base + '\n[hosting]\nci = false\n'
+                           '\n[docs.locale_paths]\n"README.md" = "docs/readme/README.{locale}{ext}"\n'
+                           '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\n'
+                           'changelog = "core/CHANGELOG.md"\ntag_pattern = "core/v{version}"\n', encoding="utf-8")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
+        self.assertIn("| `hosting.ci` | false |", agents_md)
+        self.assertIn("| `docs.locale_paths` | README.md → docs/readme/README.{locale}{ext} |", agents_md)
+        self.assertIn("| `release.packages` | core |", agents_md)
+        self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+        profile.write_text(base + '\n[docs]\nlocale_pattern = "docs/{lang}/{name}"\n'
+                           '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\ntag_pattern = "core"\n',
+                           encoding="utf-8")
+        out = run(self.script, "check", cwd=self.project).stdout
+        self.assertIn("unknown placeholder(s) lang", out)
+        self.assertIn("tag_pattern must contain {version}", out)
 
     def test_new_scaffolds_into_overlay(self) -> None:
         self.install()

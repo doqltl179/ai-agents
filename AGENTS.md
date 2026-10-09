@@ -53,7 +53,7 @@ Each line's full rule lives on the linked page.
 ## This Project
 
 - Project: **agentkit** — Portable, single-source-of-truth agent documentation kit (rules, roles, skills, stack packs, and a renderer) installed into other projects.
-- Kit: version 0.1.0, this repository is the kit itself; kit root is the repository root. CLI: `python tools/agentkit.py <sync|check|freshness|new|update>`
+- Kit: version 0.2.0, this repository is the kit itself; kit root is the repository root. CLI: `python tools/agentkit.py <sync|check|freshness|new|update>`
 - Overlay: `.ai/project/` · Owners and skills: `.ai/generated/catalog.md` · Project wiki: `.ai/project/wiki/README.md` · Lessons: `.ai/project/lessons.md`
 - Human-facing language: `ko`
 
@@ -65,7 +65,7 @@ Each line's full rule lives on the linked page.
 | `commands.test` | `python -m unittest discover -s tools/tests -v` |
 | `commands.lint` | `python tools/agentkit.py check` |
 
-Not available (report the gap, do not guess): `install`, `format`, `typecheck`, `e2e`, `run`
+Not available (report the gap, do not guess): `install`, `format`, `typecheck`, `e2e`, `run`, `worktree_setup`
 
 ### Parameters
 
@@ -82,6 +82,7 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `policy.commit_convention` | conventional |
 | `policy.commit_language` | ko |
 | `hosting.platform` | github |
+| `hosting.ci` | true |
 | `hosting.area_labels` | core, tooling, repo |
 | `docs.readme` | README.md |
 | `docs.changelog` | CHANGELOG.md |
@@ -91,3 +92,4 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `docs.specs_dir` | .ai/project/wiki |
 | `docs.adr_dir` | .ai/project/wiki/decisions |
 | `docs.glossary` | docs/glossary.md |
+| `release.tag_pattern` | v{version} |
