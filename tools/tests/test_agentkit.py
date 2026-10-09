@@ -96,6 +96,7 @@ class CapacityTests(unittest.TestCase):
         result = run(TOOLS / "agentkit.py", "capacity", cwd=agentkit.KIT_ROOT)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("recommended concurrent units", result.stdout)
+        self.assertIn("free disk", result.stdout)
 
 
 class KitRepositoryTests(unittest.TestCase):
@@ -264,6 +265,27 @@ class InstallTests(unittest.TestCase):
         profile.write_text(profile.read_text(encoding="utf-8").replace('commands = ["test_editmode"]', 'commands = ["nope"]'),
                            encoding="utf-8")
         self.assertIn("unknown command 'nope'", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_locale_paths_and_release_packages(self) -> None:
+        self.install()
+        profile = self.project / ".ai" / "project" / "profile.toml"
+        base = profile.read_text(encoding="utf-8")
+        profile.write_text(base + '\n[hosting]\nci = false\n'
+                           '\n[docs.locale_paths]\n"README.md" = "docs/readme/README.{locale}{ext}"\n'
+                           '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\n'
+                           'changelog = "core/CHANGELOG.md"\ntag_pattern = "core/v{version}"\n', encoding="utf-8")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
+        self.assertIn("| `hosting.ci` | false |", agents_md)
+        self.assertIn("| `docs.locale_paths` | README.md → docs/readme/README.{locale}{ext} |", agents_md)
+        self.assertIn("| `release.packages` | core |", agents_md)
+        self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+        profile.write_text(base + '\n[docs]\nlocale_pattern = "docs/{lang}/{name}"\n'
+                           '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\ntag_pattern = "core"\n',
+                           encoding="utf-8")
+        out = run(self.script, "check", cwd=self.project).stdout
+        self.assertIn("unknown placeholder(s) lang", out)
+        self.assertIn("tag_pattern must contain {version}", out)
 
     def test_new_scaffolds_into_overlay(self) -> None:
         self.install()
