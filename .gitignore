@@ -1,0 +1,4 @@
+# Working records (plans, scratch) are local, per agentkit planning policy.
+.ai/tasks/
+__pycache__/
+*.pyc
