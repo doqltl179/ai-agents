@@ -25,7 +25,68 @@ Every request runs the same order ([request-lifecycle.md](core/wiki/operating-mo
 
 `develop` is the development branch and `main` the release branch; `develop → main` happens only through a promotion pull request when a release is requested. Projects change these defaults in their profile.
 
-## Layout
+## Using agentkit In Your Project
+
+You do not copy this repository into your project. Keep a checkout anywhere **outside** the project and run its `install` command: it copies only the kit itself into the project and generates, at the project root, the files each AI tool reads.
+
+> **Why not clone this repository into the project?** AI tools read instruction files such as `CLAUDE.md` from the project root, so a repository nested in a subfolder is not picked up as your project's instructions. Worse, tools also load instruction files from subfolders they read, and this repository's own `AGENTS.md` and `CLAUDE.md` are written for maintaining the kit itself, so unrelated instructions would leak into your project's sessions.
+
+### 1. Install
+
+Requirements: Python 3.11+ (standard library only) and Git. The GitHub skills also use the `gh` CLI.
+
+```bash
+# Get the kit anywhere outside your project; you can delete this copy after installing
+git clone --depth 1 --branch main https://github.com/doqltl179/ai-agents agentkit
+
+# Install it into your project
+python agentkit/tools/agentkit.py install path/to/my-project --tools claude,codex,copilot
+```
+
+- `main` holds released versions and `develop` holds unreleased changes. To pin a version, clone its release tag with `--branch v<version>`.
+- `--tools` selects the AI tools to generate files for: `claude`, `codex`, `copilot`, `cursor`, `gemini`.
+
+### 2. What Gets Created
+
+```text
+my-project/
+  AGENTS.md, CLAUDE.md      generated entry files: tools read them at session start
+  .claude/ .codex/ .agents/ .github/…   generated agents, skills, and rules for each tool
+  .ai/kit/                  the kit itself (rules, roles, skills, stack packs, CLI); read-only
+  .ai/project/              your project's settings: profile.toml, wiki/, lessons.md
+  .ai/generated/            the catalog of active roles and skills
+  .gitignore                adds .ai/tasks/ and .worktrees/
+```
+
+The install never overwrites hand-written `AGENTS.md`, `CLAUDE.md`, or tool files; it stops and lists them so their content can be moved in the next step.
+
+### 3. Configure It For Your Project
+
+Open the project with your AI tool and ask it to **run the `kit-install` skill**. The skill:
+
+- reads the codebase and fills in `.ai/project/profile.toml`: the language for reports, build and test commands, the active roles, and the paths and stack packs each role owns;
+- moves the content of hand-written instruction files into `.ai/project/`, deleting those files only after you confirm;
+- proposes the repository settings the workflow expects (a `develop` branch, `develop` as the default branch, automatic deletion of merged branches) and applies them only after you confirm.
+
+To configure by hand, edit `.ai/project/profile.toml` (every key is documented in `.ai/kit/core/templates/project/profile.toml`) and run `python .ai/kit/tools/agentkit.py sync`.
+
+### 4. Commit
+
+Commit `.ai/kit/`, `.ai/project/`, `.ai/generated/`, and the generated files (`AGENTS.md`, `CLAUDE.md`, `.claude/`, and the rest), so every teammate and every AI tool works from the same setup. Adding `python .ai/kit/tools/agentkit.py check` to CI catches hand-edited generated files and local edits to the kit.
+
+### 5. Work With It
+
+Ask your AI tool for work as usual: the agent reads `AGENTS.md` and follows [How Work Flows](#how-work-flows). You can also run a skill directly, for example `/translate` in Claude Code. Keep project-specific facts in `.ai/project/` and run `sync` after changing them; never edit `.ai/kit/` or the generated files.
+
+### 6. Update
+
+```bash
+python .ai/kit/tools/agentkit.py update --from https://github.com/doqltl179/ai-agents --ref main
+```
+
+The update replaces `.ai/kit/`, prints what changed since your version together with any migration steps, and regenerates the files. It refuses to run when kit files were edited locally: the kit is read-only inside projects, and improvements go to this repository through the `kit-upstream-propose` skill.
+
+## Repository Layout
 
 ```text
 core/                  the kit payload (copied to .ai/kit/ in projects, read-only there)
@@ -40,33 +101,6 @@ tools/agentkit.py      install, update, sync, check, freshness, and new
 ```
 
 The layout inside an installed project and the files generated per tool are described in [installation.md](core/wiki/integration/installation.md) and [tool-adapters.md](core/wiki/integration/tool-adapters.md). Browse the [agents](core/agents/CATALOG.md), [skills](core/skills/CATALOG.md), and [stack packs](core/stacks/CATALOG.md).
-
-## Quick Start
-
-Requirements: Python 3.11+ (standard library only) and Git. The GitHub skills use the `gh` CLI.
-
-```bash
-# 1. From a checkout of this repository, install into a project
-python tools/agentkit.py install ../my-project --tools claude,codex,copilot
-
-# 2. In the project, edit .ai/project/profile.toml: language, commands, active roles, path and stack bindings
-#    (every key is documented in core/templates/project/profile.toml)
-
-# 3. Render and validate
-cd ../my-project
-python .ai/kit/tools/agentkit.py sync
-python .ai/kit/tools/agentkit.py check
-```
-
-If the project already has hand-written `AGENTS.md` or `CLAUDE.md` files, `sync` refuses to overwrite them. Ask an AI agent to run the **`kit-install` skill**: it moves their project-specific content into the overlay and fills in the profile.
-
-### Updating
-
-```bash
-python .ai/kit/tools/agentkit.py update --from https://github.com/doqltl179/ai-agents --ref v0.1.0
-```
-
-The update refuses to run when kit files were edited locally. The kit is read-only inside projects; improvements go upstream through the `kit-upstream-propose` skill.
 
 ## Maintaining The Kit
 

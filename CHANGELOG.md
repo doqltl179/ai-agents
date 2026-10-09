@@ -11,6 +11,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ### Changed
 - `technical-writer` owns source-language docs only; localized variants move to `localization-specialist`. (minor)
+- README (English, Korean, Japanese): a step-by-step guide to using the kit in another project, covering why not to clone it into the project, install, what gets created, configuration with `kit-install`, commit, daily use, and update. (patch)
 
 ### Fixed
 - Stack packs: `spring-boot` said `@MockBean`/`@SpyBean` were only deprecated (Boot 4.0 removed them) and named the old web starter in Detect; `django` named the wrong current release (6.1 is current, 5.2 remains the LTS). (patch)
