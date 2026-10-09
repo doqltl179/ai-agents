@@ -7,6 +7,8 @@
 name = ""                       # Project name shown to agents.
 summary = ""                    # One sentence: what the project is and who uses it.
 language = "en"                 # Language for human-facing output: reports, commits, pull requests, issues (for example "ko", "en").
+guardrails = []                 # One-line project rules every agent follows on every task, shown in AGENTS.md «This Project»;
+                                # for example "Features live in the packages; the sample projects only consume them".
 
 [tools]
 # AI tools to render adapter files for: "claude", "codex", "copilot", "cursor", "gemini".
@@ -33,7 +35,9 @@ area_labels = []                # One label per project area, matching commit sc
 
 [commands]
 # Exact shell commands agents run from the project root. Empty means "not available":
-# agents report the gap instead of guessing a substitute.
+# agents report the gap instead of guessing a substitute. Add more named commands when one kind has
+# several surfaces (for example test_editmode, test_tools) and bind them to roles with `commands`
+# in [bindings.<agent>].
 install = ""
 build = ""
 test = ""
@@ -77,6 +81,7 @@ active = []
 # Bind an active agent to this project's paths and stack packs; rendered into that agent's files.
 # paths = ["apps/web/**"]
 # stacks = ["typescript", "react"]
+# commands = ["test_web"]      # Named commands under [commands] this role runs to verify its paths.
 # notes = "Design system components live in packages/ui."
 
 # [models.<tool>]

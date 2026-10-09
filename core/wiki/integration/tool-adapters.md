@@ -65,7 +65,9 @@ Tools also load instruction files that agentkit did not generate. `sync` and `ch
 | `access: read-only` | Claude: `disallowedTools` removes edit tools · Copilot: `tools` limited to read, search, execute, web · Codex: `sandbox_mode = "read-only"` |
 | `tier` | `model` set only when the profile maps the tier in `[models.<tool>]` |
 | Skill | Folder copied with frontmatter reduced to `name` and `description` |
-| Stack pack + paths | Path-scoped rule file where the tool supports one; otherwise reachable through bindings and the catalog |
+| Stack pack + paths | Path-scoped rule file (`stack-<id>`) where the tool supports one; otherwise reachable through bindings and the catalog |
+| Project rule page with `applies_to` | Path-scoped rule file (`project-<page>`), rendered the same way |
+| `project.guardrails` | A «Project Rules» list in `AGENTS.md` «This Project» |
 | Links | Rewritten to project-root-relative paths; links inside a skill folder stay relative |
 
 ## Tool Notes

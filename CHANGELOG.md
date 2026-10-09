@@ -7,8 +7,12 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 ### Added
 - `sync` and `check` report unmanaged instruction files: files in the locations AI tools read instructions from (listed in `tool-adapters.md`) that agentkit did not generate; profile key `tools.keep_unmanaged` acknowledges files kept on purpose. (minor)
 - `check` warns when the profile repeats kit defaults and when `.editorconfig` forces a byte-order mark without the agentkit section; `update` reports profile keys that still hold a default the update changed. (minor)
+- `project.guardrails`: one-line project rules for every task, rendered under «Project Rules» in `AGENTS.md`; the `AGENTS.md` budget rises to 120 lines. (minor)
+- Path-scoped project rules: pages in `.ai/project/wiki/rules/` with `applies_to` render as path-scoped rule files for Claude Code, Copilot, and Cursor (budget 80 lines). (minor)
+- Named commands bound to roles: `commands` in `[bindings.<agent>]` lists keys under `[commands]` (validated) and is rendered into that role's «Project Binding». (minor)
 
 ### Changed
+- Agents with `extends` render the project card first and the base role one heading level down under «Base Role», with a «Scope» note; the project card's «Owns» replaces the base «Owns». (minor)
 - `install` writes a minimal profile (only the project's own keys), appends a BOM-free section to an `.editorconfig` that forces `utf-8-bom`, and exits with code 2 when it installed but hand-written instruction files need adoption. (minor)
 - `kit-install` runs the installation as one tracked unit (issue, task branch, pull request into the current default branch), adopts every file `install` and `check` report, and after the merge proposes repository settings and a label review. (minor)
 - `check` no longer flags link-only list items as duplicates, and warns when an active role lists skills the project disabled. (patch)
