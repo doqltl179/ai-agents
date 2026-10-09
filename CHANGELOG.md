@@ -14,8 +14,10 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 - Worktree setup cost: `commands.worktree_setup` runs in each fresh worktree; `capacity` reports free disk; `git-workflow.md` says when to turn worktrees off. `git-worktree-cleanup` also handles projects with worktrees off. (minor)
 - Localized doc paths: `docs.locale_pattern` takes `{stem}` and `{ext}`, and `[docs.locale_paths]` sets a path per document; unknown placeholders are errors. (minor)
 - Release scope for repositories with separately versioned packages: `[release] tag_pattern` and `[[release.packages]]` (name, version file, changelog, tag pattern), applied by `release.md` and `release-cut`. (minor)
+- Stack pack `unity-upm` for authoring Unity Package Manager packages: package layout and naming, manifest fields, assembly definitions and `versionDefines`, samples, Git URL installs (`?path=` before `#revision`), local and embedded packages, package tests, and per-package tags. (minor)
 
 ### Changed
+- Stack pack `unity`: scenes, prefabs, and serialized assets change by a decision order (live Editor → batch-mode Editor script → direct YAML only as a declared exception that never touches prefab instances or overrides) with mandatory verification after any direct edit; packages outside `Assets/` and `Packages/` are bound with `stack_paths`; fresh worktrees lack `Library/` and untracked links; mass reserialization stays out of feature changes. (minor)
 - Agents with `extends` render the project card first and the base role one heading level down under «Base Role», with a «Scope» note; the project card's «Owns» replaces the base «Owns». (minor)
 - `install` writes a minimal profile (only the project's own keys), appends a BOM-free section to an `.editorconfig` that forces `utf-8-bom`, and exits with code 2 when it installed but hand-written instruction files need adoption. (minor)
 - `kit-install` runs the installation as one tracked unit (issue, task branch, pull request into the current default branch), adopts every file `install` and `check` report, and after the merge proposes repository settings and a label review. (minor)
