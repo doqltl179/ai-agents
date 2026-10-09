@@ -32,6 +32,7 @@ reviewed: 2026-10-09
 ## Profile
 
 - Only keys present in the template exist; a key missing from the project profile takes the template default.
+- Keep only the keys the project sets differently. A key that repeats a default pins it: when a kit update changes that default, the project keeps the old value without noticing. `check` lists such keys, and `update` reports keys that still hold an old default the update changed.
 - Activate only the agents and skills the project needs: every active agent and skill costs context in tools that list them.
 - Bind each active execution agent to the paths it owns and the stack packs it applies with `[bindings.<agent>]`; the binding is rendered into that agent's files.
 - Leave a command empty when it does not exist; agents then report the gap instead of guessing.

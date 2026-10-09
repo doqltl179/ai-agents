@@ -33,6 +33,30 @@ Every AI tool reads a different file layout. `agentkit.py sync` renders the same
 | `gemini` | `GEMINI.md (imports AGENTS.md)` | — | — | — |
 <!-- agentkit:end adapters -->
 
+## Unmanaged Instruction Files
+
+Tools also load instruction files that agentkit did not generate. `sync` and `check` report every file in these locations that is neither generated nor listed in `tools.keep_unmanaged`, because it is loaded alongside the kit's files and can contradict them:
+
+<!-- agentkit:begin surfaces -->
+- `**/AGENTS.md`
+- `**/CLAUDE.md`
+- `**/GEMINI.md`
+- `.cursorrules`
+- `.windsurfrules`
+- `.claude/agents/**`
+- `.claude/commands/**`
+- `.claude/rules/**`
+- `.claude/skills/**`
+- `.codex/agents/**`
+- `.agents/skills/**`
+- `.cursor/rules/**`
+- `.github/copilot-instructions.md`
+- `.github/agents/**`
+- `.github/instructions/**`
+- `.github/prompts/**`
+- `.github/skills/**`
+<!-- agentkit:end surfaces -->
+
 ## Mappings
 
 | Kit concept | Rendering |
