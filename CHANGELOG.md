@@ -10,6 +10,10 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 - `project.guardrails`: one-line project rules for every task, rendered under «Project Rules» in `AGENTS.md`; the `AGENTS.md` budget rises to 120 lines. (minor)
 - Path-scoped project rules: pages in `.ai/project/wiki/rules/` with `applies_to` render as path-scoped rule files for Claude Code, Copilot, and Cursor (budget 80 lines). (minor)
 - Named commands bound to roles: `commands` in `[bindings.<agent>]` lists keys under `[commands]` (validated) and is rendered into that role's «Project Binding». (minor)
+- `hosting.ci`: projects without CI record verification in pull requests, and promotion requires the full verification on a fresh checkout of the integration head. (minor)
+- Worktree setup cost: `commands.worktree_setup` runs in each fresh worktree; `capacity` reports free disk; `git-workflow.md` says when to turn worktrees off. `git-worktree-cleanup` also handles projects with worktrees off. (minor)
+- Localized doc paths: `docs.locale_pattern` takes `{stem}` and `{ext}`, and `[docs.locale_paths]` sets a path per document; unknown placeholders are errors. (minor)
+- Release scope for repositories with separately versioned packages: `[release] tag_pattern` and `[[release.packages]]` (name, version file, changelog, tag pattern), applied by `release.md` and `release-cut`. (minor)
 
 ### Changed
 - Agents with `extends` render the project card first and the base role one heading level down under «Base Role», with a «Scope» note; the project card's «Owns» replaces the base «Owns». (minor)

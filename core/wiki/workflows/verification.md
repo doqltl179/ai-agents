@@ -34,7 +34,7 @@ Narrow test runs to the changed area first, then run the broader suite when the 
 
 ## Evidence Format
 
-For each check: the exact command, the result (pass or fail, counts), and for failures the first relevant error. Never paraphrase a failing run as passing, and never report a check you did not run in this task.
+For each check: the exact command, the result (pass or fail, counts), and for failures the first relevant error. Never paraphrase a failing run as passing, and never report a check you did not run in this task. With `hosting.ci = false`, the pull request body is the only record of verification: it lists every command run on the final commit and its result.
 
 ## Flaky Tests And Disabled Checks
 

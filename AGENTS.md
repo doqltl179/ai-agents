@@ -65,7 +65,7 @@ Each line's full rule lives on the linked page.
 | `commands.test` | `python -m unittest discover -s tools/tests -v` |
 | `commands.lint` | `python tools/agentkit.py check` |
 
-Not available (report the gap, do not guess): `install`, `format`, `typecheck`, `e2e`, `run`
+Not available (report the gap, do not guess): `install`, `format`, `typecheck`, `e2e`, `run`, `worktree_setup`
 
 ### Parameters
 
@@ -82,6 +82,7 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `policy.commit_convention` | conventional |
 | `policy.commit_language` | ko |
 | `hosting.platform` | github |
+| `hosting.ci` | true |
 | `hosting.area_labels` | core, tooling, repo |
 | `docs.readme` | README.md |
 | `docs.changelog` | CHANGELOG.md |
@@ -91,3 +92,4 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `docs.specs_dir` | .ai/project/wiki |
 | `docs.adr_dir` | .ai/project/wiki/decisions |
 | `docs.glossary` | docs/glossary.md |
+| `release.tag_pattern` | v{version} |
