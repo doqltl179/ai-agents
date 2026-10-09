@@ -4,6 +4,23 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added
+- `sync` and `check` report unmanaged instruction files: files in the locations AI tools read instructions from (listed in `tool-adapters.md`) that agentkit did not generate; profile key `tools.keep_unmanaged` acknowledges files kept on purpose. (minor)
+- `check` warns when the profile repeats kit defaults and when `.editorconfig` forces a byte-order mark without the agentkit section; `update` reports profile keys that still hold a default the update changed. (minor)
+
+### Changed
+- `install` writes a minimal profile (only the project's own keys), appends a BOM-free section to an `.editorconfig` that forces `utf-8-bom`, and exits with code 2 when it installed but hand-written instruction files need adoption. (minor)
+- `kit-install` runs the installation as one tracked unit (issue, task branch, pull request into the current default branch), adopts every file `install` and `check` report, and after the merge proposes repository settings and a label review. (minor)
+- `check` no longer flags link-only list items as duplicates, and warns when an active role lists skills the project disabled. (patch)
+
+### Fixed
+- Files with a UTF-8 byte-order mark are read correctly; editors saving under `charset = utf-8-bom` no longer break frontmatter or cause generated-file drift. (patch)
+
+### Migration
+1. Run `agentkit.py check` and adopt every reported unmanaged instruction file per «Adopt Existing Instructions» in `installation.md`, or list it in `tools.keep_unmanaged`.
+2. Remove the profile keys `check` reports as repeating kit defaults, so future default changes apply.
+3. If `.editorconfig` sets `charset = utf-8-bom`, append the agentkit section shown in «Editor Settings» in `installation.md`.
+
 ## [0.1.0] - 2026-10-09
 
 First release.
