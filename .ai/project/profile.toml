@@ -1,0 +1,65 @@
+# Profile of the agentkit repository itself: the kit is maintained with the kit.
+# Schema and defaults: core/templates/project/profile.toml.
+
+[project]
+name = "agentkit"
+summary = "Portable, single-source-of-truth agent documentation kit (rules, roles, skills, stack packs, and a renderer) installed into other projects."
+language = "ko"
+
+[tools]
+targets = ["claude", "codex", "copilot"]
+
+[policy]
+integration_branch = "develop"
+release_branch = "main"
+protected_branches = ["develop", "main"]
+commit_language = "ko"
+
+[commands]
+test = "python -m unittest discover -s tools/tests -v"
+lint = "python tools/agentkit.py check"
+build = "python tools/agentkit.py sync"
+
+[hosting]
+area_labels = ["core", "tooling"]
+
+[docs]
+readme = "README.md"
+changelog = "CHANGELOG.md"
+locales = ["ko", "ja"]
+locale_pattern = "docs/{locale}/{name}"
+specs_dir = ".ai/project/wiki"
+adr_dir = ".ai/project/wiki/decisions"
+
+[agents]
+enabled = ["@governance", "@documentation", "@quality", "@release", "@evolution", "devtools-engineer", "ci-cd-engineer"]
+
+[skills]
+enabled = ["@kit", "@git", "@github", "@planning", "@docs", "@review", "release-cut", "ci-failure-triage"]
+disabled = ["accessibility-review-perform", "codebase-onboard"]
+
+[stacks]
+active = []
+
+[bindings.kit-librarian]
+paths = ["core/**", ".ai/project/**", "README.md", "docs/**", "CHANGELOG.md"]
+notes = "Edit sources only; run `python tools/agentkit.py sync` and `check` after every change. The tech radar page belongs to trend-scout."
+
+[bindings.trend-scout]
+paths = ["core/wiki/evolution/tech-radar.md"]
+
+[bindings.devtools-engineer]
+paths = ["tools/**"]
+stacks = ["python"]
+notes = "tools/agentkit.py must stay standard-library only and support Python 3.11+. Keep tests in tools/tests/ passing."
+
+[bindings.ci-cd-engineer]
+paths = [".github/workflows/**"]
+stacks = ["github-actions"]
+
+[bindings.release-manager]
+paths = ["VERSION", "CHANGELOG.md"]
+notes = "Kit releases follow core/wiki/evolution/versioning.md, not the project release page."
+
+[evolution]
+upstream = "https://github.com/doqltl179/ai-agents"
