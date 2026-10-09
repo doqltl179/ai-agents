@@ -109,6 +109,7 @@ class InstallTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.project = Path(self.tmp.name) / "demo"
         self.project.mkdir()
+        subprocess.run(["git", "init", "-q"], cwd=self.project, check=True)
         self.script = self.project / ".ai" / "kit" / "tools" / "agentkit.py"
 
     def tearDown(self) -> None:
@@ -120,9 +121,8 @@ class InstallTests(unittest.TestCase):
     def bind(self) -> None:
         profile = self.project / ".ai" / "project" / "profile.toml"
         text = profile.read_text(encoding="utf-8")
-        text = text.replace('enabled = ["@governance", "@quality", "@documentation", "@release"]',
-                            'enabled = ["@governance", "@quality", "@documentation", "@release", "web-frontend-engineer"]')
-        text += '\n[bindings.web-frontend-engineer]\npaths = ["web/**"]\nstacks = ["typescript", "react"]\n'
+        text += ('\n[agents]\nenabled = ["@governance", "@quality", "@documentation", "@release", "web-frontend-engineer"]\n'
+                 '\n[bindings.web-frontend-engineer]\npaths = ["web/**"]\nstacks = ["typescript", "react"]\n')
         profile.write_text(text, encoding="utf-8")
 
     def test_install_sync_and_check(self) -> None:
@@ -170,8 +170,43 @@ class InstallTests(unittest.TestCase):
     def test_refuses_to_overwrite_hand_written_entry(self) -> None:
         (self.project / "AGENTS.md").write_text("# Hand-written rules\n", encoding="utf-8")
         result = self.install()
-        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.returncode, 2, result.stdout)
+        self.assertIn("installed, adoption needed", result.stdout)
         self.assertEqual((self.project / "AGENTS.md").read_text(encoding="utf-8"), "# Hand-written rules\n")
+
+    def test_minimal_profile_takes_defaults(self) -> None:
+        self.install()
+        profile = (self.project / ".ai" / "project" / "profile.toml").read_text(encoding="utf-8")
+        self.assertNotIn("[policy]", profile)
+        self.assertIn('name = "demo"', profile)
+        self.assertIn("| `policy.integration_branch` | develop |", (self.project / "AGENTS.md").read_text(encoding="utf-8"))
+        path = self.project / ".ai" / "project" / "profile.toml"
+        path.write_text(profile + '\n[policy]\nintegration_branch = "develop"\n', encoding="utf-8")
+        self.assertIn("profile repeats 1 kit default(s): policy.integration_branch", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_unmanaged_instruction_files_are_reported(self) -> None:
+        self.install()
+        for relpath in (".github/prompts/old.prompt.md", ".claude/commands/legacy.md", "docs/AGENTS.md"):
+            (self.project / relpath).parent.mkdir(parents=True, exist_ok=True)
+            (self.project / relpath).write_text("old rules\n", encoding="utf-8")
+        out = run(self.script, "check", cwd=self.project).stdout
+        for relpath in (".github/prompts/old.prompt.md", ".claude/commands/legacy.md", "docs/AGENTS.md"):
+            self.assertIn(f"unmanaged instruction file {relpath}", out)
+        self.assertNotIn("unmanaged instruction file .claude/agents/", out)
+        path = self.project / ".ai" / "project" / "profile.toml"
+        path.write_text(path.read_text(encoding="utf-8") + '\n[tools]\nkeep_unmanaged = [".claude/commands/**"]\n', encoding="utf-8")
+        self.assertNotIn(".claude/commands/legacy.md", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_byte_order_marks_are_tolerated(self) -> None:
+        (self.project / ".editorconfig").write_text("root = true\n\n[*.md]\ncharset = utf-8-bom\n", encoding="utf-8")
+        self.install()
+        self.assertIn("# agentkit:", (self.project / ".editorconfig").read_text(encoding="utf-8"))
+        page = self.project / ".ai" / "project" / "wiki" / "README.md"
+        page.write_bytes(b"\xef\xbb\xbf" + page.read_bytes())
+        result = run(self.script, "check", cwd=self.project)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn("missing frontmatter", result.stdout)
+        self.assertNotIn(".editorconfig forces utf-8-bom", result.stdout)
 
     def test_stale_generated_files_are_removed(self) -> None:
         self.install()
