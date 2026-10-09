@@ -18,6 +18,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 - README (English, Korean, Japanese): a step-by-step guide to using the kit in another project, covering why not to clone it into the project, install, what gets created, configuration with `kit-install`, commit, daily use, and update. (patch)
 
 ### Fixed
+- `git-worktree-cleanup`: run from the main checkout with nothing using the worktree, and finish the cleanup when the directory removal fails with `Permission denied` after Git unregistered the worktree. (patch)
 - Stack packs: `spring-boot` said `@MockBean`/`@SpyBean` were only deprecated (Boot 4.0 removed them) and named the old web starter in Detect; `django` named the wrong current release (6.1 is current, 5.2 remains the LTS). (patch)
 - Stack packs: `pytorch` (`CUBLAS_WORKSPACE_CONFIG` is needed only up to 2.9; DataLoader workers use `forkserver` on Linux with Python 3.14+), `sql` (`IS NOT DISTINCT FROM` needs SQL Server 2022+ or SQLite 3.39+; MySQL uses `<=>`), `shell` (PowerShell 5.1 encodings and `$PSNativeCommandUseErrorActionPreference` default), `go` (`GOTOOLCHAIN=local` refuses to run a newer `go` line instead of downloading), `rust` (documented `cargo update <crate>` form). (patch)
 
