@@ -24,15 +24,15 @@ reviewed: 2026-10-09
 
 ## Steps
 1. Confirm the release was requested and its scope fits «Release Unit» in [release.md](../../wiki/workflows/release.md). If either is unclear, stop and ask.
-2. Run «Preflight» in [git-workflow.md](../../wiki/workflows/git-workflow.md) on `policy.release_branch`. Confirm the latest CI run on its HEAD passed: `gh run list --branch <release-branch> --limit 1`.
-3. List what ships: `git log --oneline <previous-tag>..HEAD` and the Unreleased section of `docs.changelog`. Flag commits that have no changelog entry.
+2. Run «Preflight» in [git-workflow.md](../../wiki/workflows/git-workflow.md) in the main checkout. Confirm the latest CI run on the integration branch passed: `gh run list --branch <integration_branch> --limit 1`.
+3. List what ships: `git log --oneline <previous-tag>..origin/<integration_branch>` and the Unreleased section of `docs.changelog`. Flag commits that have no changelog entry.
 4. Choose the version per «Version Numbers» in release.md.
-5. When `policy.release_branch` is in `policy.protected_branches`, route the version commit and tag per «Release Unit» in release.md, starting the branch with `git-branch-start`.
+5. Start the version unit per «Release Unit» in release.md: its issue (when `policy.issue_first` is on), then its worktree with `git-branch-start`.
 6. Finalize `docs.changelog` per «Changelog Finalization» in release.md, and its localized variants per «Localized Variants» in [documentation.md](../../wiki/workflows/documentation.md).
 7. Bump every version declaration: find them with `rg -n "<current-version>"`, and change only the project's own version fields, never dependency versions.
 8. Run `commands.build` and `commands.test` and record results per «Evidence Format» in [verification.md](../../wiki/workflows/verification.md). Stop on any failure.
-9. Commit with `git-commit`. If a branch was started, open a pull request with `github-pr-create` and wait until it is merged.
-10. Draft the tag and release notes per «Tags And Notes» in release.md for the release commit on `policy.release_branch` (the merged commit when step 5 applied). Create the annotated tag locally: `git tag -a <tag> <commit> -F <notes-file>`.
+9. Commit with `git-commit`, open the pull request into the integration branch with `github-pr-create`, and wait until it merges. When `policy.release_branch` differs, open the promotion pull request per «Promotion» in release.md (`gh pr create --base <release_branch> --head <integration_branch>`) and wait until it merges.
+10. Draft the tag and release notes per «Tags And Notes» in release.md for the release commit on `policy.release_branch` (the commit the promotion produced, or the merged version commit when both branches are the same). Create the annotated tag locally: `git tag -a <tag> <commit> -F <notes-file>`.
 11. Show the user the version, tag, commit ID, notes, and publish targets, and get explicit confirmation per «Confirm Before Irreversible Or Outward Actions» in [integrity.md](../../wiki/principles/integrity.md). Approval covers only the actions shown.
 12. After confirmation, push the tag (`git push origin <tag>`) and publish per «Publishing» in release.md. Verify the result, for example `gh release view <tag>`.
 

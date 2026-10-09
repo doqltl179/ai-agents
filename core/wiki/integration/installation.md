@@ -29,7 +29,7 @@ From a checkout of the kit repository:
 python tools/agentkit.py install <project-dir> --tools claude,codex,copilot
 ```
 
-This copies the kit payload (`core/`, `tools/agentkit.py`, `VERSION`, `CHANGELOG.md`, `LICENSE`) into `<project>/.ai/kit/` with an integrity manifest, creates `.ai/project/` from templates, adds `.ai/tasks/` to `.gitignore`, and runs `sync`. Commit `.ai/kit/`, `.ai/project/`, `.ai/generated/`, and the generated entry and tool files, so every collaborator and hosted agent sees the same setup.
+This copies the kit payload (`core/`, `tools/agentkit.py`, `VERSION`, `CHANGELOG.md`, `LICENSE`) into `<project>/.ai/kit/` with an integrity manifest, creates `.ai/project/` from templates, adds `.ai/tasks/` and the worktree root (`policy.worktree_root`) to `.gitignore`, and runs `sync`. Commit `.ai/kit/`, `.ai/project/`, `.ai/generated/`, and the generated entry and tool files, so every collaborator and hosted agent sees the same setup.
 
 Add `python .ai/kit/tools/agentkit.py check` to the project's CI so a hand-edited generated file, a local kit edit, or a broken link fails the build.
 
@@ -45,6 +45,7 @@ The kit is copied, not linked as a Git submodule: tools load instruction files f
   .ai/project/                 the overlay, owned by the project
   .ai/generated/               catalog and manifest, generated
   .ai/tasks/                   plans, not committed
+  .worktrees/                  one worktree per unit, not committed
 ```
 
 ## Adopt Existing Instructions

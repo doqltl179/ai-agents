@@ -19,11 +19,11 @@ reviewed: 2026-10-09
 
 ## Inputs
 - The task branch name and its base (`policy.integration_branch` in the profile).
-- Linked issue numbers, if any.
+- The unit's issue number (required when `policy.issue_first` is on) and any other linked issues.
 - Verification commands and their results from this task.
 
 ## Steps
-1. Confirm the branch matches «Branch Policy» in [git-workflow.md](../../wiki/workflows/git-workflow.md) and is not a protected branch.
+1. Work inside the unit's worktree. Confirm the branch matches «Branch Policy» in [git-workflow.md](../../wiki/workflows/git-workflow.md), is not a protected branch, and that head and base fit «Pull Request Targets» in [issues-and-prs.md](../../wiki/workflows/issues-and-prs.md).
 2. Confirm the working tree is clean and the branch contains only this unit's commits: `git status --short` and `git log --oneline <base>..HEAD`.
 3. Push the branch with upstream tracking if it is not pushed yet: `git push -u origin <branch>`.
 4. Compose the title and body per «Pull Request Body» in [issues-and-prs.md](../../wiki/workflows/issues-and-prs.md), in the language set by `project.language`.
@@ -34,3 +34,4 @@ reviewed: 2026-10-09
 
 ## Output
 - The pull request number and URL, its labels, linked issues, mergeability state, and any follow-up issues created.
+- The worktree stays until the pull request merges; then run `git-worktree-cleanup`.

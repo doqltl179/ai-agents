@@ -45,7 +45,7 @@ Run units in parallel only when every condition holds:
 - no unit needs another's output, decision, or a shared mutable resource (database, port, build cache, device),
 - the time saved outweighs the coordination cost.
 
-Otherwise order them as a dependency edge. When the tool supports it, give parallel units isolated worktrees on branches named in the plan.
+Otherwise order them as a dependency edge. Every unit already has its own issue, worktree, and task branch ([request-lifecycle.md](request-lifecycle.md)), so parallel units never share a working tree.
 
 ## Node Budget
 
@@ -55,7 +55,7 @@ Otherwise order them as a dependency edge. When the tool supports it, give paral
 
 ## Fan-In
 
-1. Each unit returns focused commits and evidence; its reviewer approves exact commit IDs.
-2. `release-manager` integrates approved commits in dependency order onto one integration branch and stops on any conflict it cannot resolve from both sides' stated intent.
-3. The plan's named owner runs combined verification on the integrated result; the reviewer gates it.
-4. A dependent unit becomes ready only after its predecessors are integrated.
+1. Each unit returns focused commits and evidence in its own pull request into the integration branch; its reviewer approves the exact commit IDs.
+2. Pull requests merge in dependency order. A dependent unit's worktree is cut after its predecessors merged, or stacked on a predecessor's branch with the merge order stated in both pull requests.
+3. When units must be verified together before merging, `release-manager` combines the approved branches in dependency order on one temporary branch and stops on any conflict it cannot resolve from both sides' stated intent; the plan's named owner runs combined verification there and the reviewer gates it.
+4. A dependent unit becomes ready only after its predecessors are merged.

@@ -8,9 +8,10 @@ Every core skill, by category.
 
 | Skill | Use when |
 |---|---|
-| [`git-branch-start`](git-branch-start/SKILL.md) | Start a task branch: run the preflight, then cut a task branch from the latest remote integration branch, named per the branch policy, stopping on any unexpected repository state. Use when a bounded unit of work is about to change tracked files and has no task branch yet. |
+| [`git-branch-start`](git-branch-start/SKILL.md) | Start a unit's workspace: run the preflight in the main checkout, then create the unit's own worktree and task branch from the freshly fetched integration branch (or, with worktrees off, cut the branch in place), named from the unit's issue, stopping on any unexpected repository state. Use when a unit with an issue is about to change tracked files and has no worktree or task branch yet. |
 | [`git-commit`](git-commit/SKILL.md) | Record changes as commits: group working-tree changes by concern, stage explicit paths per group, inspect the staged set, and write each message per the commit convention in the commit language. Use when verified changes on a task branch are ready to record, or when the working tree mixes changes for more than one concern. |
 | [`git-conflict-resolve`](git-conflict-resolve/SKILL.md) | Bring base-branch changes into a task branch by merging, read the intent of both sides before editing any conflict, resolve, re-verify, and record every override in the merge commit. Use when a task branch lags its base, a pull request reports conflicts, or a merge stopped with conflicted paths. |
+| [`git-worktree-cleanup`](git-worktree-cleanup/SKILL.md) | Remove a finished unit's worktree and task branch after its pull request merged: confirm the merge, confirm the worktree holds nothing unsaved and nothing is stacked on the branch, then remove the worktree and delete the local and remote branch, and update the main checkout. Use when a unit's pull request has merged, or the user asks to clean up merged worktrees. |
 
 ## github
 

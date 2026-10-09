@@ -14,15 +14,20 @@ language = "en"                 # Language for human-facing output: reports, com
 targets = ["claude", "codex", "copilot"]
 
 [policy]
-integration_branch = "main"     # Task branches are cut from and merge back into this branch.
-release_branch = "main"         # Releases are made from this branch; equal to integration_branch for trunk-based flow.
-protected_branches = ["main"]   # Never commit directly; changes arrive only through merged pull requests.
+integration_branch = "develop"  # Development branch: every work unit starts from it and its pull request targets it.
+release_branch = "main"         # Release branch: changes arrive only through a promotion pull request from integration_branch.
+                                # Set both to the same branch for trunk-based flow.
+protected_branches = ["develop", "main"]      # Never commit directly; changes arrive only through merged pull requests.
+issue_first = true              # Every work unit starts from an issue on the hosting platform (ignored when hosting.platform is "none").
+worktrees = true                # Every work unit runs in its own Git worktree cut from integration_branch.
+worktree_root = ".worktrees"    # Directory holding the worktrees, relative to the project root; kept out of Git by .gitignore.
 branch_pattern = "<type>/<scope>-<summary>"   # Task branch name; <type> is a Conventional Commits type.
 commit_convention = "conventional"            # "conventional" (Conventional Commits) or "none".
 commit_language = ""            # Language of commit subjects and bodies; empty means project.language.
 
 [hosting]
 platform = "github"             # "github" or "none". Selects whether github-* skills apply.
+area_labels = []                # One label per project area, matching commit scopes, for example ["web", "api"].
 
 [commands]
 # Exact shell commands agents run from the project root. Empty means "not available":

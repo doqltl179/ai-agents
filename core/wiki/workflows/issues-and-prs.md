@@ -59,6 +59,15 @@ Apply `blocked` only when starting now would produce nothing: it waits on a user
 
 Register as an issue: work deliberately deferred, defects or doc/code mismatches found along the way, and follow-ups that must happen outside the repository. Do not register: anything fixable now (fix it), anything an open issue already covers (comment there).
 
+## Pull Request Targets
+
+| Head | Base | When |
+|---|---|---|
+| A unit's task branch | `policy.integration_branch` | Every unit, always |
+| `policy.integration_branch` | `policy.release_branch` | A promotion, only as part of a requested release ([release.md](release.md)) |
+
+No other combination. A pull request from a task branch into the release branch is a stop condition, not a shortcut. Pass `--base` explicitly; the platform's default base may be the release branch.
+
 ## Pull Request Body
 
 1. **Summary** — what changed and why, in two or three sentences.
@@ -69,7 +78,7 @@ Register as an issue: work deliberately deferred, defects or doc/code mismatches
 
 ## Linking Issues
 
-Use a closing keyword (`Closes #<n>`) for issues the pull request completes and a plain reference (`Refs #<n>`) otherwise. A closing keyword closes the issue only when the pull request merges into the default branch.
+Use a closing keyword (`Closes #<n>`) for issues the pull request completes and a plain reference (`Refs #<n>`) otherwise. A closing keyword closes the issue only when the change reaches the platform's default branch: when that is the release branch, the issue stays open after the unit merges into the integration branch and closes with the promotion. That is expected; do not close it by hand.
 
 ## Mergeability Check
 
