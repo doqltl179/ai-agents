@@ -6,7 +6,7 @@ applies_to: []
 related: [csharp, sql, docker]
 volatility: volatile
 reviewed: 2026-10-09
-sources: ["https://learn.microsoft.com/aspnet/core/", "https://learn.microsoft.com/aspnet/core/release-notes/aspnetcore-10.0", "https://learn.microsoft.com/ef/core/", "https://dotnet.microsoft.com/platform/support/policy/dotnet-core"]
+sources: ["https://learn.microsoft.com/aspnet/core/", "https://learn.microsoft.com/aspnet/core/release-notes/aspnetcore-10.0", "https://learn.microsoft.com/ef/core/", "https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/overview", "https://dotnet.microsoft.com/platform/support/policy/dotnet-core"]
 ---
 
 # ASP.NET Core
@@ -44,5 +44,6 @@ sources: ["https://learn.microsoft.com/aspnet/core/", "https://learn.microsoft.c
 - A singleton capturing a scoped service fails only where scope validation runs (Development by default); fix the lifetime, do not disable validation.
 
 ## Version Notes
-- Even-numbered .NET releases are LTS; .NET 10 (LTS) shipped in November 2025 (as of 2026-10, per the .NET support policy).
+- Even-numbered .NET releases are LTS; .NET 10 (LTS) shipped in November 2025 and is supported until 2028-11-14; .NET 8 (LTS) and .NET 9 (STS) reach end of support on 2026-11-10 (as of 2026-10, per the .NET support policy).
+- ASP.NET Core 11 ships with .NET 11, a go-live release candidate (RC1, September 2026) with general availability expected in November 2026. Use ASP.NET Core 11 APIs only when `<TargetFramework>` is `net11.0` (as of 2026-10, per learn.microsoft.com What's new in .NET 11).
 - ASP.NET Core 10 adds built-in validation for minimal APIs through `builder.Services.AddValidation()`; earlier versions need endpoint filters or a library (as of 2026-10, per learn.microsoft.com "What's new in ASP.NET Core 10"). Check `<TargetFramework>` before relying on it.

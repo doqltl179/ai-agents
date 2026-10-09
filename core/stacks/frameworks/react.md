@@ -6,7 +6,7 @@ applies_to: ["**/*.jsx", "**/*.tsx"]
 related: [typescript, nextjs, react-native]
 volatility: volatile
 reviewed: 2026-10-09
-sources: ["https://react.dev/reference/rules", "https://react.dev/learn/you-might-not-need-an-effect", "https://react.dev/blog", "https://testing-library.com/docs/queries/about/"]
+sources: ["https://react.dev/reference/rules", "https://react.dev/learn/you-might-not-need-an-effect", "https://react.dev/blog", "https://react.dev/blog/2026/09/09/react-19-3", "https://testing-library.com/docs/queries/about/"]
 ---
 
 # React
@@ -46,3 +46,5 @@ sources: ["https://react.dev/reference/rules", "https://react.dev/learn/you-migh
 ## Version Notes
 - React 19: `ref` is a regular prop on function components (`forwardRef` not needed); `ReactDOM.render` and function-component `propTypes`/`defaultProps` are removed; Actions, `useActionState`, `useOptimistic`, and `use` are available (as of 2026-10, per react.dev/blog).
 - React 19.2 added `<Activity>` and `useEffectEvent`; React Compiler 1.0 is stable (as of 2026-10, per react.dev/blog). Check the installed version before using them.
+- React 19.3 makes `<ViewTransition>` and Fragment refs stable. Import `ViewTransition` and `addTransitionType` from `react`; `<ViewTransition>` animates only updates inside a Transition (`startTransition`, a `<Suspense>` reveal, `useDeferredValue`) and works only in the DOM. `<Fragment ref={ref}>` yields a `FragmentInstance` (`addEventListener`, `focus`, `observeUsing`, `getClientRects`) (as of 2026-10, per react.dev/blog/2026/09/09/react-19-3). Use them only when the installed `react` is 19.3 or later.
+- React 19.3 also adds `browser()` from `react-dom` (`use(browser())` suspends only during server rendering) and makes Strict Mode double-invoke effects during hydration as well (as of 2026-10, per react.dev/blog/2026/09/09/react-19-3).
