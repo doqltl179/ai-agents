@@ -421,6 +421,15 @@ def strip_h1(body: str) -> tuple[str, str]:
     return "", "\n".join(lines)
 
 
+def demote_headings(body: str) -> str:
+    out, fence = [], False
+    for line in body.split("\n"):
+        if line.lstrip().startswith("```"):
+            fence = not fence
+        out.append("#" + line if not fence and re.match(r"^#{1,5} ", line) else line)
+    return "\n".join(out)
+
+
 def table_cell(text: str) -> str:
     return " ".join(str(text).split()).replace("|", "\\|")
 
@@ -467,6 +476,11 @@ class Renderer:
                 self.render_skill(name, root)
         for stack_id in kit.active_stacks():
             self.render_stack_rules(stack_id, targets)
+        for page in kit.pages:
+            if page.origin == "project" and page.meta.get("applies_to"):
+                slug = page.path.stem.lower()
+                self.render_path_rule(f"project-{slug}", page.meta.get("owns", slug), page, list(page.meta["applies_to"]),
+                                      targets)
         self.add(".ai/generated/catalog.md", self.catalog_md())
         self.add(".ai/generated/manifest.json", "")  # placeholder; filled after all files are known
         self.index_regions()
@@ -500,9 +514,11 @@ class Renderer:
             "Project wiki: `.ai/project/wiki/README.md` · Lessons: `.ai/project/lessons.md`",
             f"- Human-facing language: `{project.get('language', 'en')}`",
             "",
-            "### Commands",
-            "",
         ]
+        guardrails = [g for g in project.get("guardrails", []) if str(g).strip()]
+        if guardrails:
+            lines += ["### Project Rules", "", *[f"- {g}" for g in guardrails], ""]
+        lines += ["### Commands", ""]
         commands = prof.get("commands", {})
         present = {k: v for k, v in commands.items() if v}
         missing = [k for k, v in commands.items() if not v]
@@ -529,10 +545,14 @@ class Renderer:
         base_name = doc.meta.get("extends")
         if base_name and base_name in kit.agents:
             base = kit.agents[base_name]
-            parts.append(rewrite_links(base.body.strip("\n"), base.path.parent, self.p))
             title, local = strip_h1(doc.body)
-            parts.append(f"## Project Specialization: {title or name}\n\n"
-                         + rewrite_links(local.strip("\n"), doc.path.parent, self.p))
+            parts.append(f"# {title or name}\n\n" + rewrite_links(local.strip("\n"), doc.path.parent, self.p))
+            parts.append("## Scope\n\n"
+                         f"This role narrows `{base_name}`. It owns only what «Owns» above lists; the base role below "
+                         "still supplies the boundaries («Does Not Own»), «Domain Checks», and «Skills».")
+            base_title, base_body = strip_h1(base.body)
+            parts.append(f"## Base Role: {base_title or base_name}\n\n"
+                         + demote_headings(rewrite_links(base_body.strip("\n"), base.path.parent, self.p)))
         else:
             parts.append(rewrite_links(doc.body.strip("\n"), doc.path.parent, self.p))
         wiki = CORE / "wiki" / "operating-model"
@@ -549,6 +569,10 @@ class Renderer:
         if stacks:
             lines.append("- Stack packs (read before editing): "
                          + ", ".join(f"[{s}]({rel(kit.stacks[s].path, self.p)})" for s in stacks))
+        commands = kit.profile.get("commands", {})
+        bound = [c for c in binding.get("commands", []) if commands.get(c)]
+        if bound:
+            lines.append("- Commands for this role: " + ", ".join(f"`commands.{c}` (`{commands[c]}`)" for c in bound))
         if binding.get("notes"):
             lines.append(f"- Notes: {binding['notes']}")
         parts.append("\n".join(lines))
@@ -623,20 +647,23 @@ class Renderer:
     def render_stack_rules(self, stack_id: str, targets: list[str]) -> None:
         doc = self.kit.stacks[stack_id]
         paths = self.kit.stack_paths(stack_id)
-        if not paths:
-            return
-        marker = md_marker(self.kit, [self.src(doc.path), ".ai/project/profile.toml"])
+        if paths:
+            self.render_path_rule(f"stack-{stack_id}", doc.meta.get("title", stack_id) + " conventions", doc, paths,
+                                  targets)
+
+    def render_path_rule(self, rule_id: str, description: str, doc: Doc, paths: list[str], targets: list[str]) -> None:
+        sources = [self.src(doc.path)] + ([".ai/project/profile.toml"] if doc.origin == "core" else [])
+        marker = md_marker(self.kit, sources)
         body = rewrite_links(doc.body.strip("\n"), doc.path.parent, self.p) + "\n"
         if "claude" in targets:
             fm = ["---", "paths:"] + [f"  - {yaml_str(p)}" for p in paths] + ["---"]
-            self.add(f".claude/rules/stack-{stack_id}.md", "\n".join(fm + [marker, "", body]))
+            self.add(f".claude/rules/{rule_id}.md", "\n".join(fm + [marker, "", body]))
         if "copilot" in targets:
             fm = ["---", f"applyTo: {yaml_str(','.join(paths))}", "---"]
-            self.add(f".github/instructions/stack-{stack_id}.instructions.md", "\n".join(fm + [marker, "", body]))
+            self.add(f".github/instructions/{rule_id}.instructions.md", "\n".join(fm + [marker, "", body]))
         if "cursor" in targets:
-            fm = ["---", f"description: {yaml_str(doc.meta.get('title', stack_id) + ' conventions')}",
-                  f"globs: {','.join(paths)}", "alwaysApply: false", "---"]
-            self.add(f".cursor/rules/stack-{stack_id}.mdc", "\n".join(fm + [marker, "", body]))
+            fm = ["---", f"description: {yaml_str(description)}", f"globs: {','.join(paths)}", "alwaysApply: false", "---"]
+            self.add(f".cursor/rules/{rule_id}.mdc", "\n".join(fm + [marker, "", body]))
 
     # catalogs -----------------------------------------------------------
     def catalog_md(self) -> str:
@@ -733,6 +760,10 @@ class Renderer:
                     if sub_readme.exists():
                         meta, _ = parse_frontmatter(read_text(sub_readme))
                         rows.append((f"{sub.name}/README.md", f"**{sub.name}/** — {(meta or {}).get('owns', '')}"))
+                    else:
+                        for page in sorted(sub.glob("*.md")):
+                            meta, _ = parse_frontmatter(read_text(page))
+                            rows.append((f"{sub.name}/{page.name}", (meta or {}).get("owns", "")))
                 for page in sorted(readme.parent.glob("*.md")):
                     if page.name == "README.md":
                         continue
@@ -838,6 +869,10 @@ def validate(kit: Kit, report: Report) -> None:
                 report.error(f"{where}: missing frontmatter '{key}'")
         if doc.meta.get("volatility") == "volatile" and not doc.meta.get("sources"):
             report.error(f"{where}: volatile pages must list 'sources'")
+        if doc.meta.get("applies_to") and doc.origin == "core":
+            report.error(f"{where}: only project wiki pages take 'applies_to'; core path knowledge belongs in stack packs")
+        if doc.meta.get("applies_to") and doc.origin == "project" and doc.path.parent != kit.overlay / "wiki" / "rules":
+            report.error(f"{where}: pages with 'applies_to' load automatically and live in .ai/project/wiki/rules/")
     for doc in [*kit.agents.values(), *kit.skills.values(), *kit.stacks.values(), *kit.pages]:
         where = rel(doc.path, kit.project)
         vol, rev = doc.meta.get("volatility"), doc.meta.get("reviewed", "")
@@ -887,6 +922,11 @@ def validate_profile(kit: Kit, report: Report) -> None:
         for stack in binding.get("stacks", []):
             if stack not in kit.stacks:
                 report.error(f"profile [bindings.{agent}].stacks: unknown stack '{stack}'")
+        for command in binding.get("commands", []):
+            if command not in prof.get("commands", {}):
+                report.error(f"profile [bindings.{agent}].commands: unknown command '{command}' (define it under [commands])")
+            elif not prof["commands"][command]:
+                report.warn(f"profile [bindings.{agent}].commands: '{command}' is empty")
     for stack in [*prof.get("stacks", {}).get("active", []), *prof.get("stack_paths", {})]:
         if stack not in kit.stacks:
             report.error(f"profile: unknown stack '{stack}'")

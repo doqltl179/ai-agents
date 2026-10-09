@@ -30,7 +30,7 @@ Commands come from `commands.*` in the profile (shown in `AGENTS.md` «This Proj
 | Docs only | Links resolve and examples match real signatures; `agentkit.py check` for agent docs |
 | Performance | Before and after measurements under the same conditions |
 
-Narrow test runs to the changed area first, then run the broader suite when the change crosses module boundaries.
+Narrow test runs to the changed area first, then run the broader suite when the change crosses module boundaries. When the profile defines named commands for several surfaces (for example an engine compile and tool tests), run the ones listed in the «Project Binding» of the role that owns the touched paths.
 
 ## Evidence Format
 
