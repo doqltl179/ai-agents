@@ -25,7 +25,68 @@
 
 `develop` は開発用、`main` はリリース用です。`develop → main` はリリースを依頼されたときの昇格(promotion)プルリクエストでのみ行います。プロジェクトはプロフィールでこの既定値を変更できます。
 
-## 構成
+## プロジェクトへの導入
+
+このリポジトリをプロジェクトにそのままコピーする必要はありません。プロジェクトの**外**の任意の場所に取得して `install` コマンドを実行すると、キット本体だけがプロジェクトにコピーされ、各 AI ツールが読み込むファイルはプロジェクトのルートに生成されます。
+
+> **リポジトリをプロジェクト内に clone してはいけないのですか?** AI ツールは `CLAUDE.md` などの指示ファイルをプロジェクトのルートから読み込むため、サブフォルダに置いたリポジトリはプロジェクトの指示として認識されません。さらに、ツールは作業中に読んだサブフォルダの指示ファイルも取り込みます。このリポジトリの `AGENTS.md` と `CLAUDE.md` はキット自体のメンテナンス用なので、プロジェクトの作業と無関係な指示がセッションに混ざってしまいます。
+
+### 1. インストール
+
+必要なもの: Python 3.11 以上(標準ライブラリのみ使用)、Git。GitHub 関連のスキルは `gh` CLI も使います。
+
+```bash
+# プロジェクトの外の任意の場所にキットを取得します(インストール後は削除して構いません)
+git clone --depth 1 --branch main https://github.com/doqltl179/ai-agents agentkit
+
+# プロジェクトにインストールします
+python agentkit/tools/agentkit.py install path/to/my-project --tools claude,codex,copilot
+```
+
+- `main` にはリリース済みのバージョン、`develop` には未リリースの変更があります。バージョンを固定するには、`--branch v<バージョン>` でそのリリースタグを取得します。
+- `--tools` でファイルを生成する AI ツールを選びます: `claude`、`codex`、`copilot`、`cursor`、`gemini`。
+
+### 2. 生成されるもの
+
+```text
+my-project/
+  AGENTS.md, CLAUDE.md      生成されたエントリファイル: ツールがセッション開始時に読み込みます
+  .claude/ .codex/ .agents/ .github/…   ツールごとに生成されたエージェント・スキル・ルール
+  .ai/kit/                  キット本体(ルール・役割・スキル・stack pack・CLI)、読み取り専用
+  .ai/project/              プロジェクトの設定: profile.toml、wiki/、lessons.md
+  .ai/generated/            有効な役割とスキルのカタログ
+  .gitignore                .ai/tasks/ と .worktrees/ を追加
+```
+
+手書きの `AGENTS.md`・`CLAUDE.md`・ツール用ファイルがあれば上書きせずに停止し、その一覧を表示します。内容は次の手順で移します。
+
+### 3. プロジェクトに合わせた設定
+
+AI ツールでプロジェクトを開き、**`kit-install` スキルの実行を依頼**します。このスキルは次のことを行います。
+
+- コードベースを読み取り、`.ai/project/profile.toml` を埋めます: 報告に使う言語、ビルドとテストのコマンド、有効にする役割、役割ごとの担当パスと stack pack。
+- 手書きの指示ファイルの内容を `.ai/project/` へ移し、元のファイルは確認を得てから削除します。
+- 作業の流れに必要なリポジトリ設定(`develop` ブランチ、デフォルトブランチを `develop` に、マージ済みブランチの自動削除)を提案し、確認を得てから適用します。
+
+手動で設定する場合は `.ai/project/profile.toml` を編集し(各キーの説明は `.ai/kit/core/templates/project/profile.toml` にあります)、`python .ai/kit/tools/agentkit.py sync` を実行します。
+
+### 4. コミット
+
+`.ai/kit/`、`.ai/project/`、`.ai/generated/` と生成ファイル(`AGENTS.md`、`CLAUDE.md`、`.claude/` など)をすべてコミットすると、チーム全員とすべての AI ツールが同じ設定で作業できます。CI に `python .ai/kit/tools/agentkit.py check` を加えると、生成ファイルの手動編集やキットのローカル変更を検出できます。
+
+### 5. 使い方
+
+いつもどおり AI ツールに作業を依頼するだけです。エージェントが `AGENTS.md` を読み、[作業の流れ](#作業の流れ)に従います。スキルを直接実行することもできます(例: Claude Code で `/translate`)。プロジェクト固有の情報は `.ai/project/` にだけ置き、変更したら `sync` を実行します。`.ai/kit/` と生成ファイルは直接編集しません。
+
+### 6. 更新
+
+```bash
+python .ai/kit/tools/agentkit.py update --from https://github.com/doqltl179/ai-agents --ref main
+```
+
+`.ai/kit/` を新しいバージョンに置き換え、現在のバージョン以降の変更点と必要な移行手順を表示してから、ファイルを再生成します。キットのファイルがローカルで変更されている場合は実行を拒否します。キットはプロジェクト内では読み取り専用で、改善は `kit-upstream-propose` スキルでこのリポジトリに提案します。
+
+## リポジトリの構成
 
 ```text
 core/                  移植されるキット本体 (プロジェクトでは .ai/kit/ にコピーされ読み取り専用)
@@ -40,33 +101,6 @@ tools/agentkit.py      install, update, sync, check, freshness, new
 ```
 
 インストール先プロジェクトの構成とツール別の生成ファイルは [installation.md](../../core/wiki/integration/installation.md) と [tool-adapters.md](../../core/wiki/integration/tool-adapters.md) にあります。カタログ: [役割](../../core/agents/CATALOG.md)、[スキル](../../core/skills/CATALOG.md)、[stack pack](../../core/stacks/CATALOG.md)。
-
-## クイックスタート
-
-必要なもの: Python 3.11 以上(標準ライブラリのみ使用)、Git。GitHub 関連のスキルは `gh` CLI を使います。
-
-```bash
-# 1. このリポジトリを取得し、対象プロジェクトにインストール
-python tools/agentkit.py install ../my-project --tools claude,codex,copilot
-
-# 2. 対象プロジェクトで .ai/project/profile.toml を編集: 言語、コマンド、有効な役割、パスとスタックのバインディング
-#    (各キーの説明は core/templates/project/profile.toml)
-
-# 3. 生成と検証
-cd ../my-project
-python .ai/kit/tools/agentkit.py sync
-python .ai/kit/tools/agentkit.py check
-```
-
-手書きの `AGENTS.md` や `CLAUDE.md` がすでにあるプロジェクトでは、`sync` は上書きを拒否します。AI エージェントに **`kit-install` スキル** を実行させると、プロジェクト固有の内容をオーバーレイへ移し、プロフィールを埋めます。
-
-### 更新
-
-```bash
-python .ai/kit/tools/agentkit.py update --from https://github.com/doqltl179/ai-agents --ref v0.1.0
-```
-
-キットのファイルがローカルで変更されている場合、更新は拒否されます。キットはプロジェクト内では読み取り専用で、改善は `kit-upstream-propose` スキルでこのリポジトリに提案します。
 
 ## キットのメンテナンス
 

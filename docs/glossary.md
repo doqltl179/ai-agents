@@ -34,6 +34,12 @@ The single owner of how agentkit terms are written in each README language. Sour
 | pull request | A hosting-platform pull request | PR | プルリクエスト | |
 | promotion | `develop` → `main` pull request at release | 승격(promotion) | 昇格(promotion) | |
 | translation | Producing text in another language | 번역 | 翻訳 | |
+| install / update | The `install` and `update` commands and what they do | 설치 / 업데이트 | インストール / 更新 | Command names stay in code format |
+| instruction file | A file a tool reads as standing instructions (`AGENTS.md`, `CLAUDE.md`) | 지침 파일 | 指示ファイル | |
+| entry file | A generated file a tool reads at session start | 진입 파일 | エントリファイル | |
+| generated file | A file `sync` renders; never edited by hand | 생성 파일 | 生成ファイル | |
+| default branch | The hosting platform's default branch | 기본 브랜치 | デフォルトブランチ | |
+| release / release tag | A promoted version and its `v<version>` tag | 릴리스 / 릴리스 태그 | リリース / リリースタグ | |
 | tech radar | The watchlist page | = | = | |
 | change intake | The kit's change-entry flow | = | = | |
 
