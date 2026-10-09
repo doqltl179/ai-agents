@@ -31,6 +31,8 @@ commit_language = ""            # Language of commit subjects and bodies; empty 
 
 [hosting]
 platform = "github"             # "github" or "none". Selects whether github-* skills apply.
+ci = true                       # The project runs CI on pull requests. false: verification evidence comes only from
+                                # local runs recorded in pull requests (see release.md «Promotion»).
 area_labels = []                # One label per project area, matching commit scopes, for example ["web", "api"].
 
 [commands]
@@ -46,16 +48,32 @@ format = ""
 typecheck = ""
 e2e = ""
 run = ""
+worktree_setup = ""             # Run in a fresh worktree before work: recreate untracked links, local config, caches.
 
 [docs]
 readme = "README.md"
 changelog = "CHANGELOG.md"      # Empty when the project keeps no changelog.
 source_locale = ""              # Source language every translation starts from (BCP 47); empty means project.language.
 locales = []                    # Target languages of localized docs, kept in sync with the primary docs, for example ["ko", "ja"].
-locale_pattern = "docs/{locale}/{name}"   # Path of a localized copy; {name} is the primary file name.
+locale_pattern = "docs/{locale}/{name}"   # Path of a localized copy. Placeholders: {locale}, {name} (file name),
+                                          # {stem} (name without extension), {ext} (extension with the dot).
 specs_dir = "docs/specs"        # Requirements specifications.
 adr_dir = "docs/adr"            # Architecture decision records.
 glossary = ".ai/project/wiki/glossary.md"   # Terms and their approved rendering per locale, plus per-locale style notes.
+
+# [docs.locale_paths]
+# Per-document override of locale_pattern, keyed by the primary file:
+# "README.md" = "docs/readme/README.{locale}.md"
+
+[release]
+tag_pattern = "v{version}"      # Tag of a release that covers the whole repository.
+
+# [[release.packages]]
+# One entry per separately versioned package, when a repository releases several (see release.md «Release Scope»).
+# name = "core"
+# version_file = "Packages/core/package.json"
+# changelog = "Packages/core/CHANGELOG.md"
+# tag_pattern = "core/v{version}"
 
 [agents]
 # Active core agents. Tokens: "*" (all), "@<department>", or "<agent-name>".

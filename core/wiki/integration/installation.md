@@ -31,7 +31,7 @@ python tools/agentkit.py install <project-dir> --tools claude,codex,copilot
 
 This copies the kit payload (`core/`, `tools/agentkit.py`, `VERSION`, `CHANGELOG.md`, `LICENSE`) into `<project>/.ai/kit/` with an integrity manifest, creates `.ai/project/` from templates with a minimal profile (only the keys the project sets; every other key takes the kit default), adds `.ai/tasks/` and the worktree root (`policy.worktree_root`) to `.gitignore`, applies «Editor Settings», and runs `sync`. Exit code 0 means ready; 2 means installed but hand-written instruction files block generation and need «Adopt Existing Instructions»; 1 means an error. Commit `.ai/kit/`, `.ai/project/`, `.ai/generated/`, and the generated entry and tool files, so every collaborator and hosted agent sees the same setup.
 
-On a hosted repository, apply the settings in «Repository Settings» in [issues-and-prs.md](../workflows/issues-and-prs.md) after the user confirms them. Add `python .ai/kit/tools/agentkit.py check` to the project's CI so a hand-edited generated file, a local kit edit, or a broken link fails the build.
+On a hosted repository, apply the settings in «Repository Settings» in [issues-and-prs.md](../workflows/issues-and-prs.md) after the user confirms them. When the project runs CI (`hosting.ci`), add `python .ai/kit/tools/agentkit.py check` to it so a hand-edited generated file, a local kit edit, or a broken link fails the build. Without CI, `check` is part of the verification run before every pull request.
 
 The kit is copied, not linked as a Git submodule: tools load instruction files found in subdirectories they read, so a nested kit repository's own entry files would leak into the project's sessions.
 

@@ -430,6 +430,17 @@ def demote_headings(body: str) -> str:
     return "\n".join(out)
 
 
+def param_text(value: object) -> str:
+    """Show a profile value in one table cell."""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, dict):
+        return "; ".join(f"{k} → {param_text(v)}" for k, v in value.items())
+    if isinstance(value, list):
+        return ", ".join(str(v.get("name", v)) if isinstance(v, dict) else str(v) for v in value)
+    return str(value)
+
+
 def table_cell(text: str) -> str:
     return " ".join(str(text).split()).replace("|", "\\|")
 
@@ -528,13 +539,9 @@ class Renderer:
         if missing:
             lines += ["", f"Not available (report the gap, do not guess): {', '.join(f'`{k}`' for k in missing)}"]
         lines += ["", "### Parameters", "", "| Key | Value |", "|---|---|"]
-        for section in ("policy", "hosting", "docs"):
+        for section in ("policy", "hosting", "docs", "release"):
             for key, value in prof.get(section, {}).items():
-                if isinstance(value, bool):
-                    shown = "true" if value else "false"
-                else:
-                    shown = ", ".join(map(str, value)) if isinstance(value, list) else str(value)
-                lines.append(f"| `{section}.{key}` | {table_cell(shown) or '—'} |")
+                lines.append(f"| `{section}.{key}` | {table_cell(param_text(value)) or '—'} |")
         return "\n".join(lines).rstrip() + "\n"
 
     # agents -------------------------------------------------------------
@@ -907,8 +914,35 @@ def section_names(body: str, heading: str, arrow: bool = False) -> list[str]:
     return names
 
 
+LOCALE_PLACEHOLDERS = {"locale", "name", "stem", "ext"}
+
+
 def validate_profile(kit: Kit, report: Report) -> None:
     prof = kit.profile
+    docs = prof.get("docs", {})
+    patterns = {"docs.locale_pattern": docs.get("locale_pattern", "")}
+    patterns.update({f"docs.locale_paths.{k}": v for k, v in docs.get("locale_paths", {}).items()})
+    for key, pattern in patterns.items():
+        unknown = set(re.findall(r"\{(\w+)\}", str(pattern))) - LOCALE_PLACEHOLDERS
+        if unknown:
+            report.error(f"profile {key}: unknown placeholder(s) {', '.join(sorted(unknown))} "
+                         f"(supported: {', '.join(sorted(LOCALE_PLACEHOLDERS))})")
+        elif pattern and "{locale}" not in str(pattern):
+            report.error(f"profile {key}: the pattern must contain {{locale}}")
+    release = prof.get("release", {})
+    if "{version}" not in str(release.get("tag_pattern", "{version}")):
+        report.error("profile release.tag_pattern: must contain {version}")
+    names = set()
+    for index, package in enumerate(release.get("packages", [])):
+        where = f"profile release.packages[{index}]"
+        for field in ("name", "version_file", "tag_pattern"):
+            if not package.get(field):
+                report.error(f"{where}: missing '{field}'")
+        if package.get("tag_pattern") and "{version}" not in package["tag_pattern"]:
+            report.error(f"{where}: tag_pattern must contain {{version}}")
+        if package.get("name") in names:
+            report.error(f"{where}: duplicate package name '{package['name']}'")
+        names.add(package.get("name"))
     for tool in prof.get("tools", {}).get("targets", []):
         if tool not in ADAPTERS:
             report.error(f"profile [tools].targets: unknown tool '{tool}' (supported: {', '.join(ADAPTERS)})")
@@ -1426,7 +1460,11 @@ def cmd_capacity(kit: Kit) -> int:
                                             settings["reserve_min_gb"], cap)
     memory = (f"{total:.1f} GB memory, {available:.1f} GB available, reserve {reserve:.1f} GB"
               if total is not None and available is not None else "memory unknown")
-    print(f"capacity: {cores or '?'} CPU cores · {memory} · policy.max_parallel_units: {cap or 'not set'}")
+    try:
+        disk = f"{shutil.disk_usage(kit.project).free / 1024 ** 3:.1f} GB free disk"
+    except OSError:
+        disk = "free disk unknown"
+    print(f"capacity: {cores or '?'} CPU cores · {memory} · {disk} · policy.max_parallel_units: {cap or 'not set'}")
     print(f"recommended concurrent units per cost class ({rel(page, kit.project)} «Capacity»):")
     for name, (units, factor, below) in result.items():
         note = "below the reserve: run one at a time and free memory first" if below else f"limited by {factor}"
