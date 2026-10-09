@@ -53,7 +53,7 @@ Each line's full rule lives on the linked page.
 ## This Project
 
 - Project: **agentkit** — Portable, single-source-of-truth agent documentation kit (rules, roles, skills, stack packs, and a renderer) installed into other projects.
-- Kit: version 0.2.0, this repository is the kit itself; kit root is the repository root. CLI: `python tools/agentkit.py <sync|check|freshness|new|update>`
+- Kit: version 0.3.0, this repository is the kit itself; kit root is the repository root. CLI: `python tools/agentkit.py <sync|check|freshness|new|update>`
 - Overlay: `.ai/project/` · Owners and skills: `.ai/generated/catalog.md` · Project wiki: `.ai/project/wiki/README.md` · Lessons: `.ai/project/lessons.md`
 - Human-facing language: `ko`
 
