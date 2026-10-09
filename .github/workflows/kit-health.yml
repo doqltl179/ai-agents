@@ -1,0 +1,59 @@
+name: kit-health
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 0 * * 1"  # weekly freshness review, Monday 00:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover -s tools/tests -v
+      - name: Kit check (schemas, links, budgets, generated drift)
+        run: python tools/agentkit.py check
+
+  freshness:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: List overdue files
+        id: fresh
+        run: |
+          set +e
+          python tools/agentkit.py freshness --strict > freshness.txt
+          echo "overdue=$?" >> "$GITHUB_OUTPUT"
+          cat freshness.txt
+      - name: Open or update the review issue
+        if: steps.fresh.outputs.overdue == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Freshness review due"
+          body="$(printf 'Files past their review cadence (core/wiki/evolution/freshness-policy.md). Run the kit-freshness-review skill.\n\n```\n%s\n```\n' "$(grep OVERDUE freshness.txt)")"
+          number="$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number')"
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "$body"
+          else
+            gh label create intake --description "Proposed change to the kit (core/wiki/evolution/change-intake.md)" 2>/dev/null || true
+            gh issue create --title "$title" --label intake --body "$body"
+          fi
