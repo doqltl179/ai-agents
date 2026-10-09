@@ -493,7 +493,10 @@ class Renderer:
         lines += ["", "### Parameters", "", "| Key | Value |", "|---|---|"]
         for section in ("policy", "hosting", "docs"):
             for key, value in prof.get(section, {}).items():
-                shown = ", ".join(map(str, value)) if isinstance(value, list) else str(value)
+                if isinstance(value, bool):
+                    shown = "true" if value else "false"
+                else:
+                    shown = ", ".join(map(str, value)) if isinstance(value, list) else str(value)
                 lines.append(f"| `{section}.{key}` | {table_cell(shown) or '—'} |")
         return "\n".join(lines).rstrip() + "\n"
 
@@ -874,6 +877,7 @@ def authored_markdown(kit: Kit) -> list[Path]:
         files += list(kit.overlay.rglob("*.md"))
     if kit.kit_repo:
         files += [p for p in (KIT_ROOT / "README.md", KIT_ROOT / "CHANGELOG.md") if p.exists()]
+        files += list((KIT_ROOT / "docs").rglob("*.md"))
     return sorted(set(files))
 
 
@@ -1179,12 +1183,16 @@ def cmd_install(target_arg: str, tools: str | None) -> int:
                         listed = ", ".join(json.dumps(t.strip()) for t in tools.split(",") if t.strip())
                         text = re.sub(r"^targets = \[.*\]$", f"targets = [{listed}]", text, count=1, flags=re.M)
                 write_text(dest, text)
+    profile = Kit(target).profile
+    worktree_root = str(profile.get("policy", {}).get("worktree_root", "")).strip("/")
+    wanted = [".ai/tasks/"] + ([f"{worktree_root}/"] if worktree_root else [])
     gitignore = target / ".gitignore"
     lines = read_text(gitignore).split("\n") if gitignore.exists() else []
-    if ".ai/tasks/" not in [line.strip() for line in lines]:
+    missing = [entry for entry in wanted if entry not in [line.strip() for line in lines]]
+    if missing:
         prefix = "" if not lines or lines[-1] == "" else "\n"
         with open(gitignore, "a", encoding="utf-8", newline="\n") as fh:
-            fh.write(f"{prefix}# agentkit working records\n.ai/tasks/\n")
+            fh.write(f"{prefix}# agentkit working records and per-unit worktrees\n" + "".join(f"{e}\n" for e in missing))
     print(f"installed kit {read_text(KIT_ROOT / 'VERSION').strip()} into {kit_dest}")
     result = subprocess.run([sys.executable, str(kit_dest / "tools" / "agentkit.py"), "sync"], cwd=target)
     print("next: edit .ai/project/profile.toml (or run the kit-install skill), then run sync and check")

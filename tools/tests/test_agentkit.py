@@ -111,7 +111,11 @@ class InstallTests(unittest.TestCase):
         self.assertIn(".ai/kit/core/stacks/frameworks/react.md", agent)
         reviewer = (self.project / ".claude" / "agents" / "code-reviewer.md").read_text(encoding="utf-8")
         self.assertIn("disallowedTools:", reviewer)
-        self.assertIn(".ai/tasks/", (self.project / ".gitignore").read_text(encoding="utf-8"))
+        gitignore = (self.project / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn(".ai/tasks/", gitignore)
+        self.assertIn(".worktrees/", gitignore)
+        self.assertIn("| `policy.integration_branch` | develop |",
+                      (self.project / "AGENTS.md").read_text(encoding="utf-8"))
         import tomllib
         tomllib.loads((self.project / ".codex" / "agents" / "code-reviewer.toml").read_text(encoding="utf-8"))
 
