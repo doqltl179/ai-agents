@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+- `git-worktree-cleanup` updates the main checkout before deleting the task branch; `git branch -d` refused a just-merged branch while the local integration branch was behind. (patch)
+
 ## [0.2.0] - 2026-10-09
 
 ### Added
