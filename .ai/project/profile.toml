@@ -21,7 +21,7 @@ lint = "python tools/agentkit.py check"
 build = "python tools/agentkit.py sync"
 
 [hosting]
-area_labels = ["core", "tooling"]
+area_labels = ["core", "tooling", "repo"]
 
 [docs]
 readme = "README.md"

@@ -80,7 +80,7 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `policy.commit_convention` | conventional |
 | `policy.commit_language` | ko |
 | `hosting.platform` | github |
-| `hosting.area_labels` | core, tooling |
+| `hosting.area_labels` | core, tooling, repo |
 | `docs.readme` | README.md |
 | `docs.changelog` | CHANGELOG.md |
 | `docs.source_locale` | en |
