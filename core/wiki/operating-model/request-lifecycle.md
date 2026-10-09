@@ -26,7 +26,7 @@ This page owns the order of steps. Each step links to the page or skill that own
 4. **Issue.** When `policy.issue_first` is on, every unit gets an issue before any edit: reuse an open issue that already covers it, otherwise run `github-issue-create`.
 5. **Worktree.** Start the unit's worktree and task branch from the integration branch with `git-branch-start`, per «Worktrees» in [git-workflow.md](../workflows/git-workflow.md). All remaining steps run inside it.
 6. **Plan.** Non-trivial work gets a plan per [planning.md](../workflows/planning.md).
-7. **Execute.** Each owner works inside its write scope under the role protocol in [delegation.md](delegation.md). Read the bound stack packs before editing their files.
+7. **Execute.** Each owner works inside its write scope under the role protocol in [delegation.md](delegation.md); units run at the same time only as [concurrency.md](concurrency.md) allows. Read the bound stack packs before editing their files.
 8. **Sync docs.** Behavior changes update their owning docs in the same unit: [documentation.md](../workflows/documentation.md) for human docs, [authoring/README.md](../authoring/README.md) for agent docs.
 9. **Verify.** Run the checks [verification.md](../workflows/verification.md) selects for the touched surfaces.
 10. **Review.** Send review-ready work through the gates per «Choosing Gates» in [review.md](../workflows/review.md).

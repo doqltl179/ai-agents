@@ -10,12 +10,12 @@
 - Out of scope:
 
 ## Units
-| # | Unit | Owner | Write scope | Depends on | Verification | Gate | Status |
-|---|---|---|---|---|---|---|---|
-| 1 |  |  |  |  |  |  | not-started |
+| # | Unit | Owner | Writes | Reads | Depends on (reason) | Cost | Verification | Gate | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 |  |  |  |  |  |  |  |  | not-started |
 
 ## Budget
-- Max units: — · Max concurrent: — (parallel work only)
+- Max units: — · Max concurrent: — (from `agentkit.py capacity` for the heaviest cost class, `policy.max_parallel_units`, and the node budget; parallel work only)
 
 ## Risks And Open Questions
 -
