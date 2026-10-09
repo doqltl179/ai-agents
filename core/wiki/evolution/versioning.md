@@ -48,6 +48,6 @@ How the kit itself is versioned and shipped to projects. Project releases follow
 
 ## Consumer Updates
 
-- Projects update with the `kit-update` skill, from `evolution.upstream` or a local checkout, optionally pinned to a tag with `--ref`.
+- Projects update with the `kit-update` skill. By default it installs the latest release tag from `evolution.upstream`; unreleased integration-branch changes are installed only when a branch is named explicitly with `--ref`.
 - Check for updates when `agentkit.py freshness --kit` reports overdue kit files, when a tool or model the project uses changes, or at least every 90 days.
 - A project never patches `.ai/kit/` locally; it proposes the change upstream and updates when it ships.

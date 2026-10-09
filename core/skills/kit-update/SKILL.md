@@ -19,13 +19,13 @@ reviewed: 2026-10-09
 
 ## Inputs
 - The source: `evolution.upstream` in the profile, or a local kit checkout path.
-- The target ref, chosen per «Consumer Updates» in [versioning.md](../../wiki/evolution/versioning.md).
+- The target ref: the latest release by default, or a tag or branch the user names, per «Consumer Updates» in [versioning.md](../../wiki/evolution/versioning.md).
 
 ## Steps
 1. Read `.ai/kit/VERSION` and record it as the old version.
 2. Start a task branch with `git-branch-start` from a clean working tree (`git status --short`), so the update lands as one reviewable change.
 3. Run `agentkit.py check`. When it reports edits inside `.ai/kit/`, stop: carry each edit into `.ai/project/` or to `kit-upstream-propose`, and restore the original kit file only after the user confirms.
-4. Run `agentkit.py update --from <source>`, adding `--ref <tag>` when a ref was chosen, per «Update» in [installation.md](../../wiki/integration/installation.md).
+4. Run `agentkit.py update`, adding `--from <source>` only for a source other than `evolution.upstream` and `--ref <tag-or-branch>` only when the user chose a version other than the latest release, per «Update» in [installation.md](../../wiki/integration/installation.md). Record the version it reports installing.
 5. Read every CHANGELOG section the command prints and list each migration note per «Migration Notes» in versioning.md.
 6. Apply each migration step in order, editing `.ai/project/` only. Then `rg` the overlay for every renamed or removed name the notes list and fix any reference the steps missed.
 7. Run `agentkit.py sync` to regenerate tool files for the new version, then `agentkit.py check`; fix every error in the overlay, never in `.ai/kit/`.

@@ -61,8 +61,12 @@ When `sync` refuses to overwrite a hand-written `AGENTS.md`, `CLAUDE.md`, or too
 From the project root:
 
 ```bash
-python .ai/kit/tools/agentkit.py update --from <kit-repo-url-or-path> [--ref <tag>]
+python .ai/kit/tools/agentkit.py update [--from <kit-repo-url-or-path>] [--ref <tag-or-branch>]
 ```
+
+- Without `--from`, the source is `evolution.upstream` from the profile.
+- From a git URL without `--ref`, the update installs the latest release tag (`vX.Y.Z`), never an unreleased branch; it stops when the source has no release tag. Pass `--ref` to choose a tag or branch explicitly.
+- From a local checkout, the update copies that checkout as it is; check out the wanted version there first (`--ref` is refused).
 
 The update refuses to run when kit files were edited locally, replaces `.ai/kit/`, prints the changelog since the installed version, and runs `sync`. Apply every migration step it prints. See [versioning.md](../evolution/versioning.md).
 
