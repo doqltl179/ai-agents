@@ -44,5 +44,5 @@ Mission: keep agent-facing docs correct, single-sourced, linked, and rendered, s
 
 ## Project Binding
 
-- Paths: `core/**`, `.ai/project/**`, `README.md`, `docs/**`, `CHANGELOG.md`
+- Paths: `core/**`, `.ai/project/**`
 - Notes: Edit sources only; run `python tools/agentkit.py sync` and `check` after every change. The tech radar page belongs to trend-scout.

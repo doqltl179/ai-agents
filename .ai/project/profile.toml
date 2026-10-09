@@ -26,24 +26,34 @@ area_labels = ["core", "tooling"]
 [docs]
 readme = "README.md"
 changelog = "CHANGELOG.md"
+source_locale = "en"
 locales = ["ko", "ja"]
 locale_pattern = "docs/{locale}/{name}"
 specs_dir = ".ai/project/wiki"
 adr_dir = ".ai/project/wiki/decisions"
+glossary = "docs/glossary.md"
 
 [agents]
 enabled = ["@governance", "@documentation", "@quality", "@release", "@evolution", "devtools-engineer", "ci-cd-engineer"]
 
 [skills]
-enabled = ["@kit", "@git", "@github", "@planning", "@docs", "@review", "release-cut", "ci-failure-triage"]
+enabled = ["@kit", "@git", "@github", "@planning", "@docs", "@localization", "@review", "release-cut", "ci-failure-triage"]
 disabled = ["accessibility-review-perform", "codebase-onboard"]
 
 [stacks]
 active = []
 
 [bindings.kit-librarian]
-paths = ["core/**", ".ai/project/**", "README.md", "docs/**", "CHANGELOG.md"]
+paths = ["core/**", ".ai/project/**"]
 notes = "Edit sources only; run `python tools/agentkit.py sync` and `check` after every change. The tech radar page belongs to trend-scout."
+
+[bindings.technical-writer]
+paths = ["README.md"]
+notes = "README.md is the English source of the localized READMEs; hand every change to localization-specialist in the same unit."
+
+[bindings.localization-specialist]
+paths = ["docs/**"]
+notes = "Translate docs/ko and docs/ja directly from the English README.md; terms and style notes live in docs/glossary.md."
 
 [bindings.trend-scout]
 paths = ["core/wiki/evolution/tech-radar.md"]

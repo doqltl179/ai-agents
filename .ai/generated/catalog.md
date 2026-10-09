@@ -25,8 +25,9 @@ Active owners, skills, and stack packs for this project. Choose an owner with [r
 
 | Owner | Use when | Binding |
 |---|---|---|
-| [`kit-librarian`](core/agents/documentation/kit-librarian.md) | Maintains agent-facing docs: kit core files in the kit repository and the project overlay `.ai/project/`; keeps links valid, runs `agentkit.py sync` and `check`, and updates `reviewed` stamps after verification. Use when a wiki page, agent card, skill, stack pack, or profile must be added, changed, or regenerated; not for structural verdicts, external research, human docs, or editing `.ai/kit/`. | `core/**`, `.ai/project/**`, `README.md`, `docs/**`, `CHANGELOG.md` |
-| [`technical-writer`](core/agents/documentation/technical-writer.md) | Writes and maintains human-facing project docs: README, guides, tutorials, API reference prose, changelog wording, and localized variants for `docs.locales`. Use when user- or developer-facing documentation must be created, corrected, or synced with shipped behavior; not for agent-facing kit or overlay docs, documenting unverified behavior, or executing releases. | — |
+| [`kit-librarian`](core/agents/documentation/kit-librarian.md) | Maintains agent-facing docs: kit core files in the kit repository and the project overlay `.ai/project/`; keeps links valid, runs `agentkit.py sync` and `check`, and updates `reviewed` stamps after verification. Use when a wiki page, agent card, skill, stack pack, or profile must be added, changed, or regenerated; not for structural verdicts, external research, human docs, or editing `.ai/kit/`. | `core/**`, `.ai/project/**` |
+| [`localization-specialist`](core/agents/documentation/localization-specialist.md) | Translates and localizes text into target languages directly from the source language: localized docs, UI strings, store listings, product and game text, plus the glossary that keeps terms and tone consistent. Use when text needs a version in another language or translations must follow a changed source; not for writing source text or i18n code. | `docs/**` |
+| [`technical-writer`](core/agents/documentation/technical-writer.md) | Writes and maintains human-facing project docs: README, guides, tutorials, API reference prose, and changelog wording, in the source language. Use when user- or developer-facing documentation must be created, corrected, or synced with shipped behavior; not for translations, agent-facing kit or overlay docs, documenting unverified behavior, or executing releases. | `README.md` |
 
 ### quality (quality)
 
@@ -83,6 +84,12 @@ Inactive core owners (enable in `.ai/project/profile.toml` when work needs them)
 |---|---|
 | [`adr-write`](core/skills/adr-write/SKILL.md) | Write an architecture decision record in docs.adr_dir with context, options considered and their trade-offs, the decision, consequences, and status, numbered sequentially; supersede an accepted record instead of editing it. Use when a decision about structure, technology, interfaces, data, or cross-cutting conventions is made or proposed and is costly to reverse. |
 | [`project-docs-sync`](core/skills/project-docs-sync/SKILL.md) | Update the human-facing docs that own a changed behavior or API in the same change: README sections, guides, API reference, the changelog Unreleased entry, and localized variants listed in docs.locales, documenting only verified behavior. Use when a unit changes user-visible behavior, a public interface, configuration, or setup steps. |
+
+### localization
+
+| Skill | Use when |
+|---|---|
+| [`translate`](core/skills/translate/SKILL.md) | Translate text into one or more target languages directly from its single source language: profile the genre, purpose, and tone, settle every term in the glossary, translate each target from the source (never through another translation; Chinese script variants excepted), localize instead of translating literally, protect code and placeholders, and verify completeness, terminology, and naturalness. Use when docs, UI strings, product or game content, or messages need a version in another language, or their source changed. |
 
 ### kit
 
