@@ -34,6 +34,8 @@ The single owner of how agentkit terms are written in each README language. Sour
 | pull request | A hosting-platform pull request | PR | プルリクエスト | |
 | promotion | `develop` → `main` pull request at release | 승격(promotion) | 昇格(promotion) | |
 | translation | Producing text in another language | 번역 | 翻訳 | |
+| work unit | One bounded piece of work with one owner, issue, and worktree | 작업 단위 | 作業単位 | |
+| capacity | CPU and memory available for running units at the same time | 가용 자원 | 利用可能なリソース | |
 | install / update | The `install` and `update` commands and what they do | 설치 / 업데이트 | インストール / 更新 | Command names stay in code format |
 | instruction file | A file a tool reads as standing instructions (`AGENTS.md`, `CLAUDE.md`) | 지침 파일 | 指示ファイル | |
 | entry file | A generated file a tool reads at session start | 진입 파일 | エントリファイル | |

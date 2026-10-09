@@ -8,8 +8,11 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 - Translation policy (`core/wiki/workflows/translation.md`): one source language, every target translated directly from it (Chinese script variants excepted), content profiling by genre and tone, localization over literal translation, glossary-enforced terminology, protected content, and verification. (minor)
 - Repository settings policy (`issues-and-prs.md` «Repository Settings»): integration branch as the default branch and automatic deletion of merged head branches; `kit-install` proposes them. (minor)
 - `translate` skill in the new `localization` category, the `localization-specialist` role, a project glossary template, and profile keys `docs.source_locale` and `docs.glossary`. (minor)
+- Concurrency rules (`core/wiki/operating-model/concurrency.md`): read and write scope analysis per unit, ordering rules (a unit that reads what another writes waits for its merge), machine capacity per cost class, node budget, and fan-in. (minor)
+- `agentkit.py capacity` reports CPU and memory and the recommended number of concurrent units per cost class; profile key `policy.max_parallel_units` caps it. (minor)
 
 ### Changed
+- «Parallel Execution», «Node Budget», and «Fan-In» moved from `delegation.md` to `concurrency.md`; `work-decompose`, the plan template, and `orchestrator` apply scope analysis and capacity. (minor)
 - `agentkit.py update`: `--from` defaults to `evolution.upstream`, and without `--ref` a git source installs the latest `vX.Y.Z` release tag instead of the repository's default branch; `--ref` with a local checkout is refused. (minor)
 - `technical-writer` owns source-language docs only; localized variants move to `localization-specialist`. (minor)
 - README (English, Korean, Japanese): a step-by-step guide to using the kit in another project, covering why not to clone it into the project, install, what gets created, configuration with `kit-install`, commit, daily use, and update. (patch)

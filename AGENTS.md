@@ -20,6 +20,7 @@ This project uses agentkit: a shared wiki of rules, agent roles, skills, and sta
 | Choose who does the work | [routing.md](core/wiki/operating-model/routing.md), then `.ai/generated/catalog.md` |
 | Act as an owner, delegate, or hand off | [delegation.md](core/wiki/operating-model/delegation.md), [handoff-contract.md](core/wiki/operating-model/handoff-contract.md) |
 | Plan non-trivial work | [planning.md](core/wiki/workflows/planning.md) |
+| Run several units or agents at the same time | [concurrency.md](core/wiki/operating-model/concurrency.md) |
 | Add a dependency, change a public interface, or migrate data | [code-changes.md](core/wiki/workflows/code-changes.md) |
 | Start a unit (worktree, task branch) or commit | [git-workflow.md](core/wiki/workflows/git-workflow.md) |
 | Open or handle an issue or pull request | [issues-and-prs.md](core/wiki/workflows/issues-and-prs.md) |
@@ -76,6 +77,7 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `policy.issue_first` | true |
 | `policy.worktrees` | true |
 | `policy.worktree_root` | .worktrees |
+| `policy.max_parallel_units` | 0 |
 | `policy.branch_pattern` | <type>/<scope>-<summary> |
 | `policy.commit_convention` | conventional |
 | `policy.commit_language` | ko |
