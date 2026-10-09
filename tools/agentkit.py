@@ -1219,6 +1219,79 @@ def changelog_between(path: Path, old: str, new: str) -> str:
     return "\n".join(out).strip()
 
 
+def machine_memory() -> tuple[float | None, float | None]:
+    """Total and available physical memory in GB, or (None, None) when it cannot be read."""
+    gb = 1024 ** 3
+    try:
+        if sys.platform == "win32":
+            import ctypes
+
+            class MemoryStatus(ctypes.Structure):
+                _fields_ = [("dwLength", ctypes.c_ulong), ("dwMemoryLoad", ctypes.c_ulong),
+                            ("ullTotalPhys", ctypes.c_ulonglong), ("ullAvailPhys", ctypes.c_ulonglong),
+                            ("ullTotalPageFile", ctypes.c_ulonglong), ("ullAvailPageFile", ctypes.c_ulonglong),
+                            ("ullTotalVirtual", ctypes.c_ulonglong), ("ullAvailVirtual", ctypes.c_ulonglong),
+                            ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
+
+            status = MemoryStatus()
+            status.dwLength = ctypes.sizeof(MemoryStatus)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+                return status.ullTotalPhys / gb, status.ullAvailPhys / gb
+        elif sys.platform.startswith("linux"):
+            info = {}
+            for line in Path("/proc/meminfo").read_text().splitlines():
+                key, _, rest = line.partition(":")
+                info[key] = int(rest.split()[0]) * 1024
+            return info["MemTotal"] / gb, info.get("MemAvailable", info.get("MemFree", 0)) / gb
+        elif sys.platform == "darwin":
+            total = int(subprocess.run(["sysctl", "-n", "hw.memsize"], capture_output=True, text=True).stdout.strip())
+            vm = subprocess.run(["vm_stat"], capture_output=True, text=True).stdout
+            page = int(re.search(r"page size of (\d+)", vm).group(1))
+            pages = sum(int(m.group(1)) for m in re.finditer(r"Pages (?:free|inactive|speculative):\s+(\d+)", vm))
+            return total / gb, pages * page / gb
+    except (OSError, ValueError, KeyError, AttributeError):
+        pass
+    return None, None
+
+
+def recommend_concurrency(total_gb: float | None, available_gb: float | None, cores: int | None,
+                          classes: list[tuple[str, float, float]], reserve_fraction: float,
+                          reserve_min_gb: float, cap: int) -> tuple[float | None, dict[str, tuple[int, str, bool]]]:
+    """Units per cost class: (units, limiting factor, below_reserve). Rules: concurrency.md «Capacity»."""
+    reserve = max(reserve_min_gb, reserve_fraction * total_gb) if total_gb is not None else None
+    result: dict[str, tuple[int, str, bool]] = {}
+    for name, memory_gb, per_core in classes:
+        limits: dict[str, int] = {"CPU": max(1, int((cores or 1) * per_core))}
+        if available_gb is not None and reserve is not None:
+            limits["memory"] = int(max(available_gb - reserve, 0) // memory_gb)
+        if cap > 0:
+            limits["policy.max_parallel_units"] = cap
+        factor, units = min(limits.items(), key=lambda item: item[1])
+        result[name] = (max(1, units), factor, units == 0)
+    return reserve, result
+
+
+def cmd_capacity(kit: Kit) -> int:
+    page = CORE / "wiki" / "operating-model" / "concurrency.md"
+    classes = [(r[0], float(r[1]), float(r[2])) for r in parse_table(page, "capacity")]
+    settings = {r[0]: float(r[1]) for r in parse_table(page, "capacity-reserve")}
+    cap = int(kit.profile.get("policy", {}).get("max_parallel_units", 0) or 0)
+    total, available = machine_memory()
+    cores = os.cpu_count()
+    reserve, result = recommend_concurrency(total, available, cores, classes, settings["reserve_fraction"],
+                                            settings["reserve_min_gb"], cap)
+    memory = (f"{total:.1f} GB memory, {available:.1f} GB available, reserve {reserve:.1f} GB"
+              if total is not None and available is not None else "memory unknown")
+    print(f"capacity: {cores or '?'} CPU cores · {memory} · policy.max_parallel_units: {cap or 'not set'}")
+    print(f"recommended concurrent units per cost class ({rel(page, kit.project)} «Capacity»):")
+    for name, (units, factor, below) in result.items():
+        note = "below the reserve: run one at a time and free memory first" if below else f"limited by {factor}"
+        print(f"  {name:9} {units:3}   {note}")
+    if total is None:
+        print("memory could not be read: follow step 5 of «Capacity» for the fallback limits")
+    return 0
+
+
 RELEASE_TAG_RE = re.compile(r"refs/tags/(v\d+\.\d+\.\d+)$")
 
 
@@ -1299,6 +1372,7 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("sync", help="render every generated file from the kit and the project overlay")
     sub.add_parser("check", help="validate sources, links, budgets, drift, and kit integrity")
+    sub.add_parser("capacity", help="report CPU and memory and the recommended number of concurrent units")
     fresh = sub.add_parser("freshness", help="list files due or overdue for review")
     fresh.add_argument("--all", action="store_true", help="show every tracked file, not only overdue ones")
     fresh.add_argument("--strict", action="store_true", help="exit 1 when any file is overdue")
@@ -1327,6 +1401,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_sync(kit)
     if args.command == "check":
         return cmd_check(kit)
+    if args.command == "capacity":
+        return cmd_capacity(kit)
     if args.command == "freshness":
         return cmd_freshness(kit, args.all, args.strict, args.kit)
     if args.command == "new":

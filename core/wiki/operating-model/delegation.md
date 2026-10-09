@@ -1,5 +1,5 @@
 ---
-owns: "How an owner is run (subagent dispatch or role adoption), the role protocol every owner follows, and parallel execution with fan-in"
+owns: "How an owner is run (subagent dispatch or role adoption) and the role protocol every owner follows"
 volatility: evolving
 reviewed: 2026-10-09
 ---
@@ -10,13 +10,13 @@ Every rendered agent file links here. This page owns the protocol that is the sa
 
 ## When
 
-- acting as, or dispatching, an owner,
-- running units in parallel and integrating them.
+- acting as, or dispatching, an owner.
 
 ## Route Away When
 
 - choosing the owner: [routing.md](routing.md),
-- the packet passed between owners: [handoff-contract.md](handoff-contract.md).
+- the packet passed between owners: [handoff-contract.md](handoff-contract.md),
+- whether and how many units run at the same time, and fan-in: [concurrency.md](concurrency.md).
 
 ## Running An Owner
 
@@ -36,26 +36,3 @@ Dispatch costs tokens and coordination. Use it when the unit is independent, lar
 4. Never approve your own work; quality gates belong to the quality plane.
 5. Report in the shape of [handoff-contract.md](handoff-contract.md), including anything you could not do.
 6. Do not create further units or dispatch other owners unless you are `orchestrator`; report newly found scope instead.
-
-## Parallel Execution
-
-Run units in parallel only when every condition holds:
-
-- each unit has one owner and a write scope that overlaps no other running unit,
-- no unit needs another's output, decision, or a shared mutable resource (database, port, build cache, device),
-- the time saved outweighs the coordination cost.
-
-Otherwise order them as a dependency edge. Every unit already has its own issue, worktree, and task branch ([request-lifecycle.md](request-lifecycle.md)), so parallel units never share a working tree.
-
-## Node Budget
-
-- `orchestrator` sets a maximum number of units and of concurrent units in the plan before dispatching.
-- A unit needs a distinct deliverable and a reason it cannot merge into a neighbor. No speculative, duplicate, or exploratory fan-out.
-- Only `orchestrator` adds units; it re-checks the budget when it does.
-
-## Fan-In
-
-1. Each unit returns focused commits and evidence in its own pull request into the integration branch; its reviewer approves the exact commit IDs.
-2. Pull requests merge in dependency order. A dependent unit's worktree is cut after its predecessors merged, or stacked on a predecessor's branch with the merge order stated in both pull requests.
-3. When units must be verified together before merging, `release-manager` combines the approved branches in dependency order on one temporary branch and stops on any conflict it cannot resolve from both sides' stated intent; the plan's named owner runs combined verification there and the reviewer gates it.
-4. A dependent unit becomes ready only after its predecessors are merged.

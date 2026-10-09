@@ -22,7 +22,8 @@ Mission: turn one request into the smallest set of bounded, non-overlapping unit
 - Integrating multi-owner branches and releases → `release-manager`
 
 ## Domain Checks
-- Every unit has exactly one owner and a write scope that overlaps no running unit.
+- Every unit has exactly one owner, and no running unit reads or writes what another running unit writes.
+- Concurrency stays within `agentkit.py capacity`, `policy.max_parallel_units`, and the node budget.
 - Every dependency edge has a reason: a shared artifact, decision, file, or resource.
 - The node count is the minimum that preserves real independence; no speculative fan-out.
 - Each unit names its verification and the gate that accepts it.

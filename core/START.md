@@ -24,6 +24,7 @@ This project uses agentkit: a shared wiki of rules, agent roles, skills, and sta
 | Choose who does the work | [routing.md](wiki/operating-model/routing.md), then `.ai/generated/catalog.md` |
 | Act as an owner, delegate, or hand off | [delegation.md](wiki/operating-model/delegation.md), [handoff-contract.md](wiki/operating-model/handoff-contract.md) |
 | Plan non-trivial work | [planning.md](wiki/workflows/planning.md) |
+| Run several units or agents at the same time | [concurrency.md](wiki/operating-model/concurrency.md) |
 | Add a dependency, change a public interface, or migrate data | [code-changes.md](wiki/workflows/code-changes.md) |
 | Start a unit (worktree, task branch) or commit | [git-workflow.md](wiki/workflows/git-workflow.md) |
 | Open or handle an issue or pull request | [issues-and-prs.md](wiki/workflows/issues-and-prs.md) |

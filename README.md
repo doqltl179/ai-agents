@@ -23,7 +23,7 @@ Every request runs the same order ([request-lifecycle.md](core/wiki/operating-mo
 
 **confirm the request → open an issue → create a worktree from `develop` → do the work → open a pull request into `develop` → register issues found along the way**.
 
-`develop` is the development branch and `main` the release branch; `develop → main` happens only through a promotion pull request when a release is requested. Projects change these defaults in their profile.
+`develop` is the development branch and `main` the release branch; `develop → main` happens only through a promotion pull request when a release is requested. Projects change these defaults in their profile. When a request splits into several units, agents first check what each unit reads and writes, so no unit works from a document another unit is still changing, and check the machine's capacity (`agentkit.py capacity`) before running units at the same time.
 
 ## Using agentkit In Your Project
 

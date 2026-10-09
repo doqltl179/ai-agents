@@ -16,7 +16,7 @@ Branch names and switches come from the profile: `policy.integration_branch`, `p
 
 - issues, pull request targets, and labels: [issues-and-prs.md](issues-and-prs.md),
 - versions, tags, and promotion to the release branch: [release.md](release.md),
-- parallel units and fan-in: [delegation.md](../operating-model/delegation.md).
+- parallel units and fan-in: [concurrency.md](../operating-model/concurrency.md).
 
 ## Branch Policy
 
