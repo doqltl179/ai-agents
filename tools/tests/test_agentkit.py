@@ -103,7 +103,8 @@ class InstallTests(unittest.TestCase):
                         ".codex/agents/web-frontend-engineer.toml", ".claude/skills/git-commit/SKILL.md",
                         ".agents/skills/git-commit/SKILL.md", ".claude/rules/stack-typescript.md",
                         ".github/instructions/stack-react.instructions.md", ".cursor/rules/stack-react.mdc",
-                        ".ai/generated/catalog.md", ".ai/project/profile.toml"]:
+                        ".ai/generated/catalog.md", ".ai/project/profile.toml", ".ai/project/wiki/glossary.md",
+                        ".claude/skills/translate/SKILL.md"]:
             self.assertTrue((self.project / relpath).exists(), relpath)
         self.assertFalse((self.project / ".github" / "skills").exists(), "copilot skills duplicate claude/codex skills")
         agent = (self.project / ".claude" / "agents" / "web-frontend-engineer.md").read_text(encoding="utf-8")
