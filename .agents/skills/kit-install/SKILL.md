@@ -27,7 +27,8 @@ description: "Install the kit into a project: check requirements, run the instal
 6. Ask the user to settle each statement that contradicts a kit rule. Delete a hand-written file only after the user confirms, per «Confirm Before Irreversible Or Outward Actions» in [integrity.md](core/wiki/principles/integrity.md).
 7. Run `codebase-onboard` to fill the profile: `[project]`, `[commands]`, `[policy]`, `[hosting]`, `[agents]`, `[skills]`, `[stacks]`, and `[bindings.<agent>]`. Keys and defaults are in the [profile template](core/templates/project/profile.toml).
 8. Run `agentkit.py sync` to render the tool files from the filled profile, then `agentkit.py check`; fix every error in `.ai/project/`.
-9. Commit only when the user asks, with `git-commit`.
+9. Propose the hosting settings in «Repository Settings» in [issues-and-prs.md](core/wiki/workflows/issues-and-prs.md) when `hosting.platform` is `github`; apply them only after the user confirms.
+10. Commit only when the user asks, with `git-commit`.
 
 ## Output
 - The installed kit version and the tools rendered.

@@ -26,7 +26,7 @@ description: "Remove a finished unit's worktree and task branch after its pull r
    - `gh pr list --base <branch> --state open` prints nothing.
 3. If any condition fails, stop and report which one; never force-remove.
 4. Remove the worktree: `git worktree remove <worktree>`, then `git worktree prune`.
-5. Delete the branch: `git branch -d <branch>` (use `-D` only after step 2 proved a squash merge), and `git push origin --delete <branch>` when the remote branch still exists.
+5. Delete the branch: `git branch -d <branch>` (use `-D` only after step 2 proved a squash merge), and `git push origin --delete <branch>` only when the remote branch still exists (with head-branch deletion on, the platform already removed it).
 6. Update the main checkout: `git switch <integration_branch>` and `git pull --ff-only`.
 7. Confirm with `git worktree list` and `git branch -a --list "*<branch>*"`.
 
