@@ -4,6 +4,8 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-09
+
 ### Added
 - `sync` and `check` report unmanaged instruction files: files in the locations AI tools read instructions from (listed in `tool-adapters.md`) that agentkit did not generate; profile key `tools.keep_unmanaged` acknowledges files kept on purpose. (minor)
 - `check` warns when the profile repeats kit defaults and when `.editorconfig` forces a byte-order mark without the agentkit section; `update` reports profile keys that still hold a default the update changed. (minor)
