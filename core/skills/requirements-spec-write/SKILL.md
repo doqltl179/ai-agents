@@ -14,6 +14,7 @@ reviewed: 2026-10-09
 - An existing spec must change because scope or a requirement changed.
 
 ## Do Not Use When
+- An idea for new or changed content is not adopted yet and needs judging → `new-content-propose`, `content-expansion-propose`, or `content-revision-propose`.
 - Choosing between technical designs → `adr-write`.
 - Splitting agreed requirements into units → `work-decompose`.
 - Tracking execution steps → `task-plan-write`.

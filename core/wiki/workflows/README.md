@@ -1,5 +1,5 @@
 ---
-owns: "Which repeatable workflow policy applies: planning, Git, issues and pull requests, code-change safety, verification, review, documentation, and release"
+owns: "Which repeatable workflow policy applies: planning, Git, issues and pull requests, code-change safety, verification, review, documentation, product ideas, and release"
 volatility: stable
 reviewed: 2026-10-09
 ---
@@ -17,7 +17,7 @@ Open this section when the question is what must hold during a recurring kind of
 | [domain-terms.md](domain-terms.md) | How project concepts are named: one canonical term per concept, its definition, the synonyms to avoid, and using the terms in code, docs, and conversation |
 | [git-workflow.md](git-workflow.md) | Local Git policy: branch roles, preflight, per-unit worktrees and task branches, commit convention, staging, integrating base changes, cleanup, and stop conditions |
 | [idea-evaluation.md](idea-evaluation.md) | How a product idea is judged before adoption: the three idea scopes, the project values they read, verdicts, the eight criteria and their order, choosing when the user delegates the choice, and what idea work must not touch |
-| [idea-records.md](idea-records.md) | Where idea proposals and their reference files are kept, their file names, the sections a proposal has in each scope, judging an earlier idea again, and the report after a verdict |
+| [idea-records.md](idea-records.md) | Where idea proposals, defer records, and their reference files are kept, their file names, the sections a proposal has in each scope, judging an earlier idea again, and the report after a verdict |
 | [issues-and-prs.md](issues-and-prs.md) | Hosting-platform conventions: repository settings, issue bodies, labels, blocked issues, triage and closing, leftovers, pull request bodies, issue linking, mergeability, and review feedback |
 | [planning.md](planning.md) | When work needs a written plan, where plans live, plan statuses, and how plans are closed |
 | [product-evidence.md](product-evidence.md) | What counts as evidence for a product claim and how product metrics are read for it: evidence kinds and their fields, time windows, read order by cost, blocked sign-in, privacy, and attributing an effect |

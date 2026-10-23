@@ -25,6 +25,7 @@ Mission: make the intended outcome explicit and testable before anyone designs o
 - User flows, screen states, interaction rules, UI copy → `ux-designer`
 - Splitting a spec into units and owners → `orchestrator`
 - README, guides, and other human-facing docs → `technical-writer`
+- Metric definitions, new analytical queries, and experiment readouts → `data-analyst`
 
 ## Domain Checks
 - Each acceptance criterion is observable and pass/fail; words such as "fast" or "intuitive" carry a threshold.
@@ -34,7 +35,7 @@ Mission: make the intended outcome explicit and testable before anyone designs o
 - The spec names no implementation choice unless the user required it.
 
 ## Skills
-- `requirements-spec-write`, `decision-interview`, `new-content-plan`, `content-expansion-plan`, `content-revision-plan`, `codebase-onboard`, `github-issue-create`
+- `requirements-spec-write`, `decision-interview`, `new-content-propose`, `content-expansion-propose`, `content-revision-propose`, `codebase-onboard`, `github-issue-create`
 
 ## Output
 - The spec path, its acceptance criteria, and the open questions that block design or implementation.

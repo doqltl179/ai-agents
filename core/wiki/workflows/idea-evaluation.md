@@ -10,7 +10,7 @@ An idea for new or changed content is judged before anyone builds it: cheap chec
 
 ## When
 
-- running `new-content-plan`, `content-expansion-plan`, or `content-revision-plan`,
+- running `new-content-propose`, `content-expansion-propose`, or `content-revision-propose`,
 - the user asks whether an idea for new or changed content is worth doing.
 
 ## Route Away When
@@ -26,9 +26,9 @@ Content is anything a user does in the product: a feature, mode, flow, or comman
 
 | Scope | Target | Reference that comes first | Skill |
 |---|---|---|---|
-| New content | Something users do that the product does not offer yet | Every existing content and how it is used | `new-content-plan` |
-| Expansion | A new element (rule, mechanic, option) inside one existing content, to widen its variety | The elements comparable products put in that content, surveyed before choosing | `content-expansion-plan` |
-| Revision | One authored value or rule of a unit (a level, screen, or step) of one existing content, to raise its quality | The content's own status: authored values, measurements, and user signals per unit | `content-revision-plan` |
+| New content | Something users do that the product does not offer yet | Every existing content and how it is used | `new-content-propose` |
+| Expansion | A new element (rule, mechanic, option) inside one existing content, to widen its variety | The elements comparable products put in that content, surveyed before choosing | `content-expansion-propose` |
+| Revision | One authored value or rule of a unit (a level, screen, or step) of one existing content, to raise its quality | The content's own status: authored values, measurements, and user signals per unit | `content-revision-propose` |
 
 ## Project Values
 
@@ -42,13 +42,13 @@ The project supplies the yardsticks; the kit names only what each one measures. 
 | Metrics | Metric sources in read order, accounts excluded from statistics, the sign-in command per source, and the metered-query limit above which to ask; `none` before launch | All |
 | Production cost | The heavy cost axes (for example art, screens, translations, external calls, rebuild time) and how each is obtained | All |
 | Forms | The forms new content can take, extending existing content included, and the kinds of lack users can have (something to do, to gain, to see, a reason to return) | New content, expansion |
-| Unit pipeline | How units of a content are authored, built, verified, and measured; each tool's limits; and how persisted data refers to units | Expansion, revision |
+| Unit pipeline | How units of a content are authored, built, verified, and measured; each tool's limits; the properties every unit must keep (for example reproducible state); and how persisted data refers to units | Expansion, revision |
 | External sources | Where comparable products and research are found | All |
 
 ## Verdicts
 
 - `reject`: not added in this form. The report names what it duplicates or where it belongs.
-- `defer`: not now. The report names what would lift it. A defer at criteria 5 to 8 means evidence is missing, not that the idea is wrong; judge again when the evidence exists.
+- `defer`: not now. A short defer record names what would lift it, so the idea can be judged again. A defer at criteria 5 to 8 means evidence is missing, not that the idea is wrong; judge again when the evidence exists.
 - `pass`: a proposal is written. Passing is not adoption: a proposal is no product rule and leads to no code, issue, or pull request until the user adopts it.
 
 ## Criteria
@@ -57,8 +57,8 @@ Criteria 1 to 3 read differently per scope:
 
 | Criterion | New content | Expansion | Revision |
 |---|---|---|---|
-| 1. Overlap or target | Usage (what the user does, to achieve what) identical to an existing content: `reject`. Shared rewards or limits are not overlap | What the element constrains or enables and what releases it, as a pair, identical to an existing element's: `reject`. An aid used without any constraint is a helper (hint, power-up), not an element: `reject` and name the helper's owner | The change does not stand as one existing value or rule: a new rule goes to `content-expansion-plan`, anything outside the content (economy values, flow between units) to its owner, and this idea is `reject` |
-| 2. Structure | One use needs several systems working together, as the main content does: `defer` | An existing rule or helper whose interaction with the element is undecided, or a unit pipeline that can no longer build, verify, or measure the units: `defer`. Unit state stays deterministic | The change renumbers units, changes a unit count, or moves a published boundary so that recorded progress would point elsewhere: `defer` |
+| 1. Overlap or target | Usage (what the user does, to achieve what) identical to an existing content: `reject`. Shared rewards or limits are not overlap | What the element constrains or enables and what releases it, as a pair, identical to an existing element's: `reject`. An aid the user invokes with no constraint in place (a hint, an undo, a shortcut) is a helper, not an element: `reject`, naming the file that defines helpers | The change does not stand as one existing value or rule: a new rule goes to `content-expansion-propose`, anything outside the content (economy values, flow between units) to the file that owns it, and this idea is `reject` |
+| 2. Structure | One use needs several systems working together, as the main content does: `defer` | An existing rule or helper whose interaction with the element is undecided, a unit pipeline that can no longer build, verify, or measure the units, or a unit property the pipeline requires that the element breaks: `defer` | The change renumbers units, changes a unit count, or moves a published boundary so that recorded progress would point elsewhere: `defer` |
 | 3. Duration or limits | One use is long compared with one use of the main content: `defer` | Time the element adds that the content's time model cannot explain (waiting, chance): `defer` | The change needs the unit pipeline beyond its limits: `defer`; moving a limit is its own idea. State the range of units to rebuild |
 
 Criteria 4 to 8 read the same in every scope:
@@ -68,10 +68,13 @@ Criteria 4 to 8 read the same in every scope:
 | 4. Cost | The production cost per axis and how each is obtained | The time is not worth it against the value criteria 5 to 8 established and the cheaper candidates of criterion 8. Not counting an axis because it is small for this idea does not pass it |
 | 5. Value flow | Four cells: what users gain, where it is spent, what is expected, and the evidence | Any cell is empty |
 | 6. Goal | Every claim carries evidence per [product-evidence.md](product-evidence.md), and the problem fits in one sentence | The problem has no evidence |
-| 7. Form or means | At least two other forms or means for the same problem, extending existing content included; for expansion and revision, the other two scopes and helpers too | Nothing shows the chosen one fits the problem better. "Other products have it" shows only that it can work |
+| 7. Form or means | At least two other forms or means for the same problem, extending existing content included; for expansion and revision, the other two scopes and helpers too, and for revision also a change to a rule every unit shares | Nothing shows the chosen one fits the problem better. "Other products have it" shows only that it can work |
 | 8. Candidate | At least two other candidates of the same form or for the same target, compared on criteria 1 to 4 and on how much of the problem each solves | The only reasons are conditions every candidate meets (short, cheap), or the evidence was found only after choosing |
 
-When the winner of criterion 7 or 8 adds no new usage (it only changes the entry point, placement, or wording of existing content), `defer` with the reason "the better answer is not new content", and hand that improvement over in the report.
+Two winners end in `defer` with a hand-over:
+
+- The winner of criterion 7 is another scope, or, with no option well supported, another scope can test the same problem more cheaply: hand the problem to that scope's skill.
+- The winner of criterion 7 or 8 adds no new usage (it only changes the entry point, placement, or wording of existing content): the reason is "the better answer is not new content", and the report hands the improvement to the user as a follow-up for that content's owner.
 
 ## Order
 
@@ -95,4 +98,4 @@ Asked for several ideas, set one problem per idea or compare different ideas for
 ## Boundaries
 
 - Judging an idea changes no code, generated content, or checked-in units. Run a tool that rewrites tracked output only in a disposable copy outside the checkout.
-- Launch the app, builds, emulators, or devices only when the request names them.
+- Device, deployment, and other long-running runs follow «Scaling The Order» in [request-lifecycle.md](../operating-model/request-lifecycle.md).
