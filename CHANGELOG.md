@@ -4,6 +4,8 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-24
+
 ### Added
 - Idea proposals before adoption, in three scopes: skills `new-content-propose` (new content across the product), `content-expansion-propose` (a new element inside one content, starting from a survey of comparable products), and `content-revision-propose` (one value or rule of a unit, starting from a status table of the content). They hold only the steps; `requirements-analyst` owns the proposals, and `requirements-spec-write` routes ideas not yet adopted to them. (minor)
 - Page `idea-evaluation.md`: scopes, the project values each scope reads from `.ai/project/wiki/product-planning.md`, the verdicts `reject`, `defer`, and `pass` (passing is not adoption), the eight criteria and their order, hand-overs to another scope or owner, choosing when the user delegates the choice, and boundaries. (minor)
