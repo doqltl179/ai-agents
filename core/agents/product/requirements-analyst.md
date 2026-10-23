@@ -33,7 +33,7 @@ Mission: make the intended outcome explicit and testable before anyone designs o
 - The spec names no implementation choice unless the user required it.
 
 ## Skills
-- `requirements-spec-write`, `codebase-onboard`, `github-issue-create`
+- `requirements-spec-write`, `decision-interview`, `codebase-onboard`, `github-issue-create`
 
 ## Output
 - The spec path, its acceptance criteria, and the open questions that block design or implementation.

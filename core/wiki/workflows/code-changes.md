@@ -16,6 +16,7 @@ Rules every execution owner follows regardless of surface. Surface-specific rule
 
 ## Route Away When
 
+- how much a change may touch, and cleanup of what it leaves unused: [change-scope.md](change-scope.md),
 - verifying the change: [verification.md](verification.md),
 - the step-by-step procedures: the `dependency-upgrade`, `schema-migration`, `code-migration`, and `refactor-safely` skills.
 
