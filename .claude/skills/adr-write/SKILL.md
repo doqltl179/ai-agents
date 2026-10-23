@@ -7,11 +7,12 @@ description: "Write an architecture decision record in docs.adr_dir with context
 # Write Architecture Decision Record
 
 ## Use When
-- A decision is costly to reverse: architecture, technology or vendor choice, public interface, data model, or cross-cutting convention.
+- A decision is costly to reverse (architecture, technology or vendor choice, public interface, data model, or cross-cutting convention), was chosen among real alternatives, and would surprise a later reader who lacks its reason.
 - A plan, a review, or the user asks to record a decision.
 - An accepted record no longer holds and must be superseded.
 
 ## Do Not Use When
+- The decision is cheap to reverse, had no real alternative, or is the obvious default → state it in the commit or pull request body instead.
 - Deciding what to build rather than how → `requirements-spec-write`.
 - Describing how existing behavior works → `project-docs-sync`.
 - Changing a kit rule or policy → `kit-page-update`.

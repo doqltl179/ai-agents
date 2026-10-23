@@ -30,6 +30,7 @@ Rules every execution owner follows regardless of surface. Surface-specific rule
 
 ## Compatibility
 
+- An interface is everything its callers rely on: the signature, plus defaults, error behavior, ordering, side effects, and performance characteristics. Changing any of them changes the interface.
 - A change to a public API, CLI, configuration format, event, or file format is breaking unless proven otherwise. Breaking changes need the user's approval and a changelog entry that says how to migrate.
 - Prefer additive change: new optional fields, new endpoints, deprecation before removal.
 - When a shared contract changes, `software-architect` decides it and each side's owner implements it.
