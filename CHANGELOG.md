@@ -4,6 +4,21 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added
+- Page `change-scope.md`: how much a change may touch: assumptions named before editing, the smallest sufficient change (no unrequested features, options, or single-use abstractions), edit boundaries inside touched files, and cleanup of only what the change left unused. Routed from `START.md`, `request-lifecycle.md`, `code-changes.md`, and the code review checklist. (minor)
+- Page `domain-terms.md`: one canonical term per concept, its definition, the synonyms to avoid, and using the terms in code, docs, and conversation. The glossary template gains an `Avoid` column; existing glossaries may add it. (minor)
+- Skill `decision-interview`: settles several user-owned decisions in rounds ordered by their prerequisites, looks facts up instead of asking for them, and gives a recommended answer per question; listed on `requirements-analyst` and `software-architect`, and referenced from the Confirm step of `request-lifecycle.md` and from `requirements-spec-write`. (minor)
+
+### Changed
+- Writing rules: pointers name one situation per distinct case, material only some cases need moves behind a link, sentences that change no behavior are deleted, established terms win over coined ones, and prohibitions stay only as hard limits (`agent-first-writing.md`); skill steps end on a checkable condition (`skill-spec.md`); repository files own the facts they state (`ssot.md`). (minor)
+- `bug-diagnose`: the reproduction must show the reported symptom, intermittent failures are raised to a usable rate, ranked candidate causes are tested one variable at a time, temporary logging carries a marker that is searched away, and a bug no test can reach follows «When Verification Cannot Run». (minor)
+- `test-add`: expected values come from a source independent of the code, and only what the test cannot control is substituted. `code-review-perform` adds a scope check and cites the project's documented conventions. (minor)
+- `adr-write` applies only to decisions that are costly to reverse, chosen among real alternatives, and surprising without their reason. (minor)
+- `code-changes.md`: an interface includes defaults, error behavior, ordering, side effects, and performance characteristics. (minor)
+- `issues-and-prs.md`: issues describe behavior and interfaces rather than paths and may name what is out of scope; pull request risks state who could be affected and whether a revert fully undoes the change; "already implemented" is a close reason (also in `github-issue-triage`); work inside the current unit's scope is fixed, not registered as a leftover. (minor)
+- Handoff packets point to artifacts instead of pasting them (`handoff-contract.md`); compacting or handing off happens only between steps, after the running summary records decisions with their reasons (`context-budget.md`). (minor)
+- A rule a tool can check mechanically becomes an automated check instead of a lesson (`memory-policy.md`, `kit-lesson-capture`). `work-decompose` sizes units to one session and orders a preparatory restructuring as its own unit. (minor)
+
 ## [0.3.0] - 2026-10-09
 
 ### Added
