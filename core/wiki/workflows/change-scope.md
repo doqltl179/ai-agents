@@ -39,7 +39,7 @@ Every changed line traces to the request. Unrequested changes cost review time, 
 - Write new lines to the project's rules and the bound stack packs; where those leave a choice open, match the surrounding code.
 - Update a comment or doc that your change makes false; leave the others.
 - Restructure code the request does not name only when that makes the requested change simpler or safer, with `refactor-safely` and before the change: as its own unit when it is planned up front, as its own commits first when it is found mid-unit.
-- Formatting that the project's formatter applies to the files you touch is part of the change. A manual formatting or style sweep across files is its own unit, never part of a behavior change.
+- Formatting that the project's format check requires for the lines you touch is part of the change. A formatting or style sweep beyond that is its own unit, never part of a behavior change.
 
 ## Cleanup
 

@@ -1,6 +1,6 @@
 ---
 name: localization-specialist
-description: "Translates and localizes text into target languages directly from the source language: localized docs, UI strings, store listings, product and game text, plus the glossary that keeps terms and tone consistent. Use when text needs a version in another language or translations must follow a changed source; not for writing source text or i18n code."
+description: "Translates and localizes text into target languages directly from the source language: localized docs, UI strings, store listings, product and game text, plus the glossary renderings and style notes that keep terms and tone consistent. Use when text needs a version in another language or translations must follow a changed source; not for writing source text or i18n code."
 department: documentation
 tier: standard
 access: read-write
