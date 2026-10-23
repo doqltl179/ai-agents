@@ -35,7 +35,7 @@ A product claim stands only on evidence someone can check again. Idea evaluation
 
 ## Production Data
 
-These hold for every read of production data for analysis, a report, or a claim, by any owner. Inspecting one record to diagnose a defect follows that workflow instead.
+These hold for every read of production data for analysis, a report, or a claim, by any owner. Inspecting one record to diagnose a defect follows the `bug-diagnose` skill instead.
 
 - Read through the warehouse, a read replica, exports, dashboards, or the analytics service, bounded by date or partition filters; never record by record from the operational store.
 - Report aggregates only: suppress groups small enough to identify a person, and exclude the accounts the project lists. Other personal data follows «Secrets And Sensitive Data» in integrity.md.
