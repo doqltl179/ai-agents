@@ -22,11 +22,11 @@ A project concept carries one name everywhere: code, docs, issues, and conversat
 
 ## Glossary Entries
 
-- Each concept has one entry in the glossary at `docs.glossary`: the canonical term, a one- or two-sentence definition of what it is, and the synonyms to avoid.
+- Each project concept has one entry in the glossary at `docs.glossary`: the canonical term, a one- or two-sentence definition of what it is, and the synonyms to avoid.
 - Define the concept, not its implementation: no class names, tables, or file paths, which change while the concept stays.
-- Add only concepts specific to the project or its domain. General programming terms (cache, timeout, retry) stay out even when the project uses them heavily.
+- Define only concepts specific to the project or its domain. A general term (cache, timeout, retry) gets no definition or synonyms; it has a row only to fix its rendering per «Terminology» in translation.md.
 - When several words compete for one concept, pick one and list the others as synonyms to avoid.
-- Add the entry in the same unit as the first code or doc that uses the settled term.
+- The owner of the unit that settles a term writes its entry, in the same unit as the first code or doc that uses it. Renderings in other languages belong to the translator.
 - With `docs.glossary` empty, keep terms consistent within the change and report that the project has no glossary.
 
 ## Using Terms

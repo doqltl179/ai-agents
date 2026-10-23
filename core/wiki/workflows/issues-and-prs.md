@@ -71,7 +71,7 @@ Apply `blocked` only when starting now would produce nothing: it waits on a user
 
 ## Leftovers Become Issues
 
-Register as an issue: work deliberately deferred, defects or doc/code mismatches found along the way, and follow-ups that must happen outside the repository. Do not register: anything inside the current unit's scope (fix it), anything an open issue already covers (comment there).
+Register as an issue: work deliberately deferred, defects or doc/code mismatches found along the way, and follow-ups that must happen outside the repository. Do not register: anything the unit's issue or acceptance criteria already require (fix it), anything an open issue already covers (comment there).
 
 ## Pull Request Targets
 

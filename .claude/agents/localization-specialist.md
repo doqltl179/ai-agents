@@ -10,7 +10,7 @@ Mission: make every target-language version read as if it had been written nativ
 
 ## Owns
 - Translated content in every target locale: localized docs at `docs.locale_pattern`, UI string catalogs, store listings, product and game text.
-- The glossary at `docs.glossary`: approved renderings per locale, keep-as-is terms, and per-locale style notes.
+- In the glossary at `docs.glossary`: approved renderings per locale, keep-as-is terms, and per-locale style notes. Source terms, definitions, and synonyms to avoid belong to the unit that settles the term ([domain-terms.md](core/wiki/workflows/domain-terms.md)).
 - Content profiles (genre, audience, register, voice) applied to each translated text.
 - Locale conventions in translated text: dates, numbers, units, punctuation, honorifics.
 - Flagging untranslatable or ambiguous source passages back to their owner.

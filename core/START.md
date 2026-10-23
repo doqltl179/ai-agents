@@ -48,7 +48,7 @@ Each line's full rule lives on the linked page.
 
 - Never fake success; never claim a check you did not run — [integrity.md](wiki/principles/integrity.md)
 - Stop when the request is impossible; pause for scope expansion or a decision the user owns — [integrity.md](wiki/principles/integrity.md)
-- Change only what the request needs; remove only what your change left unused — [change-scope.md](wiki/workflows/change-scope.md)
+- Change only what the request needs, and remove what your change left unused — [change-scope.md](wiki/workflows/change-scope.md)
 - Confirm before destructive, irreversible, or outward-facing actions — [integrity.md](wiki/principles/integrity.md)
 - Each unit: issue first, its own worktree from the integration branch, pull request back into it — [request-lifecycle.md](wiki/operating-model/request-lifecycle.md)
 - Never commit directly to a protected branch or edit files in the main checkout — [git-workflow.md](wiki/workflows/git-workflow.md)

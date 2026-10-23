@@ -1,6 +1,6 @@
 ---
 name: adr-write
-description: "Write an architecture decision record in docs.adr_dir with context, options considered and their trade-offs, the decision, consequences, and status, numbered sequentially; supersede an accepted record instead of editing it. Use when a decision about structure, technology, interfaces, data, or cross-cutting conventions is made or proposed and is costly to reverse."
+description: "Write an architecture decision record in docs.adr_dir with context, options considered and their trade-offs, the decision, consequences, and status, numbered sequentially; supersede an accepted record instead of editing it. Use when a decision about structure, technology, interfaces, data, or cross-cutting conventions is made or proposed, is costly to reverse, was chosen among real alternatives, and would surprise a later reader without its reason."
 ---
 <!-- agentkit:generated from core/skills/adr-write/SKILL.md. Do not edit: change the source, then run `python tools/agentkit.py sync`. Paths are relative to the project root. -->
 
