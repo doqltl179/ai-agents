@@ -1,5 +1,5 @@
 ---
-owns: "What counts as evidence for a product claim and how product metrics are read for it: evidence kinds and their fields, time windows, read order by cost, blocked sign-in, privacy, and attributing an effect"
+owns: "What counts as evidence for a product claim and how production data is read for analysis or evidence: evidence kinds and their fields, time windows, production data reads and privacy, read order by cost, blocked sign-in, and attributing an effect"
 volatility: evolving
 reviewed: 2026-10-23
 ---
@@ -11,7 +11,8 @@ A product claim stands only on evidence someone can check again. Idea evaluation
 ## When
 
 - a proposal, spec, or report claims something about users, usage, or comparable products,
-- reading product metrics to support or test such a claim.
+- reading product metrics to support or test such a claim,
+- reading production data for analysis, a report, or a claim, by any owner.
 
 ## Route Away When
 
@@ -34,9 +35,9 @@ A product claim stands only on evidence someone can check again. Idea evaluation
 
 ## Production Data
 
-These hold for every read of production data, by any owner.
+These hold for every read of production data for analysis, a report, or a claim, by any owner. Inspecting one record to diagnose a defect follows that workflow instead.
 
-- Read it only through the warehouse, a read replica, or exports, bounded by date or partition filters; never record by record from the operational store.
+- Read through the warehouse, a read replica, exports, dashboards, or the analytics service, bounded by date or partition filters; never record by record from the operational store.
 - Report aggregates only: suppress groups small enough to identify a person, and exclude the accounts the project lists. Other personal data follows «Secrets And Sensitive Data» in integrity.md.
 
 ## Reading Metrics

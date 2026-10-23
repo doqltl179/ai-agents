@@ -1,5 +1,5 @@
 ---
-owns: "How a product idea is judged before adoption: the three idea scopes, the project values they read, verdicts, the eight criteria and their order, choosing when the user delegates the choice, and what idea work must not touch"
+owns: "How a product idea is judged before adoption: the three idea scopes, the project values they read, verdicts, the eight criteria and their order, hand-overs to another scope or owner, choosing when the user delegates the choice, and what idea work must not touch"
 volatility: evolving
 reviewed: 2026-10-23
 ---
@@ -57,7 +57,7 @@ Criteria 1 to 3 read differently per scope:
 
 | Criterion | New content | Expansion | Revision |
 |---|---|---|---|
-| 1. Overlap or target | Usage (what the user does, to achieve what) identical to an existing content: `reject`. Shared rewards or limits are not overlap | What the element constrains or enables and what releases it, as a pair, identical to an existing element's: `reject`. An aid the user invokes with no constraint in place (a hint, an undo, a shortcut) is a helper, not an element: `reject`, naming the file that defines helpers | The change does not stand as one existing value or rule: a new rule goes to `content-expansion-propose`, anything outside the content (economy values, flow between units) to the file that owns it, and this idea is `reject` |
+| 1. Overlap or target | Usage (what the user does, to achieve what) identical to an existing content: `reject`. Shared rewards or limits are not overlap | What the element constrains or enables and what releases it, as a pair, identical to an existing element's: `reject`. An aid the user invokes with no constraint in place (a hint, an undo, a shortcut) is a helper, not an element: `reject`, naming the file that defines helpers | The change does not stand as one existing value or rule: a new rule goes to `content-expansion-propose`, anything outside the content (value-flow values, flow between units) to the file that owns it, and this idea is `reject` |
 | 2. Structure | One use needs several systems working together, as the main content does: `defer` | An existing rule or helper whose interaction with the element is undecided, a unit pipeline that can no longer build, verify, or measure the units, or a unit property the pipeline requires that the element breaks: `defer` | The change renumbers units, changes a unit count, or moves a published boundary so that recorded progress would point elsewhere: `defer` |
 | 3. Duration or limits | One use is long compared with one use of the main content: `defer` | Time the element adds that the content's time model cannot explain (waiting, chance): `defer` | The change needs the unit pipeline beyond its limits: `defer`; moving a limit is its own idea. State the range of units to rebuild |
 
