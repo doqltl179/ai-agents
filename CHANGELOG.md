@@ -5,6 +5,12 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 ## [Unreleased]
 
 ### Added
+- Idea planning before adoption, in three scopes: skills `new-content-plan` (new content across the product), `content-expansion-plan` (a new element inside one content, starting from a survey of comparable products), and `content-revision-plan` (one value or rule of a unit, starting from a status table of the content). They hold only the steps; `requirements-analyst` owns the proposals. (minor)
+- Page `idea-evaluation.md`: scopes, the project values each scope reads from `.ai/project/wiki/product-planning.md`, the verdicts `reject`, `defer`, and `pass` (passing is not adoption), the eight criteria and their order, choosing when the user delegates the choice, and boundaries. (minor)
+- Page `product-evidence.md`: evidence kinds and their fields, time windows, reading metrics by cost, stopping on blocked sign-in, aggregates only, and attributing an effect; `requirements-spec-write` cites it for the Problem section. (minor)
+- Page `idea-records.md`: idea records in the main checkout's ignored `.ai/tasks/ideas/`, file names, the domain survey and status table, proposal sections per scope, judging again, and the report. `planning.md` closeout leaves them in place, and `git-workflow.md` allows them in the main checkout. (minor)
+
+### Added
 - Page `change-scope.md`: how much a change may touch: assumptions named before editing, the smallest sufficient change (no unrequested features, options, or single-use abstractions), edit boundaries inside touched files, and cleanup of only what the change left unused. Routed from a new `START.md` route and «Stop First» line (rendered into every `AGENTS.md`), `request-lifecycle.md`, `code-changes.md`, and the code review checklist. (minor)
 - Page `domain-terms.md`: one canonical term per concept, its definition, the synonyms to avoid, and using the terms in code, docs, and conversation. The glossary template gains an `Avoid` column; existing glossaries may add it. `localization-specialist` now owns only renderings, keep-as-is terms, and style notes in the glossary; the unit that settles a term writes its entry. (minor)
 - Skill `decision-interview`: settles several user-owned decisions in rounds ordered by their prerequisites, looks facts up instead of asking for them, and gives a recommended answer per question; listed on `requirements-analyst` and `software-architect`, and referenced from the Confirm step of `request-lifecycle.md` and from `requirements-spec-write`. (minor)
