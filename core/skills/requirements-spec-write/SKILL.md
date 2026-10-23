@@ -31,7 +31,7 @@ reviewed: 2026-10-09
 6. Write Functional requirements, numbered `FR-1`, `FR-2`, …: one observable behavior each, phrased with "must", free of implementation choices.
 7. Write Acceptance criteria for each requirement, each testable by a person or an automated test. Use Given/When/Then when the outcome depends on prior state. Replace words like "fast" or "intuitive" with a measurable threshold.
 8. Write Non-functional requirements with thresholds for the categories that apply: performance, availability, security, privacy, accessibility, localization (`docs.locales`), compatibility, and observability.
-9. Write Open questions: each names the decision, the options, a recommendation, and the decision owner. Ask the user only for decisions they own per «Stop, Pause, or Proceed» in [integrity.md](../../wiki/principles/integrity.md); settle conventional choices yourself and record them as assumptions.
+9. Write Open questions: each names the decision, the options, a recommendation, and the decision owner. Ask the user only for decisions they own per «Stop, Pause, or Proceed» in [integrity.md](../../wiki/principles/integrity.md); settle conventional choices yourself and record them as assumptions. When several questions are open, resolve them with `decision-interview`.
 10. Save it in `docs.specs_dir`, written in `project.language`, with the file name and `Status:` line per «Specifications» in documentation.md; it moves past draft only when the user approves scope and the open questions are resolved. Link it from the issue, and commit with `git-commit`.
 
 ## Output

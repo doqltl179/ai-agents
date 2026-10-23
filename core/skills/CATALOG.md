@@ -46,7 +46,7 @@ Every core skill, by category.
 
 | Skill | Use when |
 |---|---|
-| [`adr-write`](adr-write/SKILL.md) | Write an architecture decision record in docs.adr_dir with context, options considered and their trade-offs, the decision, consequences, and status, numbered sequentially; supersede an accepted record instead of editing it. Use when a decision about structure, technology, interfaces, data, or cross-cutting conventions is made or proposed and is costly to reverse. |
+| [`adr-write`](adr-write/SKILL.md) | Write an architecture decision record in docs.adr_dir with context, options considered and their trade-offs, the decision, consequences, and status, numbered sequentially; supersede an accepted record instead of editing it. Use when a decision about structure, technology, interfaces, data, or cross-cutting conventions is made or proposed, is costly to reverse, was chosen among real alternatives, and would surprise a later reader without its reason. |
 | [`project-docs-sync`](project-docs-sync/SKILL.md) | Update the human-facing docs that own a changed behavior or API in the same change: README sections, guides, API reference, the changelog Unreleased entry, and localized variants listed in docs.locales, documenting only verified behavior. Use when a unit changes user-visible behavior, a public interface, configuration, or setup steps. |
 
 ## localization
@@ -78,6 +78,7 @@ Every core skill, by category.
 | Skill | Use when |
 |---|---|
 | [`codebase-onboard`](codebase-onboard/SKILL.md) | Map an unfamiliar codebase quickly while reading narrowly: entry points, build and test commands, directory map, architecture, and conventions; propose values for .ai/project/profile.toml (commands, bindings, stacks) and draft .ai/project/wiki/overview.md. Use when the kit is newly installed in a project, or work starts in a codebase or area that no project doc describes. |
+| [`decision-interview`](decision-interview/SKILL.md) | Settle the open decisions behind a request, plan, or design with the user: list the decisions and their prerequisites, look up every fact yourself, ask in numbered rounds only the decisions whose prerequisites are settled, each with a recommended answer, repeat until none is open, and confirm the shared understanding. Use when several user-owned decisions are open before work starts, or the user asks to be questioned about a plan. |
 | [`task-plan-write`](task-plan-write/SKILL.md) | Create or update the plan file in .ai/tasks/ with `agentkit.py new plan` from the kit plan template: scope with done-when and out-of-scope, the unit table with owners, verification, gates, and statuses, budget, risks, and a running summary kept current after every unit, then close it out when the work ends. Use when work needs a plan under the planning policy, when a planned unit changes state, or when planned work finishes. |
 | [`work-decompose`](work-decompose/SKILL.md) | Break a request into bounded units with one owner each: extract the goal and acceptance criteria, map the surfaces touched, select owners from the project catalog, find dependency edges, choose serial or parallel execution within the node budget, assign verification and review gates, and produce a unit table. Use when a request spans several owners or surfaces, or its owner is unclear. |
 
