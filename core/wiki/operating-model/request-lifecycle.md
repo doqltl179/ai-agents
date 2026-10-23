@@ -37,7 +37,7 @@ This page owns the order of steps. Each step links to the page or skill that own
 
 ## Scaling The Order
 
-- A question or analysis with no file changes needs only steps 1, 2, and 13.
+- A question or analysis with no tracked file changes, judging an idea included, needs only steps 1, 2, and 13.
 - With `hosting.platform = "none"`, skip the issue and pull request steps and record the unit in its plan instead.
 - With `policy.worktrees` off, step 5 cuts the task branch in the current checkout.
 - Promotion from the integration branch to the release branch is never part of a unit; it is a release, started only on request ([release.md](../workflows/release.md)).

@@ -42,7 +42,7 @@ A skill links to the policy it applies instead of restating it. Example: `git-co
 | `localization` | Translation and localization into other languages |
 | `kit` | Creating, auditing, installing, updating, and evolving the kit and its overlay |
 | `planning` | Decomposition, plans, settling open decisions, onboarding to a codebase |
-| `product` | Requirements and specification work |
+| `product` | Requirements and specification work, and judging content ideas before adoption |
 | `release` | Versioning and release execution |
 | `ops` | CI and operational diagnosis |
 

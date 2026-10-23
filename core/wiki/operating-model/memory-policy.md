@@ -23,6 +23,7 @@ reviewed: 2026-10-09
 |---|---|---|
 | Current reasoning, scratch notes, temporary handoffs | Session context | The session |
 | Progress, decisions, and open risks of active work | Plan file in `.ai/tasks/` | Until the task closes |
+| Idea proposals, defer records, and their reference files | `.ai/tasks/ideas/` in the main checkout, per «Location» in [idea-records.md](../workflows/idea-records.md) | Until the user deletes them |
 | A durable project fact (architecture, domain terms, local convention) | A page in `.ai/project/wiki/` | Until it stops being true |
 | A project parameter (commands, branches, languages, roles) | `.ai/project/profile.toml` | Until changed |
 | A rule a tool can check mechanically (a banned pattern or API, an import shape, a file location, a format) | An automated check in the project's lint, test, or CI configuration | Until the rule changes |
