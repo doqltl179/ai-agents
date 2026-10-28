@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+- Stack pack `unity`: the Unity CLI version note names the latest beta, 1.0.0-beta.14 (2026-10-21); there is still no stable release. (patch)
+
 ## [0.4.0] - 2026-10-24
 
 ### Added
