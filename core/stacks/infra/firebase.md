@@ -6,7 +6,7 @@ applies_to: ["**/firebase.json", "**/.firebaserc", "**/firestore.rules", "**/fir
 related: [flutter, unity, typescript, python, terraform]
 volatility: volatile
 reviewed: 2026-10-28
-sources: ["https://firebase.google.com/docs/cli", "https://firebase.google.com/support/release-notes/cli", "https://firebase.google.com/docs/emulator-suite/install_and_configure", "https://firebase.google.com/docs/firestore/quotas", "https://firebase.google.com/docs/firestore/best-practices", "https://firebase.google.com/docs/firestore/security/rules-query", "https://firebase.google.com/docs/rules/unit-tests", "https://firebase.google.com/docs/functions/config-env", "https://firebase.google.com/docs/functions/retries", "https://docs.cloud.google.com/functions/docs/runtime-support", "https://firebase.google.com/support/release-notes/admin/node", "https://firebase.google.com/docs/storage/faqs-storage-changes-announced-sept-2024", "https://firebase.google.com/docs/cloud-messaging/manage-tokens", "https://firebase.google.com/docs/flutter/setup", "https://firebase.google.com/support/release-notes/flutter", "https://firebase.google.com/docs/unity/setup", "https://firebase.google.com/support/release-notes/unity", "https://firebase.google.com/docs/projects/billing/avoid-surprise-bills"]
+sources: ["https://firebase.google.com/docs/cli", "https://firebase.google.com/support/release-notes/cli", "https://firebase.google.com/docs/emulator-suite/install_and_configure", "https://firebase.google.com/docs/firestore/quotas", "https://firebase.google.com/docs/firestore/best-practices", "https://firebase.google.com/docs/firestore/security/rules-query", "https://firebase.google.com/docs/firestore/editions", "https://firebase.google.com/docs/rules/manage-deploy", "https://firebase.google.com/docs/rules/unit-tests", "https://firebase.google.com/docs/storage/security/rules-conditions", "https://firebase.google.com/docs/functions/config-env", "https://github.com/firebase/firebase-functions/releases", "https://firebase.google.com/docs/functions/retries", "https://docs.cloud.google.com/functions/docs/runtime-support", "https://firebase.google.com/support/release-notes/admin/node", "https://firebase.google.com/docs/storage/faqs-storage-changes-announced-sept-2024", "https://firebase.google.com/docs/cloud-messaging/manage-tokens", "https://firebase.google.com/docs/cloud-messaging/migrate-off-device-groups", "https://firebase.google.com/docs/flutter/setup", "https://firebase.google.com/support/release-notes/flutter", "https://firebase.google.com/docs/unity/setup", "https://firebase.google.com/support/release-notes/unity", "https://firebase.google.com/docs/projects/billing/avoid-surprise-bills", "https://firebase.google.com/docs/projects/terraform/get-started"]
 ---
 
 # Firebase
@@ -18,11 +18,11 @@ sources: ["https://firebase.google.com/docs/cli", "https://firebase.google.com/s
 - Firestore databases (default or named) and edition (Standard or Enterprise; Enterprise does not create single-field indexes automatically).
 - Flutter: `lib/firebase_options.dart` from `flutterfire configure` and the Firebase plugins in `pubspec.yaml`. Unity: `.unitypackage` imports under `Assets/Firebase` or UPM `.tgz` entries in `Packages/manifest.json`, External Dependency Manager, and `google-services.json` and `GoogleService-Info.plist` under `Assets/`.
 - Other products in use, each following its official docs: Remote Config, Analytics, Hosting (static) or App Hosting (server-rendered), Realtime Database (`database.rules.json`), SQL Connect (`dataconnect/`), App Check.
-- Projects and apps provisioned with Terraform use the `google-beta` provider; follow the `terraform` pack for them.
+- Whether Terraform provisions the Firebase projects and apps, and whether through the `google` or `google-beta` provider; follow the `terraform` pack for those files.
 
 ## Conventions
 - Develop and test against the Emulator Suite: `firebase emulators:start`, or `firebase emulators:exec "<test command>"` in CI. A project ID starting with `demo-` reaches only emulators; persist seed data with `--import <dir> --export-on-exit`.
-- Deploy only what changed: `--only firestore:rules`, `storage`, `functions:<name>`, or `functions:<codebase>`. Rules files in the repository are the source of truth: a CLI deploy overwrites console edits, and a rules release cannot be rolled back.
+- Deploy only what changed: `--only firestore:rules`, `storage`, `functions:<name>`, or `functions:<codebase>`. Rules files in the repository are the source of truth: a CLI deploy overwrites console edits, a release takes several minutes to propagate, and reverting means redeploying the previous file from version control.
 - Security Rules: `rules_version = '2';`, deny by default, grant per path from `request.auth`, and validate `request.resource.data` (allowed keys, types, sizes) on create and update; `resource` is the stored document.
 - Rules are not filters: a query must constrain itself to documents the rules allow, or the whole query is denied.
 - Keep `get()` and `exists()` lookups in rules few (10 per request, 20 per transaction or batch); prefer custom claims or fields on the document itself.
@@ -49,7 +49,6 @@ sources: ["https://firebase.google.com/docs/cli", "https://firebase.google.com/s
 - Opening rules (`allow read, write: if true;` or expiring test-mode rules) to silence a client error; write the narrow rule and its test.
 - Checking `resource.data` on create, where no stored document exists; use `request.resource.data`.
 - Trusting client-sent `uid`, role, or price fields; derive them from `request.auth` or server code. The Admin SDK bypasses Security Rules, so functions validate their own inputs.
-- Reading params or secrets at global scope; values are only available at runtime.
 - A non-interactive `firebase deploy --force` deletes deployed indexes missing from `firestore.indexes.json`.
 - Storage rules' `firestore.get()` reads only the default database, and each read is billed.
 - In Unity, calling Firebase before the dependency check completes, or touching Unity objects from a continuation that is not on the main thread.
@@ -57,10 +56,11 @@ sources: ["https://firebase.google.com/docs/cli", "https://firebase.google.com/s
 ## Version Notes
 - firebase-tools 15 requires Node 20+, and its emulators require Java 21+; some docs pages still list older minimums (as of 2026-10, per the CLI release notes).
 - Functions runtimes: nodejs20 is decommissioned on 2026-10-30 and nodejs22 is deprecated on 2027-04-30; python310 is deprecated, and Python 3.11 to 3.14 are supported (as of 2026-10, per the Cloud Run functions runtime schedule).
-- firebase-functions v7 removed `functions.config()`; deploys that still use Runtime Config fail after 2027-03. Migrate with `firebase functions:config:export` (as of 2026-10, per the Functions config docs).
+- firebase-functions v7 removed `functions.config()`; deploys that still use Runtime Config fail after 2027-03. Migrate with `firebase functions:config:export` (as of 2026-10, per the firebase-functions releases and the Functions config docs).
 - firebase-admin for Node 14 requires Node 22+ and removes the namespaced API in favor of modular entry points (as of 2026-10, per the Admin release notes).
 - Cloud Storage for Firebase needs the Blaze plan for every bucket from 2026-02-03; new default buckets are named `<project-id>.firebasestorage.app` (as of 2026-10, per the Storage changes FAQ).
-- FCM is moving from registration tokens to Firebase Installation IDs (both work for now; Admin for Node deprecates `TokenMessage` for `FidMessage`), and the Instance ID server APIs and device groups shut down on 2027-09-29 (as of 2026-10, per the FCM docs).
-- FlutterFire `firebase_core` 5 requires Flutter 3.27+, Android API 24+, and iOS 15+ (as of 2026-10, per the FlutterFire release notes).
+- FCM is moving from registration tokens to Firebase Installation IDs; both work for now, and Admin for Node deprecates `TokenMessage` for `FidMessage` (as of 2026-10, per the FCM token docs and the Admin release notes).
+- FCM device group messaging stops working after 2027-09-29 (as of 2026-10, per the device groups migration page).
+- FlutterFire `firebase_core` 5 requires Flutter 3.27+ and Android API 24+, and FlutterFire supports iOS 15+ (as of 2026-10, per the FlutterFire release notes and setup page).
 - Firebase Unity SDK 14 requires Unity 2022.3 LTS+ and Android API 24+, and resolves iOS dependencies with Swift Package Manager instead of CocoaPods; the setup page still describes CocoaPods (as of 2026-10, per the Unity release notes).
 - Data Connect is renamed SQL Connect; the `dataconnect` key and `--only dataconnect` are unchanged (as of 2026-10, per the CLI release notes).
