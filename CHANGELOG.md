@@ -6,7 +6,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ### Fixed
 - Stack pack `unity`: the Unity CLI version note names the latest beta, 1.0.0-beta.14 (2026-10-21); there is still no stable release. (patch)
-- Stack pack `csharp`: Unity projects compile C# 9 at the .NET Standard 2.1 or .NET Framework 4.8 API level, so the pack names the C# 9 features Unity rejects, forbids `record` in serialized types, and skips its .NET-only rules there (`record` for immutable data, `TimeProvider`, the `dotnet` commands) in favor of the `unity` pack's Verify. (patch)
+- Stack pack `csharp`: Unity projects compile C# 9 at the .NET Standard 2.1 or .NET Framework 4.8 API level, so the pack names the C# 9 features Unity rejects and forbids `record` in serialized types. There it also drops `record` for immutable data and `TimeProvider` (unless the project includes `Microsoft.Bcl.TimeProvider`), and the `unity` pack's Verify replaces the `dotnet` commands. (patch)
 
 ## [0.4.0] - 2026-10-24
 
