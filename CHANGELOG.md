@@ -8,12 +8,17 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 - Stack pack `firebase`: CLI and `firebase.json`, Emulator Suite, Firestore and Security Rules, Cloud Functions, Auth, Storage, Crashlytics, and FCM, with FlutterFire and Unity SDK setup. The `infra` kind now also covers cloud platforms and managed backend services (`stack-spec.md`). (minor)
 - Stack pack `aws`: credentials, IAM, Regions, tags, and cost; Lambda, API Gateway, DynamoDB, Cognito, S3, and CloudFront; Terraform through the `terraform` pack. It has no default paths: bind it to a role or set `[stack_paths]` in the profile. (minor)
 
+### Changed
+- Stack pack `unity-upm`: Unity 6.3–6.6 package changes. Create package writes a `.sample.json` that makes packing ignore the `samples` array, and samples gain `images` (6.5). Packages are signature-checked from 6.3, with the signing methods listed. Unity 6.5 drops bundled copies of four class-library assemblies, and 6.6 turns more packages into core packages. Packages that also support Editors older than 6.6 branch on `UNITY_6000_6_OR_NEWER` instead of the deprecated `DEVELOPMENT_BUILD`. New conventions cover `license` and `LICENSE.md`, the 50-character name limit, and `scopedRegistries` scopes. (minor)
+
 ### Fixed
 - Stack pack `unity`: the Unity CLI version note names the latest beta, 1.0.0-beta.14 (2026-10-21); there is still no stable release. (patch)
 - Stack pack `unity`: Unity 6.3, not 6.4, removes URP Compatibility Mode (6.4 removes the define used to convert a project); render pipeline detection reads a Quality level's asset before the Graphics default; scripts under the top-level `Assets/Plugins` folder compile into the `-firstpass` assemblies, and asmdefs can reference none of the predefined assemblies; the Unity 6.2 malformed-YAML note names general parse errors instead of invalid IDs and says earlier versions often, not always, discard malformed data. (patch)
+- Stack pack `unity-upm`: Export adds the tilde to `Samples` only, not `Documentation`. Git LFS pointer files can arrive even with the LFS client installed, because the Package Manager clones shallowly. The Samples note follows the Unity 6000.6 manual, and unversioned Unity Manual sources use the `docs.unity.com/en-us/engine/current/` addresses they redirect to. (patch)
 
 ### Reviewed
 - Stack pack `unity`, ahead of its due date because an intake record named it. (patch)
+- Stack pack `unity-upm`, against the Unity 6000.6 manual, ahead of its due date because an intake record named it. (patch)
 
 ## [0.4.0] - 2026-10-24
 
