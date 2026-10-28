@@ -6,13 +6,14 @@ applies_to: ["**/*.cs"]
 related: [aspnet-core, unity]
 volatility: volatile
 reviewed: 2026-10-09
-sources: ["https://learn.microsoft.com/en-us/dotnet/csharp/", "https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-versioning", "https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/overview", "https://learn.microsoft.com/en-us/dotnet/core/tools/global-json", "https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core"]
+sources: ["https://learn.microsoft.com/en-us/dotnet/csharp/", "https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-versioning", "https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-11/overview", "https://learn.microsoft.com/en-us/dotnet/core/tools/global-json", "https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core", "https://learn.microsoft.com/en-us/dotnet/api/system.timeprovider", "https://docs.unity3d.com/Manual/csharp-compiler.html", "https://docs.unity3d.com/Manual/dotnet-profile-support.html"]
 ---
 
 # C#
 
 ## Detect
-- Unity project (`Assets/`, `ProjectSettings/ProjectVersion.txt`, `*.asmdef`): Unity's own runtime and C# version apply, not the .NET SDK's; follow the `unity` pack.
+- Unity project (`Assets/`, `ProjectSettings/ProjectVersion.txt`, `*.asmdef`): Unity's compiler, C# version, and .NET API level apply, not the .NET SDK's; follow the `unity` pack. Write C# 9 without the C# 9 features Unity rejects (see «Version Notes»); C# 10+ syntax, such as file-scoped namespaces, does not compile. Never use `record` for a type Unity serializes; Unity serialization does not support records.
+- In a Unity project, skip this pack's .NET-only rules: `record` for immutable data, `TimeProvider` (inject a clock interface instead), and the `dotnet` commands in «Verify»; the `unity` pack's «Verify» replaces them.
 - SDK version from `global.json` (`sdk.version`, `rollForward`); target frameworks from `<TargetFramework>`/`<TargetFrameworks>` in `*.csproj`.
 - Solution file `*.sln` or `*.slnx`; shared settings in `Directory.Build.props`/`.targets`; central package versions in `Directory.Packages.props`.
 - Project flags: `<Nullable>`, `<LangVersion>`, `<TreatWarningsAsErrors>`, `<ImplicitUsings>`; analyzer packages and `.editorconfig` severities.
@@ -48,3 +49,4 @@ sources: ["https://learn.microsoft.com/en-us/dotnet/csharp/", "https://learn.mic
 - Even-numbered .NET releases are LTS (three years) and odd-numbered are STS (two years). .NET 10 is the current LTS, supported until 2028-11-14; .NET 8 and .NET 9 both reach end of support on 2026-11-10 (as of 2026-10, per dotnet.microsoft.com support policy).
 - .NET 11 is a go-live release candidate (RC1, September 2026) with general availability expected in November 2026; check `global.json` and `<TargetFramework>` before assuming it (as of 2026-10, per learn.microsoft.com What's new in .NET 11).
 - `TimeProvider` is built in from .NET 8; .NET Standard 2.0 and .NET Framework 4.6.2+ targets get it from the `Microsoft.Bcl.TimeProvider` package. Without that package on older targets, inject a clock interface instead (as of 2026-10, per learn.microsoft.com TimeProvider API reference).
+- Unity 6 (`6000.0`–`6000.6`) and the `7000.0` alpha compile with Roslyn at C# 9 against the .NET Standard 2.1 (default) or .NET Framework 4.8 API level; neither level includes `TimeProvider`. These C# 9 features fail to compile there: init-only setters, covariant return types, module initializers, suppressing the `localsinit` flag, and extensible calling conventions for unmanaged function pointers. Full record support needs `System.Runtime.CompilerServices.IsExternalInit` declared in the project (as of 2026-10, per the Unity Manual C# compiler and .NET API compatibility pages).
