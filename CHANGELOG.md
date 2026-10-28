@@ -4,9 +4,17 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added
+- Stack pack `firebase`: CLI and `firebase.json`, Emulator Suite, Firestore and Security Rules, Cloud Functions, Auth, Storage, Crashlytics, and FCM, with FlutterFire and Unity SDK setup. The `infra` kind now also covers cloud platforms and managed backend services (`stack-spec.md`). (minor)
+- Stack pack `aws`: credentials, IAM, Regions, tags, and cost; Lambda, API Gateway, DynamoDB, Cognito, S3, and CloudFront; Terraform through the `terraform` pack. It has no default paths: bind it to a role or set `[stack_paths]` in the profile. (minor)
+
 ### Fixed
 - Stack pack `unity`: the Unity CLI version note names the latest beta, 1.0.0-beta.14 (2026-10-21); there is still no stable release. (patch)
+- Stack pack `unity`: Unity 6.3, not 6.4, removes URP Compatibility Mode (6.4 removes the define used to convert a project); render pipeline detection reads a Quality level's asset before the Graphics default; scripts under the top-level `Assets/Plugins` folder compile into the `-firstpass` assemblies, and asmdefs can reference none of the predefined assemblies; the Unity 6.2 malformed-YAML note names general parse errors instead of invalid IDs and says earlier versions often, not always, discard malformed data. (patch)
 - Stack pack `csharp`: Unity projects compile C# 9 at the .NET Standard 2.1 or .NET Framework 4.8 API level, so the pack names the C# 9 features Unity rejects and forbids `record` in serialized types. There it also drops `record` for immutable data and `TimeProvider` (unless the project includes `Microsoft.Bcl.TimeProvider`), and the `unity` pack's Verify replaces the `dotnet` commands. (patch)
+
+### Reviewed
+- Stack pack `unity`, ahead of its due date because an intake record named it. (patch)
 
 ## [0.4.0] - 2026-10-24
 
