@@ -56,6 +56,7 @@ my-project/
   .ai/project/              プロジェクトの設定: profile.toml、wiki/、lessons.md
   .ai/generated/            有効な役割とスキルのカタログ
   .gitignore                .ai/tasks/ と .worktrees/ を追加
+  .gitattributes            エージェントファイルを LF 改行でチェックアウト
 ```
 
 手書きの `AGENTS.md`・`CLAUDE.md`・ツール用ファイルがあれば上書きせずに停止し、その一覧を表示します。内容は次の手順で移します。
