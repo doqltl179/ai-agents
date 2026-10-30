@@ -56,6 +56,7 @@ my-project/
   .ai/project/              your project's settings: profile.toml, wiki/, lessons.md
   .ai/generated/            the catalog of active roles and skills
   .gitignore                adds .ai/tasks/ and .worktrees/
+  .gitattributes            checks agent files out with LF line endings
 ```
 
 The install never overwrites hand-written `AGENTS.md`, `CLAUDE.md`, or tool files; it stops and lists them so their content can be moved in the next step.

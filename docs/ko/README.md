@@ -56,6 +56,7 @@ my-project/
   .ai/project/              프로젝트 설정: profile.toml, wiki/, lessons.md
   .ai/generated/            활성 역할·스킬 카탈로그
   .gitignore                .ai/tasks/와 .worktrees/ 추가
+  .gitattributes            에이전트 파일을 LF 줄바꿈으로 체크아웃
 ```
 
 직접 작성한 `AGENTS.md`·`CLAUDE.md`·도구 파일이 있으면 덮어쓰지 않고 멈춘 뒤 목록을 보여 줍니다. 그 내용은 다음 단계에서 옮깁니다.
