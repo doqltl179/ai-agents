@@ -4,6 +4,8 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-31
+
 ### Added
 - `install` and `update` append a section to `.gitattributes` that checks the kit, the overlay, and the generated agent files out with LF (`text=auto eol=lf`), writing only the lines the file lacks. In a checkout with `core.autocrlf=true` those files had CRLF, so every `update` listed the kit files as modified in `git status` while `git diff` stayed empty. The rule and the command that converts files a clone already holds with CRLF are in «Line Endings» in `installation.md`. (minor)
 
