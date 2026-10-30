@@ -4,6 +4,8 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-30
+
 ### Added
 - Stack pack `firebase`: CLI and `firebase.json`, Emulator Suite, Firestore and Security Rules, Cloud Functions, Auth, Storage, Crashlytics, and FCM, with FlutterFire and Unity SDK setup. The `infra` kind now also covers cloud platforms and managed backend services (`stack-spec.md`). (minor)
 - Stack pack `aws`: credentials, IAM, Regions, tags, and cost; Lambda, API Gateway, DynamoDB, Cognito, S3, and CloudFront; Terraform through the `terraform` pack. It has no default paths: bind it to a role or set `[stack_paths]` in the profile. (minor)
