@@ -57,7 +57,7 @@ sources: ["https://firebase.google.com/docs/cli", "https://firebase.google.com/s
 - firebase-tools 15 requires Node 20+, and its emulators require Java 21+; some docs pages still list older minimums (as of 2026-10, per the CLI release notes).
 - Functions runtimes: nodejs20 is decommissioned on 2026-10-30 and nodejs22 is deprecated on 2027-04-30; python310 is deprecated, and Python 3.11 to 3.14 are supported (as of 2026-10, per the Cloud Run functions runtime schedule).
 - firebase-functions v7 removed `functions.config()`; deploys that still use Runtime Config fail after 2027-03. Migrate with `firebase functions:config:export` (as of 2026-10, per the firebase-functions releases and the Functions config docs).
-- firebase-admin for Node 14 requires Node 22+ and removes the namespaced API in favor of modular entry points (as of 2026-10, per the Admin release notes).
+- `firebase-admin` 14 (the Admin SDK for Node.js) requires Node 22+ and removes the namespaced API in favor of modular entry points (as of 2026-10, per the Admin release notes).
 - Cloud Storage for Firebase needs the Blaze plan for every bucket from 2026-02-03; new default buckets are named `<project-id>.firebasestorage.app` (as of 2026-10, per the Storage changes FAQ).
 - FCM is moving from registration tokens to Firebase Installation IDs; both work for now, and Admin for Node deprecates `TokenMessage` for `FidMessage` (as of 2026-10, per the FCM token docs and the Admin release notes).
 - FCM device group messaging stops working after 2027-09-29 (as of 2026-10, per the device groups migration page).
