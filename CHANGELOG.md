@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+- `release-cut`: the tag command passes `--cleanup=verbatim`, because `git tag -F` by default deletes lines starting with `#`, so release notes lost their Markdown headings in the tag message. (patch)
+
 ## [0.5.0] - 2026-10-30
 
 ### Added
