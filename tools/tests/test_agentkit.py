@@ -226,10 +226,37 @@ class InstallTests(unittest.TestCase):
         refused = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), "--ref", "main", cwd=self.project)
         self.assertEqual(refused.returncode, 1)
         self.assertIn("--ref applies to a git URL", refused.stdout)
+        # An install from before «Line Endings» has no .gitattributes section; update adds it.
+        (self.project / ".gitattributes").unlink()
         result = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), cwd=self.project)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("kit updated", result.stdout)
+        self.assertIn("added an agentkit section to .gitattributes", result.stdout)
+        self.assertIn(".ai/** text=auto eol=lf\n", (self.project / ".gitattributes").read_text(encoding="utf-8"))
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+
+    def test_converting_checkout_does_not_list_agent_files_as_modified(self) -> None:
+        def git(*args: str) -> str:
+            return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.com",
+                                   "-c", "commit.gpgsign=false", *args],
+                                  cwd=self.project, capture_output=True, text=True, check=True).stdout
+
+        git("config", "core.autocrlf", "true")
+        self.install()
+        git("add", "-A")
+        git("commit", "-qm", "install")
+        # A fresh clone: tracked files come back through the checkout's line-ending conversion.
+        for relpath in git("ls-files", "-z").split("\0"):
+            if relpath:
+                (self.project / relpath).unlink()
+        git("checkout", "--", ".")
+        for _ in range(2):
+            result = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), cwd=self.project)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(git("status", "--porcelain"), "")
+        attributes = (self.project / ".gitattributes").read_text(encoding="utf-8")
+        self.assertEqual(attributes.count("# agentkit:"), 1)
+        self.assertIn(".ai/** text=auto eol=lf\n", attributes)
 
     def test_project_rules_commands_and_extends(self) -> None:
         self.install()
