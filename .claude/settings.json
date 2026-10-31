@@ -12,9 +12,9 @@
   },
   "permissions": {
     "ask": [
-      "Edit(**/CLAUDE.md)",
-      "Edit(**/.claude.md)",
-      "Edit(**/.claude.local.md)",
+      "Edit(/**/CLAUDE.md)",
+      "Edit(/**/.claude.md)",
+      "Edit(/**/.claude.local.md)",
       "Edit(~/.claude/CLAUDE.md)"
     ]
   }
