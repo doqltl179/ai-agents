@@ -2,5 +2,7 @@
 .ai/tasks/
 # One worktree per work unit (policy.worktree_root).
 .worktrees/
+# Personal notes the claude-md-management plugin writes; never shared.
+.claude.local.md
 __pycache__/
 *.pyc
