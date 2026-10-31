@@ -9,5 +9,13 @@
   },
   "enabledPlugins": {
     "claude-md-management@claude-plugins-official": true
+  },
+  "permissions": {
+    "ask": [
+      "Edit(**/CLAUDE.md)",
+      "Edit(**/.claude.md)",
+      "Edit(**/.claude.local.md)",
+      "Edit(~/.claude/CLAUDE.md)"
+    ]
   }
 }
