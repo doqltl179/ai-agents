@@ -10,6 +10,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 ### Changed
 - `verification.md`: a change that must hold an escape sequence as literal text, such as a Unicode escape in a string literal, JSON, a regular expression, or a doc example, is verified by the bytes that landed, not by what was typed. The path from an agent to its tools may decode typed escape text into the character itself, in file edits and shell commands alike, search needles included, so a plain text search can pass while the file holds the character. (minor)
 
+### Fixed
+- `git-branch-start`: the check that the worktree root is ignored runs `git check-ignore <worktree_root>/` with a trailing slash. Without it, the directory-only pattern that `install` writes to `.gitignore`, such as `.worktrees/`, does not match before the first worktree creates the folder, so the check reported an ignored root as not ignored. (patch)
+
 ## [0.6.0] - 2026-10-31
 
 ### Added
