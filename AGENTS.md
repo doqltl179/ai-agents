@@ -67,7 +67,7 @@ Each line's full rule lives on the linked page.
 | `commands.test` | `python -m unittest discover -s tools/tests -v` |
 | `commands.lint` | `python tools/agentkit.py check` |
 
-Not available (report the gap, do not guess): `install`, `format`, `typecheck`, `e2e`, `run`, `worktree_setup`
+Not available (report the gap, do not guess): `install`, `format`, `typecheck`, `e2e`, `run`, `worktree_setup`, `worktree_teardown`
 
 ### Parameters
 
