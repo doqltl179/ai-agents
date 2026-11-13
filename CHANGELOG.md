@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Added
+- Profile key `commands.worktree_teardown`: `git-worktree-cleanup` runs it inside a worktree right before `git worktree remove`, to undo what `commands.worktree_setup` made that blocks removal, such as links or junctions. On Windows, junctions left in a worktree stopped `git worktree remove` with `Directory not empty` after Git had already unregistered the worktree, so its folder stayed behind. The key is empty by default and cleanup is unchanged without it; projects whose `worktree_setup` makes links or junctions may set it. (minor)
+
 ## [0.6.0] - 2026-10-31
 
 ### Added
