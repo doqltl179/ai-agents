@@ -12,6 +12,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ### Fixed
 - `git-branch-start`: the check that the worktree root is ignored runs `git check-ignore <worktree_root>/` with a trailing slash. Without it, the directory-only pattern that `install` writes to `.gitignore`, such as `.worktrees/`, does not match before the first worktree creates the folder, so the check reported an ignored root as not ignored. (patch)
+- `git-branch-start`: the worktree root is confirmed ignored before `git worktree add`, so a root that is not ignored stops the step with nothing created. Before, the check came after the worktree and its task branch were made, and stopping left them behind. (patch)
 
 ## [0.6.0] - 2026-10-31
 
