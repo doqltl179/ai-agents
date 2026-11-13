@@ -7,6 +7,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 ### Added
 - Profile key `commands.worktree_teardown`: `git-worktree-cleanup` runs it inside a worktree right before `git worktree remove`, to undo what `commands.worktree_setup` made that blocks removal, such as links or junctions. On Windows, junctions left in a worktree stopped `git worktree remove` with `Directory not empty` after Git had already unregistered the worktree, so its folder stayed behind. The key is empty by default and cleanup is unchanged without it; projects whose `worktree_setup` makes links or junctions may set it. (minor)
 
+### Changed
+- `verification.md`: a change that must hold an escape sequence as literal text, such as a Unicode escape in a string literal, JSON, a regular expression, or a doc example, is verified by the bytes that landed, not by what was typed. The path from an agent to its tools may decode typed escape text into the character itself, in file edits and shell commands alike, search needles included, so a plain text search can pass while the file holds the character. (minor)
+
 ## [0.6.0] - 2026-10-31
 
 ### Added
