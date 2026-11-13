@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed
+- `verification.md`: a change that must hold an escape sequence as literal text, such as a Unicode escape in a string literal, JSON, a regular expression, or a doc example, is verified by the bytes that landed, not by what was typed. The path from an agent to its tools may decode typed escape text into the character itself, in file edits and shell commands alike, search needles included, so a plain text search can pass while the file holds the character. (minor)
+
 ## [0.6.0] - 2026-10-31
 
 ### Added
