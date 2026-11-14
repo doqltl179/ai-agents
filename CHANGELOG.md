@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+- `release-cut`: the previous release tag is read from the release branch and narrowed to the tag pattern of the repository or package: `git describe --tags --abbrev=0 --match '<glob>' origin/<release_branch>`. The old `git describe --tags --abbrev=0` described the checked-out commit. On the integration branch, where the main checkout stays, it could fail when the release branch differs, because the promotion commit that carries the tag is not on the integration branch, or return an older tag that an earlier merge of the release branch back into the integration branch had brought in; with `release.packages` it could return another package's tag. (patch)
+
 ## [0.7.2] - 2026-11-14
 
 ### Fixed
