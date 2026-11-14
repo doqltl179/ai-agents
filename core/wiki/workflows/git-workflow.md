@@ -89,6 +89,7 @@ With head-branch deletion on («Repository Settings» in [issues-and-prs.md](iss
 
 - the pull request is merged and `git log origin/<integration_branch>..<branch>` is empty,
 - the worktree has no uncommitted or untracked changes,
+- no other worktree lies inside the worktree,
 - no open pull request is stacked on the branch,
 - this task created the worktree and branch.
 
