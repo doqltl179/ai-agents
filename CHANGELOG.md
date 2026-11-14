@@ -9,7 +9,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ### Migration
 1. If `.ai/project/` holds guidance that gives units running at the same time a worktree while `policy.worktrees = false`, such as following the worktree steps of `git-branch-start` in place of its in-place step, delete only that guidance and keep the other project facts in the same file: «Worktrees» in `.ai/kit/core/wiki/workflows/git-workflow.md` now owns that rule.
-2. If `policy.worktrees = false` in `.ai/project/profile.toml`, units run at the same time, and a fresh worktree lacks something they need, set `commands.worktree_setup` there to recreate what a fresh worktree lacks, and `commands.worktree_teardown` when that setup makes links or junctions, per «Worktrees» in `.ai/kit/core/wiki/workflows/git-workflow.md`.
+2. If `policy.worktrees = false` in `.ai/project/profile.toml`, units run at the same time, and a fresh worktree lacks something they need, set `commands.worktree_setup` there to recreate it, and `commands.worktree_teardown` when that setup makes links or junctions, per «Worktrees» in `.ai/kit/core/wiki/workflows/git-workflow.md`.
 
 ## [0.7.3] - 2026-11-14
 
