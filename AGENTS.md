@@ -79,6 +79,7 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `policy.issue_first` | true |
 | `policy.worktrees` | true |
 | `policy.worktree_root` | .worktrees |
+| `policy.work_root` | — |
 | `policy.max_parallel_units` | 0 |
 | `policy.branch_pattern` | <type>/<scope>-<summary> |
 | `policy.commit_convention` | conventional |
