@@ -4,6 +4,8 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-14
+
 ### Changed
 - `git-branch-start`, «Worktrees» in `git-workflow.md`, «Scaling The Order» in `request-lifecycle.md`, and the `policy.worktrees` comment in the profile template: with `policy.worktrees = false`, a unit that runs at the same time as another unit still gets its own worktree under `policy.worktree_root`, through the target-path check, the check that the root is ignored, and `commands.worktree_setup`. Only a unit that runs alone cuts its task branch in the main checkout, and no other unit starts until that unit is cleaned up; `git-branch-start` stops before cutting a branch in place while a worktree under `policy.worktree_root` exists. Before, the policy alone chose the workspace, so a unit that ran at the same time as another also cut its branch in the main checkout and shared that working tree with it, which «Ordering Rules» in `concurrency.md` rules out, and skipped the checks that guard worktree creation. The main checkout stays on the integration branch while units run in worktrees, because `git-worktree-cleanup` switches it there after each merge: `git-branch-start` now stops before creating a worktree when the main checkout is on another branch, and «Stop Conditions» in `git-workflow.md` stops before project files are edited in the main checkout while another unit runs. (minor)
 
