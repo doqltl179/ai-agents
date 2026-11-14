@@ -85,7 +85,7 @@ Always cut from the freshly fetched remote integration branch, never from whatev
 
 ## Cleanup
 
-With head-branch deletion on («Repository Settings» in [issues-and-prs.md](issues-and-prs.md)), the platform deletes the remote task branch at merge. After a unit's pull request merged, the `git-worktree-cleanup` skill removes its worktree (with `policy.worktrees = false`, only the task branch) and updates the main checkout, so the next unit starts from the latest integration branch. This needs no further confirmation when every condition holds; otherwise stop and ask:
+With head-branch deletion on («Repository Settings» in [issues-and-prs.md](issues-and-prs.md)), the platform deletes the remote task branch at merge. After a unit's pull request merged, the `git-worktree-cleanup` skill removes its worktree (for a unit without a worktree, only the task branch) and updates the main checkout, so the next unit starts from the latest integration branch. This needs no further confirmation when every condition holds; otherwise stop and ask:
 
 - the pull request is merged and `git log origin/<integration_branch>..<branch>` is empty,
 - the worktree has no uncommitted or untracked changes,
