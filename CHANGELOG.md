@@ -4,6 +4,8 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-15
+
 ### Added
 - `policy.work_root` accepts `env:NAME` for a work-folder root that differs per machine: the root is the value of the environment variable `NAME` on the machine running the agents, which must be an absolute path or start with `~`. «Work Folders» in `git-workflow.md` treats an unset or empty variable as an empty root, and the agent then proposes in its report that the user set that variable on the machine, instead of a change to the key; `git-worktree-cleanup` reads the same root before it builds `<work_root>/<project.name>/<unit>`, and the profile template comment names the form. Before, the key held one value for every machine, read only from the committed profile, so a project whose machines needed different roots, such as a short path at a drive root that another machine lacks, left the key empty and had every unit ask for a root and propose setting the key. Absolute, `~`, and empty values behave as before. (minor)
 
