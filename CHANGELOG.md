@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+- `git-worktree-cleanup`: whether a unit has a worktree to check, tear down, and remove is decided by `git worktree list` showing its task branch checked out in a linked worktree, not by `policy.worktrees`. Parallel units and agent hosts create worktrees even while the policy is off; for such a unit the skill checked the main checkout for unsaved changes instead of the worktree, skipped `commands.worktree_teardown` and `git worktree remove`, and then failed to delete the branch, still checked out in the worktree. (patch)
+
 ## [0.7.0] - 2026-11-14
 
 ### Added
