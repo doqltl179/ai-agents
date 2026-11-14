@@ -55,7 +55,7 @@ Each line's full rule lives on the linked page.
 ## This Project
 
 - Project: **agentkit** — Portable, single-source-of-truth agent documentation kit (rules, roles, skills, stack packs, and a renderer) installed into other projects.
-- Kit: version 0.8.0, this repository is the kit itself; kit root is the repository root. CLI: `python tools/agentkit.py <sync|check|freshness|new|update>`
+- Kit: version 0.9.0, this repository is the kit itself; kit root is the repository root. CLI: `python tools/agentkit.py <sync|check|freshness|new|update>`
 - Overlay: `.ai/project/` · Owners and skills: `.ai/generated/catalog.md` · Project wiki: `.ai/project/wiki/README.md` · Lessons: `.ai/project/lessons.md`
 - Human-facing language: `ko`
 
@@ -79,6 +79,7 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `policy.issue_first` | true |
 | `policy.worktrees` | true |
 | `policy.worktree_root` | .worktrees |
+| `policy.work_root` | — |
 | `policy.max_parallel_units` | 0 |
 | `policy.branch_pattern` | <type>/<scope>-<summary> |
 | `policy.commit_convention` | conventional |
