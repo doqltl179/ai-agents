@@ -36,4 +36,4 @@ description: "Clean up after a unit's pull request merged: confirm the merge, co
 10. Confirm with `git worktree list` and `git branch -a --list "*<branch>*"`.
 
 ## Output
-- The removed worktree path, deleted work folders, and deleted branches, or the condition that stopped the cleanup.
+- The removed worktree path, deleted work folders, the folders reported instead of deleted (step 9), and deleted branches, or the condition that stopped the cleanup.
