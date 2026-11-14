@@ -4,6 +4,11 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-11-14
+
+### Fixed
+- The `.ai/project/lessons.md` template and «Lessons» in `project-overlay.md` now point to «Promotion» in `memory-policy.md` for when a lesson is promoted and deleted. Both had joined proposing a lesson upstream and deleting it into one sentence ending "then delete it here", which read as deleting the lesson as soon as it was proposed, while «Promotion» keeps it locally until a kit release contains it. `update` does not rewrite an existing `.ai/project/lessons.md`, so a project created from the old template keeps the old header. (patch)
+
 ## [0.7.1] - 2026-11-14
 
 ### Changed
