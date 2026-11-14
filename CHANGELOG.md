@@ -4,6 +4,8 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-11-14
+
 ### Changed
 - Stack pack `shell`: PowerShell's `$LASTEXITCODE` keeps its previous value when a command cannot start, such as a POSIX-only `VAR=value cmd`, or is a cmdlet, so a failure can read as `0` and a success as an earlier non-zero code. For a command that may not start or may be a cmdlet, the pack says to read `$?` in the next statement and names what `$?` misses: a non-terminating failure inside a function or inside a script that ends without `exit`, and, in Windows PowerShell 5.1, a failure inside `(...)`, `$(...)`, or `@(...)`. `git-worktree-cleanup` links this pitfall instead of stating it. (patch)
 
