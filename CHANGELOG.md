@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed
+- Stack pack `shell`: PowerShell's `$LASTEXITCODE` keeps its previous value when a command cannot start, such as a POSIX-only `VAR=value cmd`, or is a cmdlet, so a failure can read as `0` and a success as an earlier non-zero code. For a command that may not start or may be a cmdlet, the pack says to read `$?` in the next statement and names what `$?` misses: a non-terminating failure inside a function or inside a script that ends without `exit`, and, in Windows PowerShell 5.1, a failure inside `(...)`, `$(...)`, or `@(...)`. `git-worktree-cleanup` links this pitfall instead of stating it. (patch)
+
 ### Fixed
 - `git-worktree-cleanup`: whether a unit has a worktree to check, tear down, and remove is decided by `git worktree list` showing its task branch checked out in a linked worktree, not by `policy.worktrees`. Parallel units and agent hosts create worktrees even while the policy is off; for such a unit the skill checked the main checkout for unsaved changes instead of the worktree, skipped `commands.worktree_teardown` and `git worktree remove`, and then failed to delete the branch, still checked out in the worktree. (patch)
 - `git-worktree-cleanup`: the PowerShell form of the `commands.worktree_teardown` step checks `$?` and throws on failure instead of checking `$LASTEXITCODE`, which keeps its previous value when the command cannot start, such as a POSIX-only `VAR=value cmd`, or is a cmdlet. A teardown that never ran or failed as a cmdlet could pass as a success, and the cleanup went on to `git worktree remove` with the links or junctions still in place. (patch)
