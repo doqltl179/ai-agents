@@ -57,7 +57,7 @@ git worktree add --no-track -b <branch> <worktree_root>/<branch-with-slashes-as-
 - A fresh worktree holds only tracked files. It lacks dependency folders, build outputs, engine import caches, local configuration, and untracked links or junctions. `commands.worktree_setup` recreates what the project needs and runs right after the worktree is created. `commands.worktree_teardown` undoes what would block removal; the `git-worktree-cleanup` skill runs it inside the worktree before `git worktree remove`.
 - Before relying on worktrees, weigh the setup cost per worktree: disk (`agentkit.py capacity` shows free disk) and first-setup time, such as a full engine re-import. When it outweighs the isolation, set `policy.worktrees = false`: a unit that runs alone then works in the main checkout.
 
-When `policy.worktrees` is off and no other unit will run before this one is cleaned up, cut the task branch in the current checkout: `git switch -c <branch> --no-track origin/<integration_branch>`. While a unit works in the main checkout, start no other unit until `git-worktree-cleanup` has run for it after its pull request merged; if another unit must start sooner, stop and ask the user.
+When `policy.worktrees` is off and no other unit is open or will start before this one is cleaned up, cut the task branch in the current checkout: `git switch -c <branch> --no-track origin/<integration_branch>`. While a unit works in the main checkout, start no other unit until `git-worktree-cleanup` has run for it after its pull request merged; if another unit must start sooner, stop and ask the user.
 
 ## Task Branch
 
