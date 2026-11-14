@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+- `git-worktree-cleanup`: the removal step runs `git -c core.longpaths=true worktree remove <worktree>`, and the unsaved-changes check runs `git -c core.longpaths=true -C <worktree> status --short`. Git for Windows reaches a path longer than 260 characters only when `core.longpaths` is on for the command that touches it, taken from the checkout the command runs in or from `-c`, so a setting in the removed worktree's own configuration does not reach a removal run from the main checkout. Before, removing a worktree that held such a path, a deep worktree an agent host made or an ignored dependency folder or engine cache inside it, failed with `Filename too long` after Git had already unregistered the worktree, and left its folder where `git worktree list` no longer finds it. When the worktree had no such setting of its own either, the status check listed those files as deleted and stopped the cleanup, and `git worktree remove` refused with a message that suggests `--force`. Git on other platforms has no such setting and ignores the key. (patch)
+
 ## [0.10.0] - 2026-11-15
 
 ### Added
