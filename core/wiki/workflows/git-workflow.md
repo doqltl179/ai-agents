@@ -6,7 +6,7 @@ reviewed: 2026-10-09
 
 # Git Workflow
 
-Branch names and switches come from the profile: `policy.integration_branch`, `policy.release_branch`, `policy.protected_branches`, `policy.worktrees`, `policy.worktree_root`, `policy.branch_pattern`, `policy.commit_convention`, `policy.commit_language`.
+Branch names and switches come from the profile: `policy.integration_branch`, `policy.release_branch`, `policy.protected_branches`, `policy.worktrees`, `policy.worktree_root`, `policy.work_root`, `policy.branch_pattern`, `policy.commit_convention`, `policy.commit_language`.
 
 ## When
 
@@ -59,6 +59,16 @@ git worktree add --no-track -b <branch> <worktree_root>/<branch-with-slashes-as-
 
 When `policy.worktrees` is off and no other unit is open or will start before this one is cleaned up, cut the task branch in the current checkout: `git switch -c <branch> --no-track origin/<integration_branch>`. While a unit works in the main checkout, start no other unit until `git-worktree-cleanup` has run for it after its pull request merged; if another unit must start sooner, stop and ask the user.
 
+## Work Folders
+
+A work folder holds what a unit makes for its own run and throws away afterward: an engine mirror or cache, a disposable copy of the project, a tool's output or logs. The project's usual ignored build outputs and caches, and single temporary files such as a commit message, are not work folders.
+
+- Keep it in a Git-ignored folder inside the unit's worktree when the work can run there: removing the worktree removes it.
+- Otherwise put it at `<policy.work_root>/<project.name>/<unit>/`: when it must lie outside the checkout, for example because of a path-length limit or because a tool must not see the repository, and when the unit has no worktree. `<unit>` is the unit's task branch with slashes as dashes. A project whose stack limits path length may give `<unit>` a shorter form in its overlay. Work with no task branch, such as judging an idea, uses a short kebab-case name of the task and deletes its folder before its report.
+- Never make a work folder directly in a shared location, such as a drive root, the home folder, or the system temp folder. When `policy.work_root` or `project.name` is empty, ask the user for the missing value before making one, and record it in the profile so later units do not ask again.
+- Each unit uses its own `<unit>` folder; units never share one.
+- Why: the path is the only record of which unit owns the folder. Without it, neither cleanup nor the user can tell what may be deleted, and the folders pile up.
+
 ## Task Branch
 
 Always cut from the freshly fetched remote integration branch, never from whatever is checked out: a branch cut from an already-merged branch starts beside other work and conflicts late. To build on an unmerged unit, stack the new branch on that unit's branch and state the merge order in both pull requests.
@@ -85,7 +95,7 @@ Always cut from the freshly fetched remote integration branch, never from whatev
 
 ## Cleanup
 
-With head-branch deletion on («Repository Settings» in [issues-and-prs.md](issues-and-prs.md)), the platform deletes the remote task branch at merge. After a unit's pull request merged, the `git-worktree-cleanup` skill removes its worktree (for a unit without a worktree, only the task branch) and updates the main checkout, so the next unit starts from the latest integration branch. This needs no further confirmation when every condition holds; otherwise stop and ask:
+With head-branch deletion on («Repository Settings» in [issues-and-prs.md](issues-and-prs.md)), the platform deletes the remote task branch at merge. After a unit's pull request merged, the `git-worktree-cleanup` skill removes its worktree (for a unit without a worktree, only the task branch) and its work folder under `policy.work_root` («Work Folders»), and updates the main checkout, so the next unit starts from the latest integration branch. It deletes nothing else outside the worktree; it reports any other folder the unit made outside its checkout instead. This needs no further confirmation when every condition holds; otherwise stop and ask:
 
 - the pull request is merged and `git log origin/<integration_branch>..<branch>` is empty,
 - the worktree has no uncommitted or untracked changes,
