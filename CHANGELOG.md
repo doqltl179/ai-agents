@@ -6,6 +6,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ### Fixed
 - `git-worktree-cleanup`: whether a unit has a worktree to check, tear down, and remove is decided by `git worktree list` showing its task branch checked out in a linked worktree, not by `policy.worktrees`. Parallel units and agent hosts create worktrees even while the policy is off; for such a unit the skill checked the main checkout for unsaved changes instead of the worktree, skipped `commands.worktree_teardown` and `git worktree remove`, and then failed to delete the branch, still checked out in the worktree. (patch)
+- `git-worktree-cleanup`: the PowerShell form of the `commands.worktree_teardown` step checks `$?` and throws on failure instead of checking `$LASTEXITCODE`, which keeps its previous value when the command cannot start, such as a POSIX-only `VAR=value cmd`, or is a cmdlet. A teardown that never ran or failed as a cmdlet could pass as a success, and the cleanup went on to `git worktree remove` with the links or junctions still in place. (patch)
 
 ## [0.7.0] - 2026-11-14
 
