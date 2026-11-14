@@ -55,9 +55,9 @@ git worktree add --no-track -b <branch> <worktree_root>/<branch-with-slashes-as-
 - Never share a worktree between units or reuse one for a different branch.
 - `--no-track` keeps the task branch from tracking the integration branch; the first `git push -u origin <branch>` sets its own upstream.
 - A fresh worktree holds only tracked files. It lacks dependency folders, build outputs, engine import caches, local configuration, and untracked links or junctions. `commands.worktree_setup` recreates what the project needs and runs right after the worktree is created. `commands.worktree_teardown` undoes what would block removal; the `git-worktree-cleanup` skill runs it inside the worktree before `git worktree remove`.
-- Before relying on worktrees, weigh the setup cost per worktree: disk (`agentkit.py capacity` shows free disk) and first-setup time, such as a full engine re-import. When it outweighs the isolation, set `policy.worktrees = false`: units then run one at a time in the main checkout.
+- Before relying on worktrees, weigh the setup cost per worktree: disk (`agentkit.py capacity` shows free disk) and first-setup time, such as a full engine re-import. When it outweighs the isolation, set `policy.worktrees = false`: units that run one at a time then run in the main checkout. Units that run at the same time still get one worktree each, whatever `policy.worktrees` says, and the main checkout stays on the integration branch while they run, as above: two units never share a working tree.
 
-When `policy.worktrees` is off, cut the task branch in the current checkout: `git switch -c <branch> --no-track origin/<integration_branch>`.
+When `policy.worktrees` is off and no other unit runs at the same time, cut the task branch in the current checkout: `git switch -c <branch> --no-track origin/<integration_branch>`.
 
 ## Task Branch
 
@@ -97,7 +97,7 @@ With head-branch deletion on («Repository Settings» in [issues-and-prs.md](iss
 
 Stop and report instead of improvising when:
 
-- a commit is about to land on a protected branch, or project files are about to be edited in the main checkout while `policy.worktrees` is on,
+- a commit is about to land on a protected branch, or project files are about to be edited in the main checkout while `policy.worktrees` is on or another unit runs at the same time,
 - the branch or worktree does not match the unit or the naming pattern,
 - local and remote state diverged, or a push would overwrite remote work,
 - files cannot be attributed to the current concern,

@@ -4,6 +4,12 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed
+- `git-branch-start`, «Worktrees» in `git-workflow.md`, and «Scaling The Order» in `request-lifecycle.md`: with `policy.worktrees = false`, a unit that runs at the same time as another unit still gets its own worktree under `policy.worktree_root`, through the target-path check, the check that the root is ignored, and `commands.worktree_setup`, and the main checkout stays on the integration branch while such units run. Only a unit that runs alone cuts its task branch in the main checkout. Before, the policy alone chose the workspace, so a unit that ran at the same time as another also cut its branch in the main checkout and shared that working tree with it, which «Ordering Rules» in `concurrency.md` rules out, and skipped the checks that guard worktree creation. «Stop Conditions» in `git-workflow.md` now also stops before project files are edited in the main checkout while another unit runs. (minor)
+
+### Migration
+1. If `.ai/project/` holds guidance that gives units running at the same time a worktree while `policy.worktrees = false`, such as following the worktree steps of `git-branch-start` in place of its in-place step, delete it: «Worktrees» in `.ai/kit/core/wiki/workflows/git-workflow.md` now owns that rule.
+
 ## [0.7.3] - 2026-11-14
 
 ### Fixed
