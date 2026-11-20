@@ -75,6 +75,19 @@ class ReleaseTagTests(unittest.TestCase):
         self.assertIsNone(agentkit.latest_release_tag(""))
 
 
+class OverlayTemplateTests(unittest.TestCase):
+    def test_glossary_only_when_named(self) -> None:
+        def names(glossary: str) -> list[str]:
+            return [agentkit.rel(p, agentkit.CORE / "templates" / "project")
+                    for p in agentkit.overlay_templates({"docs": {"glossary": glossary}})]
+
+        self.assertNotIn("wiki/glossary.md", names(""))
+        self.assertNotIn("wiki/glossary.md", names("docs/glossary.md"))
+        self.assertIn("wiki/glossary.md", names(".ai/project/wiki/glossary.md"))
+        self.assertIn("wiki/README.md", names(""))
+        self.assertNotIn("profile.toml", names(".ai/project/wiki/glossary.md"))
+
+
 class CapacityTests(unittest.TestCase):
     CLASSES = [("light", 0.5, 1.0), ("standard", 2.0, 0.5), ("heavy", 6.0, 0.25)]
 
@@ -138,9 +151,9 @@ class InstallTests(unittest.TestCase):
                         ".codex/agents/web-frontend-engineer.toml", ".claude/skills/git-commit/SKILL.md",
                         ".agents/skills/git-commit/SKILL.md", ".claude/rules/stack-typescript.md",
                         ".github/instructions/stack-react.instructions.md", ".cursor/rules/stack-react.mdc",
-                        ".ai/generated/catalog.md", ".ai/project/profile.toml", ".ai/project/wiki/glossary.md",
-                        ".claude/skills/translate/SKILL.md"]:
+                        ".ai/generated/catalog.md", ".ai/project/profile.toml", ".claude/skills/translate/SKILL.md"]:
             self.assertTrue((self.project / relpath).exists(), relpath)
+        self.assertFalse((self.project / ".ai" / "project" / "wiki" / "glossary.md").exists(), "docs.glossary is empty")
         self.assertFalse((self.project / ".github" / "skills").exists(), "copilot skills duplicate claude/codex skills")
         agent = (self.project / ".claude" / "agents" / "web-frontend-engineer.md").read_text(encoding="utf-8")
         self.assertIn("`web/**`", agent)
@@ -150,7 +163,7 @@ class InstallTests(unittest.TestCase):
         gitignore = (self.project / ".gitignore").read_text(encoding="utf-8")
         self.assertIn(".ai/tasks/", gitignore)
         self.assertIn(".worktrees/", gitignore)
-        self.assertIn("| `policy.integration_branch` | develop |",
+        self.assertIn("| `policy.integration_branch` | main |",
                       (self.project / "AGENTS.md").read_text(encoding="utf-8"))
         import tomllib
         tomllib.loads((self.project / ".codex" / "agents" / "code-reviewer.toml").read_text(encoding="utf-8"))
@@ -178,12 +191,14 @@ class InstallTests(unittest.TestCase):
     def test_minimal_profile_takes_defaults(self) -> None:
         self.install()
         profile = (self.project / ".ai" / "project" / "profile.toml").read_text(encoding="utf-8")
-        self.assertNotIn("[policy]", profile)
+        self.assertNotIn("\n[policy]", profile)
         self.assertIn('name = "demo"', profile)
-        self.assertIn("| `policy.integration_branch` | develop |", (self.project / "AGENTS.md").read_text(encoding="utf-8"))
+        self.assertIn("| `policy.integration_branch` | main |", (self.project / "AGENTS.md").read_text(encoding="utf-8"))
         path = self.project / ".ai" / "project" / "profile.toml"
-        path.write_text(profile + '\n[policy]\nintegration_branch = "develop"\n', encoding="utf-8")
-        self.assertIn("profile repeats 1 kit default(s): policy.integration_branch", run(self.script, "check", cwd=self.project).stdout)
+        # Policy, hosting, and docs values stay explicit even when they equal a default; other sections stay minimal.
+        path.write_text(profile + '\n[policy]\nintegration_branch = "main"\n\n[hosting]\nplatform = "none"\n'
+                        '\n[docs]\nchangelog = ""\n\n[skills]\nenabled = ["*"]\n', encoding="utf-8")
+        self.assertIn("profile repeats 1 kit default(s): skills.enabled;", run(self.script, "check", cwd=self.project).stdout)
 
     def test_unmanaged_instruction_files_are_reported(self) -> None:
         self.install()

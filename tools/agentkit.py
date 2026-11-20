@@ -89,6 +89,10 @@ EDITORCONFIG_SECTION = (
 GITATTRIBUTES_COMMENT = ("agentkit: kit, overlay, and generated agent files check out with LF, the line endings "
                          "agentkit.py writes, so a converting checkout does not list them as modified")
 GITATTRIBUTES_LINES = [f"{glob} text=auto eol=lf" for glob in AGENT_FILE_GLOBS]
+# Profile sections that hold the project's own policy: values there stay explicit even when they equal a kit default,
+# so a changed default never changes a project's branches, hosting, or doc paths («Profile» in project-overlay.md).
+EXPLICIT_SECTIONS = ("policy", "hosting", "docs")
+GLOSSARY_TEMPLATE = "wiki/glossary.md"   # Under core/templates/project/; install copies it only when docs.glossary names it.
 READ_ONLY_TOOLS = {
     "claude": "Edit, Write, NotebookEdit",
     "copilot": '["read", "search", "execute", "web"]',
@@ -1087,7 +1091,7 @@ def check_profile_defaults(kit: Kit, report: Report) -> None:
     redundant = []
     for section, values in kit.user_profile.items():
         defaults = kit.default_profile.get(section)
-        if section == "project" or not isinstance(values, dict) or not isinstance(defaults, dict):
+        if section in ("project", *EXPLICIT_SECTIONS) or not isinstance(values, dict) or not isinstance(defaults, dict):
             continue
         redundant += [f"{section}.{key}" for key, value in values.items() if key in defaults and defaults[key] == value]
     if redundant:
@@ -1380,6 +1384,15 @@ def ensure_gitattributes(project: Path) -> None:
         print("added an agentkit section to .gitattributes: agent files check out with LF line endings")
 
 
+def overlay_templates(profile: dict) -> list[Path]:
+    """Templates install copies into a new overlay: all but the profile, and the glossary only when docs.glossary names its copy."""
+    root = CORE / "templates" / "project"
+    glossary = str(profile.get("docs", {}).get("glossary", ""))
+    return [path for path in sorted(root.rglob("*"))
+            if path.is_file() and path.name != "profile.toml"
+            and (rel(path, root) != GLOSSARY_TEMPLATE or glossary == f".ai/project/{GLOSSARY_TEMPLATE}")]
+
+
 def cmd_install(target_arg: str, tools: str | None) -> int:
     target = Path(target_arg).resolve()
     if not target.is_dir():
@@ -1394,12 +1407,9 @@ def cmd_install(target_arg: str, tools: str | None) -> int:
         return 1
     copy_payload(KIT_ROOT, kit_dest)
     overlay = target / ".ai" / "project"
-    if not overlay.exists():
-        for path in sorted((CORE / "templates" / "project").rglob("*")):
-            if path.is_file() and path.name != "profile.toml":
-                dest = overlay / rel(path, CORE / "templates" / "project")
-                write_text(dest, fill(read_text(path), {"date": today().isoformat()}))
-        # The profile starts minimal: keys that only repeat a kit default would pin today's default forever.
+    fresh = not overlay.exists()
+    if fresh:
+        # The profile starts minimal; kit-install then writes the policy, hosting, and docs values the user confirms.
         tools_block = ""
         if tools:
             listed = ", ".join(json.dumps(t.strip()) for t in tools.split(",") if t.strip())
@@ -1407,6 +1417,11 @@ def cmd_install(target_arg: str, tools: str | None) -> int:
         write_text(overlay / "profile.toml", fill(read_text(CORE / "templates" / "profile.starter.toml"),
                                                   {"name": json.dumps(target.name), "tools": tools_block}))
     profile = Kit(target).profile
+    if fresh:
+        for path in overlay_templates(profile):
+            dest = overlay / rel(path, CORE / "templates" / "project")
+            write_text(dest, fill(read_text(path), {"date": today().isoformat()}))
+    # The worktree root is ignored even with policy.worktrees off: units running at the same time still use it.
     worktree_root = str(profile.get("policy", {}).get("worktree_root", "")).strip("/")
     wanted = [".ai/tasks/"] + ([f"{worktree_root}/"] if worktree_root else [])
     append_missing_lines(target / ".gitignore", "agentkit working records and per-unit worktrees", wanted)
