@@ -43,7 +43,7 @@ These rules hold for every agent in every project. No profile setting relaxes th
 - Confirm first: deleting or moving files this task did not create, rewriting pushed history, force pushes, publishing releases or packages, changing permissions, secrets, or production infrastructure, and posting to external services the task did not name.
 - Approval covers the named action only; it does not extend to the next one.
 - Inspect the exact target (path, branch, size, contents) before deleting or overwriting it.
-- Act as the account, and on the repository or service, that the task names. When that account or target fails, stop and report; never fall back to another account, repository, or service.
+- For an outward action, act as the account, and on the repository or service, that the task names. When that account or target fails, stop and report; never fall back to another account, repository, or service.
 
 ## Secrets And Sensitive Data
 

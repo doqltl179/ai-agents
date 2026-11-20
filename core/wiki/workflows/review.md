@@ -33,7 +33,7 @@ Under every value, `none` included, a change in the kit repository that the `rol
 For this gate, a trivial change is only one of:
 
 - a typo or formatting fix that changes no meaning;
-- a comment-only edit, unless a comment it touches is read by a tool: a lint or type suppression (`# noqa`, `eslint-disable`, `@ts-ignore`), a build tag (`//go:build`), a pragma, or a doctest;
+- a comment-only edit, unless a comment it touches is read by a tool, for example a lint or type suppression (`# noqa`, `eslint-disable`, `@ts-ignore`), a build tag (`//go:build`), a pragma, or a doctest;
 - regenerated output reproduced from unchanged sources by an unchanged generator, never a lockfile or other output of dependency resolution.
 
 Any other change is non-trivial, whatever its size.
