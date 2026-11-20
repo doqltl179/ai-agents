@@ -40,7 +40,7 @@ Example: unit `q` edits document `a`; units `w` and `e` read `a`. Run `q` first;
 
 - A change to what agents themselves follow (kit pages, profile, glossary, shared specs) is read by every later unit: schedule it first and alone.
 - Also order units that would race on one external resource (the same database, port, emulator, or deployment target), even when their files differ.
-- Each unit already has its own issue, worktree, and task branch ([request-lifecycle.md](request-lifecycle.md)), so independent units never share a working tree.
+- Units that run at the same time each get their own worktree and task branch per «Worktrees» in [git-workflow.md](../workflows/git-workflow.md), so independent units never share a working tree.
 
 ## Capacity
 

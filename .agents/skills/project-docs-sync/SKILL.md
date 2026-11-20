@@ -26,7 +26,7 @@ description: "Update the human-facing docs that own a changed behavior or API in
 3. Check each fact you will write against this change's evidence (a test or a quoted command result). Write only verified behavior; list anything unverified as a gap in the report instead.
 4. Update the owning sections: prose, examples, option tables, and migration notes for breaking changes. Generated reference docs change per «Generated Code» in [code-changes.md](core/wiki/workflows/code-changes.md); when no command regenerates them, report the gap.
 5. Run each changed example or command snippet that can run locally, or mark it unverified in the report.
-6. Add the Unreleased entry to `docs.changelog` per «Changelog» in documentation.md. Skip this step when `docs.changelog` is empty.
+6. When the project keeps a changelog per «Changelog» in documentation.md, add the Unreleased entry to it; otherwise skip this step.
 7. Stage the doc edits with the code change per «Staging» in [git-workflow.md](core/wiki/workflows/git-workflow.md) and commit with `git-commit`.
 
 ## Output

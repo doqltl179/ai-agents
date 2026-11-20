@@ -24,10 +24,10 @@ Branch names and switches come from the profile: `policy.integration_branch`, `p
 |---|---|
 | `policy.integration_branch` (default `develop`) | Development. Every unit starts from it and its pull request targets it |
 | `policy.release_branch` (default `main`) | Release. Changes arrive only through a promotion pull request from the integration branch ([release.md](release.md)) |
-| Task branch | One per unit, named by `policy.branch_pattern`, living in its own worktree |
+| Task branch | One per unit, named by `policy.branch_pattern`, in the unit's own worktree when «Worktrees» gives it one |
 
 - Never commit directly to a branch in `policy.protected_branches`; changes arrive through merged pull requests.
-- With Conventional Commits, the branch `<type>` is one of `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, and the scope matches the commit scope.
+- With `policy.commit_convention = "conventional"`, the branch `<type>` is one of `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, and the scope matches the commit scope. Otherwise `<type>` is a short lowercase word for the kind of change, such as `fix` or `feat`.
 - One task branch carries one bounded unit and, when `policy.issue_first` is on, one issue.
 
 ## Preflight
@@ -80,7 +80,7 @@ Always cut from the freshly fetched remote integration branch, never from whatev
 ## Commit Convention
 
 - With `policy.commit_convention = "conventional"`: `<type>(<scope>): <subject>`, type and scope in English and lowercase, subject and body in `policy.commit_language` (or `project.language` when empty).
-- One concern per commit. The body explains why, not what. Reference the unit's issue (`Refs #<n>`).
+- One concern per commit. The body explains why, not what. When the unit has an issue (step 4 of «Required Order» in [request-lifecycle.md](../operating-model/request-lifecycle.md)), reference it (`Refs #<n>`).
 - Never rewrite commits that are already pushed.
 
 ## Staging

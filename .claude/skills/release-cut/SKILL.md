@@ -23,10 +23,10 @@ description: "Cut a requested release: confirm scope, choose the version, finali
 ## Steps
 1. Confirm the release was requested and its scope fits «Release Unit» in [release.md](core/wiki/workflows/release.md). If either is unclear, stop and ask.
 2. Run «Preflight» in [git-workflow.md](core/wiki/workflows/git-workflow.md) in the main checkout. Confirm the integration head is verified per «Promotion» in release.md: the latest CI run passed (`gh run list --branch <integration_branch> --limit 1`), or with `hosting.ci = false` the full verification passed on a fresh checkout of it.
-3. Fix the scope per «Release Scope» in release.md. For each package in scope, or the repository as a whole, list what ships (`git log --oneline <previous-tag>..origin/<integration_branch> -- <package path>`) and its Unreleased changelog section; flag commits with no entry.
+3. Fix the scope per «Release Scope» in release.md. For each package in scope, or the repository as a whole, list what ships (`git log --oneline <previous-tag>..origin/<integration_branch> -- <package path>`). When it keeps a changelog per «Changelog» in [documentation.md](core/wiki/workflows/documentation.md), also list its Unreleased section and flag commits with no entry.
 4. Choose each version in scope per «Version Numbers» in release.md.
 5. Start the version unit per «Release Unit» in release.md: its issue (when `policy.issue_first` is on), then its worktree with `git-branch-start`.
-6. Finalize `docs.changelog` per «Changelog Finalization» in release.md.
+6. Finalize each changelog in scope per «Changelog Finalization» in release.md; skip this step when the project keeps none.
 7. Bump every version declaration: find them with `rg -n "<current-version>"`, and change only the project's own version fields, never dependency versions.
 8. Run `commands.build` and `commands.test` and record results per «Evidence Format» in [verification.md](core/wiki/workflows/verification.md). Stop on any failure.
 9. Commit with `git-commit`, open the pull request into the integration branch with `github-pr-create`, and wait until it merges. When `policy.release_branch` differs, open the promotion pull request per «Promotion» in release.md (`gh pr create --base <release_branch> --head <integration_branch>`) and wait until it merges.
