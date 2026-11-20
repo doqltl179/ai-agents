@@ -58,10 +58,13 @@ worktree_teardown = ""          # Run inside a worktree right before it is remov
 
 [docs]
 readme = "README.md"
-changelog = ""                  # Changelog file, for example "CHANGELOG.md"; empty when the project keeps no changelog.
+changelog = ""                  # Changelog file, for example "CHANGELOG.md"; empty: the project keeps no changelog and the kit
+                                # never creates one (documentation.md «Changelog»).
 source_locale = ""              # Source language every translation starts from (BCP 47); empty means project.language.
-specs_dir = ""                  # Directory of requirements specifications, for example "docs/specs"; empty when the project keeps none.
-adr_dir = ""                    # Directory of architecture decision records, for example "docs/adr"; empty when the project keeps none.
+specs_dir = ""                  # Directory of requirements specifications, for example "docs/specs"; empty: no spec files,
+                                # the content goes where documentation.md «Specifications» puts it.
+adr_dir = ""                    # Directory of architecture decision records, for example "docs/adr"; empty: no record files,
+                                # the content goes where documentation.md «Decision Records» puts it.
 glossary = ""                   # Project terms file: canonical term, meaning, synonyms to avoid, rendering per locale, and per-locale style notes;
                                 # empty when the project keeps none. Start one from .ai/kit/core/templates/project/wiki/glossary.md,
                                 # for example at ".ai/project/wiki/glossary.md".
