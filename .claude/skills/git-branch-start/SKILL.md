@@ -11,7 +11,7 @@ description: "Start a unit's workspace: run the preflight in the main checkout, 
 - Its issue exists, or `policy.issue_first` is off or `hosting.platform` is `none`.
 
 ## Do Not Use When
-- The unit has no issue yet and `policy.issue_first` is on → `github-issue-create` first.
+- The unit has no issue yet, `policy.issue_first` is on, and `hosting.platform` is not `"none"` → `github-issue-create` first.
 - A worktree for this unit already exists → work inside it; record work with `git-commit`.
 - The task branch exists but lags its base → `git-conflict-resolve`.
 - The work is not yet one bounded unit → `work-decompose` first.
