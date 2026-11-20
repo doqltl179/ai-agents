@@ -36,6 +36,7 @@ Releases of the project the kit is installed in. Kit releases follow [versioning
 - A promotion pull request carries everything merged into the integration branch since the last promotion; its body lists the included pull requests and, when the project keeps a changelog, the changelog section.
 - Open one only on request, when no unit planned for the release is still open and the integration branch's head is verified: CI passed on it, or with `hosting.ci = false` the full verification (every relevant `commands.*`) passed on a fresh checkout of it, with the results in the promotion pull request body.
 - Promotion without a version bump is allowed when the project does not version its releases; the rest of this page still applies.
+- With `hosting.platform = "none"` there is no promotion pull request: under the same conditions, after the user approves the merge and the push, merge the integration branch into the release branch with `git merge --no-ff` in the main checkout, put in the merge commit body what the promotion pull request body would hold, and push the release branch when it has a remote.
 
 ## Version Numbers
 

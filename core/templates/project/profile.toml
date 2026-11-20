@@ -21,9 +21,10 @@ keep_unmanaged = []             # Glob patterns of instruction files outside the
 
 [policy]
 integration_branch = "main"     # Development branch: every work unit starts from it and its pull request targets it.
-release_branch = "main"         # Release branch: when it differs from integration_branch, changes arrive only through a promotion pull request from it.
+release_branch = "main"         # Release branch: when it differs from integration_branch, changes arrive only through a promotion from it (release.md «Promotion»).
                                 # The same branch for both is trunk-based flow; a separate integration branch (for example "develop") adds promotion.
-protected_branches = ["main"]   # Never commit directly; changes arrive only through merged pull requests.
+protected_branches = ["main"]   # Never commit directly; changes arrive only through merged pull requests, or with hosting.platform "none"
+                                # through an approved merge (request-lifecycle.md «Scaling The Order»).
 issue_first = false             # true: every work unit starts from an issue on the hosting platform (ignored when hosting.platform is "none").
 worktrees = false               # true: every work unit runs in its own Git worktree cut from integration_branch. false: only a unit that runs alone works in the main checkout.
 worktree_root = ".worktrees"    # Directory holding the worktrees, relative to the project root; kept out of Git by .gitignore.
