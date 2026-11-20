@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed
+- «Where Knowledge Goes» in `memory-policy.md` orders the stores for a rule learned from a correction: first a code change that makes the mistake impossible, such as an API reachable only through one wrapper that uses it correctly, then an automated check, and a written store only for a rule whose application needs judgment a tool cannot make; step 3 of «Promotion» also moves a lesson into a code change. `kit-lesson-capture` follows that order with a code-change destination, bounds each lesson by the condition its evidence supports, and, when it adds an automated check to code that already breaks the rule, exempts the existing places by a baseline or exclusion list so the check fails only on new ones, registers their cleanup as its own unit, and has the check's failure message name the fix. Before, every store in the table was equally eligible, so a mistake a tool could catch could be kept only as a lesson that works when the next agent reads it, one correction could turn into a rule for every case, and a new check had no rule for places that already broke it or for what its message says. (minor)
+
 ## [1.0.1] - 2026-11-20
 
 ### Fixed

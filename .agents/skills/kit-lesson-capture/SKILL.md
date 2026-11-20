@@ -19,14 +19,15 @@ description: "Capture a lesson after a user correction or a durable discovery: s
 - What would have prevented the mistake or saved the effort.
 
 ## Steps
-1. State the lesson as one testable imperative with a one-line reason, per [agent-first-writing.md](core/wiki/principles/agent-first-writing.md).
+1. State the lesson as one testable imperative with a one-line reason, per [agent-first-writing.md](core/wiki/principles/agent-first-writing.md). Bound it by the condition the evidence supports: one corrected case yields a rule for the cases that share its cause, not a ban that reaches every case.
 2. Screen it against «Do Not Persist» in [memory-policy.md](core/wiki/operating-model/memory-policy.md). On a match, stop and report that it was not persisted and why.
 3. `rg` the key terms over `.ai/project/lessons.md`, `.ai/project/wiki/`, and the core wiki. When an owner already states it, write nothing new: report the owner, and run `kit-page-update` if its wording caused the miss. When an older lesson conflicts, replace that lesson. When the lesson departs from a core policy, continue with step 4, which stores it as a replacement per «Layers and Precedence» in [ssot.md](core/wiki/principles/ssot.md); when it contradicts a core invariant, stop and report the conflict.
-4. Choose the store per «Where Knowledge Goes» in memory-policy.md, then act on it:
+4. Choose the store per «Where Knowledge Goes» in memory-policy.md, in the order it gives for a rule learned from a correction, then act on it:
+   - a code change that makes the mistake impossible: make it when the current unit owns that code, otherwise register it with `github-issue-create` for the code's owner; then skip to step 7;
    - `.ai/project/lessons.md`: continue with step 5;
    - a page in `.ai/project/wiki/`: run `kit-page-add` or `kit-page-update`, then skip to step 7;
    - `.ai/project/profile.toml`: set the key or add the `project.guardrails` entry, run `agentkit.py sync`, then skip to step 7;
-   - an automated check: add it when the current unit owns that configuration, otherwise register it with `github-issue-create` for the configuration's owner; then skip to step 7;
+   - an automated check: add it when the current unit owns that configuration, otherwise register it with `github-issue-create` for the configuration's owner. When the code already breaks the rule, exempt those existing places by a baseline or exclusion list so the check fails only on new ones, and register their cleanup as its own unit per «Leftovers Become Issues» in [issues-and-prs.md](core/wiki/workflows/issues-and-prs.md): the pattern stops spreading now without the cleanup blocking this unit. Make the check's failure message name the fix the rule wants, so the next agent repairs the cause instead of suppressing the check. Then skip to step 7;
    - the kit: propose it with `kit-upstream-propose`, or name it as a candidate, per step 4 of «Promotion»; keep the lesson locally either way, continuing with step 5;
    - any other store in that table: write it there, then skip to step 7.
 5. Append the lesson to `.ai/project/lessons.md` in the format given by «Lessons» in [project-overlay.md](core/wiki/integration/project-overlay.md).
