@@ -21,9 +21,9 @@ A portable **documentation kit for AI coding agents**, installed into many proje
 
 Every request runs the same order ([request-lifecycle.md](core/wiki/operating-model/request-lifecycle.md)):
 
-**confirm the request → open an issue → create a worktree from `develop` → do the work → open a pull request into `develop` → register issues found along the way**.
+**confirm the request → open an issue → create a worktree from the integration branch → do the work → open a pull request into the integration branch → register issues found along the way**.
 
-`develop` is the development branch and `main` the release branch; `develop → main` happens only through a promotion pull request when a release is requested. Projects change these defaults in their profile. When a request splits into several units, agents first check what each unit reads and writes, so no unit works from a document another unit is still changing, and check the machine's capacity (`agentkit.py capacity`) before running units at the same time.
+The profile decides which of these steps run and on which branches. Issues and worktrees can each be turned off, and a project without a hosting platform works without issues and pull requests. The integration and release branches are the ones the profile names, both `main` unless it sets them; with a separate release branch, changes reach it only through a promotion pull request when a release is requested. When a request splits into several units, agents first check what each unit reads and writes, so no unit works from a document another unit is still changing, and check the machine's capacity (`agentkit.py capacity`) before running units at the same time.
 
 ## Using agentkit In Your Project
 
@@ -65,9 +65,9 @@ The install never overwrites hand-written `AGENTS.md`, `CLAUDE.md`, or tool file
 
 Open the project with your AI tool and ask it to **run the `kit-install` skill**. The skill:
 
-- reads the codebase and fills in `.ai/project/profile.toml`: the language for reports, build and test commands, the active roles, and the paths and stack packs each role owns;
+- reads the codebase and fills in `.ai/project/profile.toml`: the language for reports, build and test commands, the active roles, the paths and stack packs each role owns, the branches, hosting, and docs it finds, and the issue and worktree policy you choose;
 - moves the content of hand-written instruction files into `.ai/project/`, deleting those files only after you confirm;
-- proposes the repository settings the workflow expects (a `develop` branch, `develop` as the default branch, automatic deletion of merged branches) and applies them only after you confirm.
+- proposes the repository settings the chosen workflow needs (a separate integration branch as the default branch when you choose one, automatic deletion of merged branches) and applies them only after you confirm.
 
 To configure by hand, edit `.ai/project/profile.toml` (every key is documented in `.ai/kit/core/templates/project/profile.toml`) and run `python .ai/kit/tools/agentkit.py sync`.
 

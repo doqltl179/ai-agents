@@ -1,5 +1,6 @@
 # Profile of the agentkit repository itself: the kit is maintained with the kit.
-# Only keys that differ from the kit defaults; schema and defaults: core/templates/project/profile.toml.
+# The [policy], [hosting], and [docs] values this repository chose are set explicitly; elsewhere only keys that differ from the kit defaults.
+# Schema and defaults: core/templates/project/profile.toml.
 
 [project]
 name = "agentkit"
@@ -8,6 +9,12 @@ language = "ko"
 guardrails = ["When README.md changes, update docs/ko/README.md and docs/ja/README.md in the same unit; localization-specialist translates each directly from README.md."]
 
 [policy]
+integration_branch = "develop"
+release_branch = "main"
+protected_branches = ["develop", "main"]
+issue_first = true
+worktrees = true
+commit_convention = "conventional"
 commit_language = "ko"
 
 [commands]
@@ -16,9 +23,12 @@ lint = "python tools/agentkit.py check"
 build = "python tools/agentkit.py sync"
 
 [hosting]
+platform = "github"
+ci = true
 area_labels = ["core", "tooling", "repo"]
 
 [docs]
+changelog = "CHANGELOG.md"
 source_locale = "en"
 specs_dir = ".ai/project/wiki"
 adr_dir = ".ai/project/wiki/decisions"

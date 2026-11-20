@@ -45,7 +45,7 @@ Before translating, classify the text and keep the profile with the work:
 | Voice | A brand voice, a narrator, a character's speech habits |
 | Constraints | UI length limits, line breaks, character limits, legal fixed wording |
 
-Carry the profile into each target with that language's own means, not the source's surface form: for example Korean speech levels (합니다체, 해요체, 반말), Japanese politeness (です・ます体, だ・である体, 敬語), or the formality of `vous`/`tu` and `Sie`/`du`. Record the choice per text type and locale in the glossary's style notes so later translations keep it.
+Carry the profile into each target with that language's own means, not the source's surface form: for example Korean speech levels (합니다체, 해요체, 반말), Japanese politeness (です・ます体, だ・である体, 敬語), or the formality of `vous`/`tu` and `Sie`/`du`. When `docs.glossary` is set, record the choice per text type and locale in its style notes so later translations keep it.
 
 ## Localization Over Literal Translation
 
@@ -59,6 +59,7 @@ Carry the profile into each target with that language's own means, not the sourc
 
 - The glossary at `docs.glossary` is the single owner of how terms are rendered: one row per concept, one approved rendering per locale. Choosing and defining the source term itself follows [domain-terms.md](domain-terms.md).
 - Look up every name and domain term before translating it. A term with no entry gets one before its first use, with the decision: translate, transliterate, or keep as-is.
+- With `docs.glossary` empty, add no entries: make the same decision and use the same rendering for each term throughout the change.
 - Within one language, the same concept always uses the same approved rendering, in every file and every later translation. Example: once the item `냥이` is rendered `Nyani` in English, it is never `Kitty` elsewhere.
 - Changing an approved rendering is one change: update the glossary entry and every occurrence in that language in the same unit.
 - Names with product, legal, or brand impact (product names, character names, marketed features) need the user's approval before first use.

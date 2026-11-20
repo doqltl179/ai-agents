@@ -22,8 +22,8 @@ Branch names and switches come from the profile: `policy.integration_branch`, `p
 
 | Branch | Role |
 |---|---|
-| `policy.integration_branch` (default `develop`) | Development. Every unit starts from it and its pull request targets it |
-| `policy.release_branch` (default `main`) | Release. Changes arrive only through a promotion pull request from the integration branch ([release.md](release.md)) |
+| `policy.integration_branch` | Development. Every unit starts from it and its pull request targets it |
+| `policy.release_branch` | Release. When it differs from the integration branch, changes arrive only through a promotion pull request from it ([release.md](release.md)) |
 | Task branch | One per unit, named by `policy.branch_pattern`, in the unit's own worktree when «Worktrees» gives it one |
 
 - Never commit directly to a branch in `policy.protected_branches`; changes arrive through merged pull requests.
@@ -43,7 +43,7 @@ Stop if the checkout is not the one expected for this step, holds changes you ca
 
 ## Worktrees
 
-Every unit runs in its own worktree when `policy.worktrees` is on (the default), and also when it runs at the same time as another unit, whatever the policy says:
+Every unit runs in its own worktree when `policy.worktrees` is on, and also when it runs at the same time as another unit, whatever the policy says:
 
 ```bash
 git fetch origin

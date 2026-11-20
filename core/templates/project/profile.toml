@@ -17,25 +17,26 @@ targets = ["claude", "codex", "copilot"]
 keep_unmanaged = []             # Glob patterns of instruction files outside the kit kept on purpose; `check` stops reporting them.
 
 [policy]
-integration_branch = "develop"  # Development branch: every work unit starts from it and its pull request targets it.
-release_branch = "main"         # Release branch: changes arrive only through a promotion pull request from integration_branch.
-                                # Set both to the same branch for trunk-based flow.
-protected_branches = ["develop", "main"]      # Never commit directly; changes arrive only through merged pull requests.
-issue_first = true              # Every work unit starts from an issue on the hosting platform (ignored when hosting.platform is "none").
-worktrees = true                # Every work unit runs in its own Git worktree cut from integration_branch. false: only a unit that runs alone works in the main checkout.
+integration_branch = "main"     # Development branch: every work unit starts from it and its pull request targets it.
+release_branch = "main"         # Release branch: when it differs from integration_branch, changes arrive only through a promotion pull request from it.
+                                # The same branch for both is trunk-based flow; a separate integration branch (for example "develop") adds promotion.
+protected_branches = ["main"]   # Never commit directly; changes arrive only through merged pull requests.
+issue_first = false             # true: every work unit starts from an issue on the hosting platform (ignored when hosting.platform is "none").
+worktrees = false               # true: every work unit runs in its own Git worktree cut from integration_branch. false: only a unit that runs alone works in the main checkout.
 worktree_root = ".worktrees"    # Directory holding the worktrees, relative to the project root; kept out of Git by .gitignore.
 work_root = ""                  # Root of the folders units make outside their checkout, as <work_root>/<project.name>/<unit> (git-workflow.md «Work Folders»):
                                 # an absolute path, or one starting with "~" for the user's home, that every machine running the agents can use,
                                 # or "env:NAME" when the root differs per machine: each machine sets the environment variable NAME to an absolute or "~" path on that machine.
                                 # Empty, or NAME unset or empty: ask the user before making one.
 max_parallel_units = 0          # Upper limit on units running at the same time on this machine; 0 means decide with `agentkit.py capacity`.
-branch_pattern = "<type>/<scope>-<summary>"   # Task branch name; <type> is a Conventional Commits type.
-commit_convention = "conventional"            # "conventional" (Conventional Commits) or "none".
+branch_pattern = "<type>/<scope>-<summary>"   # Task branch name; <type> is a Conventional Commits type when commit_convention is "conventional",
+                                              # otherwise a short kind word such as "fix" or "feat" (git-workflow.md «Branch Policy»).
+commit_convention = "none"      # "conventional" (Conventional Commits) or "none".
 commit_language = ""            # Language of commit subjects and bodies; empty means project.language.
 
 [hosting]
-platform = "github"             # "github" or "none". Selects whether github-* skills apply.
-ci = true                       # The project runs CI on pull requests. false: verification evidence comes only from
+platform = "none"               # "github" or "none". Selects whether github-category skills apply; "none" also stops rendering them.
+ci = false                      # true: the project runs CI on pull requests. false: verification evidence comes only from
                                 # local runs recorded in pull requests (see release.md «Promotion»).
 area_labels = []                # One label per project area, matching commit scopes, for example ["web", "api"].
 
@@ -57,11 +58,16 @@ worktree_teardown = ""          # Run inside a worktree right before it is remov
 
 [docs]
 readme = "README.md"
-changelog = "CHANGELOG.md"      # Empty when the project keeps no changelog.
+changelog = ""                  # Changelog file, for example "CHANGELOG.md"; empty: the project keeps no changelog and the kit
+                                # never creates one (documentation.md «Changelog»).
 source_locale = ""              # Source language every translation starts from (BCP 47); empty means project.language.
-specs_dir = "docs/specs"        # Requirements specifications.
-adr_dir = "docs/adr"            # Architecture decision records.
-glossary = ".ai/project/wiki/glossary.md"   # Project terms: canonical term, meaning, synonyms to avoid, rendering per locale, and per-locale style notes.
+specs_dir = ""                  # Directory of requirements specifications, for example "docs/specs"; empty: no spec files,
+                                # the content goes where documentation.md «Specifications» puts it.
+adr_dir = ""                    # Directory of architecture decision records, for example "docs/adr"; empty: no record files,
+                                # the content goes where documentation.md «Decision Records» puts it.
+glossary = ""                   # Project terms file: canonical term, meaning, synonyms to avoid, rendering per locale, and per-locale style notes;
+                                # empty when the project keeps none. Start one from .ai/kit/core/templates/project/wiki/glossary.md,
+                                # for example at ".ai/project/wiki/glossary.md".
 
 [release]
 tag_pattern = "v{version}"      # Tag of a release that covers the whole repository.
