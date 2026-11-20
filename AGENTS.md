@@ -90,8 +90,6 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `docs.readme` | README.md |
 | `docs.changelog` | CHANGELOG.md |
 | `docs.source_locale` | en |
-| `docs.locales` | ko, ja |
-| `docs.locale_pattern` | docs/{locale}/{name} |
 | `docs.specs_dir` | .ai/project/wiki |
 | `docs.adr_dir` | .ai/project/wiki/decisions |
 | `docs.glossary` | docs/glossary.md |

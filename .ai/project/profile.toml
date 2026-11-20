@@ -19,7 +19,6 @@ area_labels = ["core", "tooling", "repo"]
 
 [docs]
 source_locale = "en"
-locales = ["ko", "ja"]
 specs_dir = ".ai/project/wiki"
 adr_dir = ".ai/project/wiki/decisions"
 glossary = "docs/glossary.md"

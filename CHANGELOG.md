@@ -4,6 +4,13 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Removed
+- Profile keys `docs.locales`, `docs.locale_pattern`, and `[docs.locale_paths]`, and «Localized Variants» in `documentation.md`: the kit no longer decides which docs have translated copies, where they live, or when they follow the source. Each project decides that and records it in its overlay. `project-docs-sync` drops its step that updated every localized copy in the same unit, `release-cut` no longer finalizes localized copies, `translate` writes each target at the path the request or the overlay names, `technical-writer` no longer hands every source-doc change to `localization-specialist` in the same unit, `code-review-perform` no longer checks localized copies under doc sync, and `check` no longer validates locale path placeholders. Before, a project that listed languages in `docs.locales` had every unit that changed a doc rewrite each translated copy, and each review fix and release repeat that work, with no way to choose another time. `translation.md`, the `translate` skill, `localization-specialist`, `docs.source_locale`, and the glossary still apply whenever a project asks for a translation. (major)
+
+### Migration
+1. If `.ai/project/profile.toml` sets `docs.locales`, `docs.locale_pattern`, or `[docs.locale_paths]` and the project still wants translated docs, write that rule in `.ai/project/`: which docs, which languages, each copy's path, and when a copy follows its source (for example in the same unit, or once per release). Put it where agents read it, such as `notes` in `[bindings.<doc owner>]` and `[bindings.localization-specialist]`, `project.guardrails`, or a page in `.ai/project/wiki/`.
+2. Delete those keys from `.ai/project/profile.toml`, or keep them only when the rule from step 1 names them; the kit no longer reads them, and `AGENTS.md` lists any `[docs]` key the profile sets.
+
 ## [0.10.1] - 2026-11-15
 
 ### Fixed

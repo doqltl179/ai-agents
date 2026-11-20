@@ -1,5 +1,5 @@
 ---
-owns: "Human-facing project documentation policy: doc sync with behavior, changelog entries, which localized variants exist and when they are updated, specifications, and decision records"
+owns: "Human-facing project documentation policy: doc sync with behavior, changelog entries, specifications, and decision records"
 volatility: evolving
 reviewed: 2026-10-09
 ---
@@ -29,12 +29,6 @@ Human-facing project docs: README, guides, API references, changelog, specificat
 - When `docs.changelog` is set, every user-visible change adds an entry under `## [Unreleased]` in the same unit, in the project's existing changelog format (Keep a Changelog style when none exists).
 - Breaking changes say how to migrate.
 - `release-manager` moves Unreleased entries into a version at release time; nobody else edits released sections.
-
-## Localized Variants
-
-- For every locale in `docs.locales`, the localized copy is updated in the same unit as its primary doc, translated per [translation.md](translation.md). Its path is `docs.locale_paths[<primary file>]` when set, otherwise `docs.locale_pattern`; both take the placeholders `{locale}`, `{name}`, `{stem}`, and `{ext}`. `localization-specialist` owns the localized copies.
-- Keep the same section structure across languages, not only the same text, and link each copy to the others.
-- When a translation cannot be produced, mark the localized section as outdated with a visible note rather than leaving it silently stale.
 
 ## Specifications
 

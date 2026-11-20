@@ -293,25 +293,24 @@ class InstallTests(unittest.TestCase):
                            encoding="utf-8")
         self.assertIn("unknown command 'nope'", run(self.script, "check", cwd=self.project).stdout)
 
-    def test_locale_paths_and_release_packages(self) -> None:
+    def test_project_keys_and_release_packages(self) -> None:
         self.install()
         profile = self.project / ".ai" / "project" / "profile.toml"
         base = profile.read_text(encoding="utf-8")
+        self.assertNotIn("locale_pattern", base)
         profile.write_text(base + '\n[hosting]\nci = false\n'
-                           '\n[docs.locale_paths]\n"README.md" = "docs/readme/README.{locale}{ext}"\n'
+                           '\n[docs.translations]\n"README.md" = "docs/{lang}/README.md"\n'
                            '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\n'
                            'changelog = "core/CHANGELOG.md"\ntag_pattern = "core/v{version}"\n', encoding="utf-8")
         self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
         agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
         self.assertIn("| `hosting.ci` | false |", agents_md)
-        self.assertIn("| `docs.locale_paths` | README.md → docs/readme/README.{locale}{ext} |", agents_md)
+        self.assertIn("| `docs.translations` | README.md → docs/{lang}/README.md |", agents_md)
         self.assertIn("| `release.packages` | core |", agents_md)
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
-        profile.write_text(base + '\n[docs]\nlocale_pattern = "docs/{lang}/{name}"\n'
-                           '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\ntag_pattern = "core"\n',
+        profile.write_text(base + '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\ntag_pattern = "core"\n',
                            encoding="utf-8")
         out = run(self.script, "check", cwd=self.project).stdout
-        self.assertIn("unknown placeholder(s) lang", out)
         self.assertIn("tag_pattern must contain {version}", out)
 
     def test_unfilled_scaffolds_are_reported(self) -> None:

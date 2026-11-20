@@ -47,7 +47,7 @@ Every core skill, by category.
 | Skill | Use when |
 |---|---|
 | [`adr-write`](adr-write/SKILL.md) | Write an architecture decision record in docs.adr_dir with context, options considered and their trade-offs, the decision, consequences, and status, numbered sequentially; supersede an accepted record instead of editing it. Use when a decision about structure, technology, interfaces, data, or cross-cutting conventions is made or proposed, is costly to reverse, was chosen among real alternatives, and would surprise a later reader without its reason. |
-| [`project-docs-sync`](project-docs-sync/SKILL.md) | Update the human-facing docs that own a changed behavior or API in the same change: README sections, guides, API reference, the changelog Unreleased entry, and localized variants listed in docs.locales, documenting only verified behavior. Use when a unit changes user-visible behavior, a public interface, configuration, or setup steps. |
+| [`project-docs-sync`](project-docs-sync/SKILL.md) | Update the human-facing docs that own a changed behavior or API in the same change: README sections, guides, API reference, and the changelog Unreleased entry, documenting only verified behavior. Use when a unit changes user-visible behavior, a public interface, configuration, or setup steps. |
 
 ## localization
 
