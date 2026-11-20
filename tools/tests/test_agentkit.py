@@ -193,6 +193,14 @@ class KitRepositoryTests(unittest.TestCase):
         self.assertIn("core/wiki/README.md: missing frontmatter 'reviewed'", missing)
         self.assertFalse([e for e in missing if e.startswith(".ai/project/")], missing)
 
+    def test_budget_overruns_are_errors_only_in_kit_files(self) -> None:
+        kit = agentkit.Kit(agentkit.KIT_ROOT)
+        kit.budgets = [(agentkit.glob_re(p), p, 1) for p in ("core/START.md", ".ai/project/lessons.md", "AGENTS.md")]
+        report = agentkit.Report()
+        agentkit.check_budgets(kit, report, {"AGENTS.md": "a\nb\n"})
+        self.assertEqual([e.split(":")[0] for e in report.errors], ["core/START.md"])
+        self.assertEqual(sorted(w.split(":")[0] for w in report.warnings), [".ai/project/lessons.md", "AGENTS.md"])
+
     def test_kit_repository_renders_its_own_skills(self) -> None:
         files = agentkit.Renderer(agentkit.Kit(agentkit.KIT_ROOT)).render().files
         self.assertIn(".claude/skills/kit-stack-add/SKILL.md", files)
@@ -362,6 +370,21 @@ class InstallTests(unittest.TestCase):
             self.assertNotIn(name, fresh)
         (overlay / "wiki" / "plain.md").write_text("---\nvolatility: evolving\n---\n\n# Plain\n", encoding="utf-8")
         self.assertIn(".ai/project/wiki/plain.md: missing frontmatter 'owns'", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_project_budget_overruns_are_warnings(self) -> None:
+        self.install()
+        profile = self.project / ".ai" / "project" / "profile.toml"
+        rules = ", ".join(f'"Project rule {i}."' for i in range(60))
+        profile.write_text(profile.read_text(encoding="utf-8").replace('language = "en"', f'language = "en"\nguardrails = [{rules}]'),
+                           encoding="utf-8")
+        page = self.project / ".ai" / "project" / "wiki" / "long.md"
+        page.write_text('---\nowns: "A long page"\n---\n\n# Long\n\n' + "".join(f"Fact {i}.\n\n" for i in range(80)),
+                        encoding="utf-8")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        check = run(self.script, "check", cwd=self.project)
+        self.assertEqual(check.returncode, 0, check.stdout)
+        self.assertRegex(check.stdout, r"warning: AGENTS\.md: \d+ lines exceeds budget 120")
+        self.assertRegex(check.stdout, r"warning: \.ai/project/wiki/long\.md: \d+ lines exceeds budget 150")
 
     def test_drift_and_local_kit_edits_fail_check(self) -> None:
         self.install()

@@ -1046,19 +1046,21 @@ def check_links(kit: Kit, report: Report) -> None:
 
 
 def check_budgets(kit: Kit, report: Report, rendered: dict[str, str | bytes]) -> None:
-    candidates: list[tuple[str, int]] = []
+    # Overruns are errors in kit files and warnings in the overlay and AGENTS.md («Line Budgets» in context-budget.md).
+    candidates: list[tuple[str, int, bool]] = []
     if kit.kit_repo:
-        candidates += [(rel(p, KIT_ROOT), len(read_text(p).split("\n"))) for p in CORE.rglob("*.md") if p.name != "CATALOG.md"]
+        candidates += [(rel(p, KIT_ROOT), len(read_text(p).split("\n")), True)
+                       for p in CORE.rglob("*.md") if p.name != "CATALOG.md"]
     if kit.overlay.exists():
-        candidates += [(rel(p, kit.project), len(read_text(p).split("\n"))) for p in kit.overlay.rglob("*.md")]
+        candidates += [(rel(p, kit.project), len(read_text(p).split("\n")), False) for p in kit.overlay.rglob("*.md")]
     agents_md = rendered.get("AGENTS.md")
     if isinstance(agents_md, str):
-        candidates.append(("AGENTS.md", len(agents_md.split("\n"))))
-    for path, count in candidates:
+        candidates.append(("AGENTS.md", len(agents_md.split("\n")), False))
+    for path, count, strict in candidates:
         for regex, pattern, limit in kit.budgets:
             if regex.match(path):
                 if count > limit:
-                    report.error(f"{path}: {count} lines exceeds budget {limit} ({pattern})")
+                    (report.error if strict else report.warn)(f"{path}: {count} lines exceeds budget {limit} ({pattern})")
                 break
 
 
