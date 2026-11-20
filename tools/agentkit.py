@@ -36,6 +36,7 @@ LINK_RE = re.compile(r"(!?\[[^\]\n]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 REGION_RE = re.compile(r"(<!-- agentkit:begin (?P<name>[\w-]+) -->\n)(?P<body>.*?)(<!-- agentkit:end (?P=name) -->)", re.S)
 CONDITION_RE = re.compile(r"\{\{([a-z][a-z-]*)\|([^|{}\n]*)(?:\|([^|{}\n]*))?\}\}")
 SKILL_SCOPES = ["kit-repo"]  # Values of the optional skill field `scope`; skill-spec.md «Frontmatter» owns their meaning.
+PLATFORMS = ["github", "none"]  # Values of hosting.platform; the profile template's comment on the key owns their meaning.
 
 # Adapter table: the single owner of which files each AI tool reads. Rendered into tool-adapters.md.
 ADAPTERS: dict[str, dict[str, str | None]] = {
@@ -369,10 +370,16 @@ class Kit:
 
     def skill_applies(self, name: str) -> bool:
         """Whether the profile allows the skill at all, whatever [skills] selects."""
+        return self.skill_exclusion(name) is None
+
+    def skill_exclusion(self, name: str) -> str | None:
+        """Why the profile rules the skill out whatever [skills] selects, or None when it does not."""
         meta = self.skills[name].meta
         if meta.get("scope") == "kit-repo" and not self.kit_repo:
-            return False
-        return meta.get("category") != "github" or profile_conditions(self.profile)["platform"]
+            return "its scope is kit-repo, so it is active only in the kit repository"
+        if meta.get("category") == "github" and not profile_conditions(self.profile)["platform"]:
+            return 'its category is github and hosting.platform is "none"'
+        return None
 
     def bindings(self) -> dict[str, dict]:
         return self.profile.get("bindings", {})
@@ -446,6 +453,24 @@ def demote_headings(body: str) -> str:
             fence = not fence
         out.append("#" + line if not fence and re.match(r"^#{1,5} ", line) else line)
     return "\n".join(out)
+
+
+def without_skills(body: str, names: set[str]) -> str:
+    """Drop `names` from the «Skills» bullets of an agent card body; a bullet or section left empty goes too."""
+    match = re.search(r"^## Skills\n(.*?)(?=^## |\Z)", body, re.S | re.M)
+    if not match or not names:
+        return body
+    lines = []
+    for line in match.group(1).split("\n"):
+        if line.startswith("- "):
+            items = [item for item in line[2:].split(", ") if item.strip().strip("`") not in names]
+            if not items:
+                continue
+            line = "- " + ", ".join(items)
+        lines.append(line)
+    if not "".join(lines).strip():
+        return body[:match.start()] + body[match.end():]
+    return body[:match.start(1)] + "\n".join(lines) + body[match.end(1):]
 
 
 def param_text(value: object) -> str:
@@ -593,19 +618,21 @@ class Renderer:
         kit = self.kit
         doc = kit.agents[name]
         parts = []
+        # A card must not point to a skill this project never renders (platform, scope).
+        excluded = {n for n in kit.skills if not kit.skill_applies(n)}
         base_name = doc.meta.get("extends")
         if base_name and base_name in kit.agents:
             base = kit.agents[base_name]
-            title, local = strip_h1(doc.body)
+            title, local = strip_h1(without_skills(doc.body, excluded))
             parts.append(f"# {title or name}\n\n" + rewrite_links(local.strip("\n"), doc.path.parent, self.p))
             parts.append("## Scope\n\n"
                          f"This role narrows `{base_name}`. It owns only what «Owns» above lists; the base role below "
                          "still supplies the boundaries («Does Not Own»), «Domain Checks», and «Skills».")
-            base_title, base_body = strip_h1(base.body)
+            base_title, base_body = strip_h1(without_skills(base.body, excluded))
             parts.append(f"## Base Role: {base_title or base_name}\n\n"
                          + demote_headings(rewrite_links(base_body.strip("\n"), base.path.parent, self.p)))
         else:
-            parts.append(rewrite_links(doc.body.strip("\n"), doc.path.parent, self.p))
+            parts.append(rewrite_links(without_skills(doc.body, excluded).strip("\n"), doc.path.parent, self.p))
         wiki = CORE / "wiki" / "operating-model"
         parts.append("## Protocol\n\n"
                      f"- Act under the role protocol in [delegation.md]({rel(wiki / 'delegation.md', self.p)}) "
@@ -993,8 +1020,20 @@ def validate_profile(kit: Kit, report: Report) -> None:
     for tool in prof.get("tools", {}).get("targets", []):
         if tool not in ADAPTERS:
             report.error(f"profile [tools].targets: unknown tool '{tool}' (supported: {', '.join(ADAPTERS)})")
+    platform = prof.get("hosting", {}).get("platform")
+    if platform not in PLATFORMS:
+        report.error(f"profile hosting.platform: {json.dumps(platform)} is not one of "
+                     f"{', '.join(json.dumps(p) for p in PLATFORMS)}")
     active = kit.active_agents(report)
     kit.active_skills(report)
+    # A skill the project asks for by name, or writes itself, is not dropped silently.
+    for name in sorted({t for t in prof.get("skills", {}).get("enabled", []) if t in kit.skills}
+                       | {n for n, d in kit.skills.items() if d.origin == "project"}):
+        reason = kit.skill_exclusion(name)
+        if reason and kit.skills[name].origin == "project":
+            report.warn(f"{rel(kit.skills[name].path, kit.project)}: not rendered, since {reason}")
+        elif reason:
+            report.warn(f"profile [skills].enabled: '{name}' is not rendered, since {reason}; remove it from the list")
     for agent, binding in kit.bindings().items():
         if agent not in kit.agents:
             report.error(f"profile [bindings.{agent}]: unknown agent")
@@ -1384,10 +1423,14 @@ def cmd_new(kit: Kit, args: argparse.Namespace) -> int:
         dest = base / f"{name}.md"
         text = fill(read_text(templates / "page.md"), values)
         if not args.core and name.startswith("rules/"):
-            text = text.replace("\nreviewed: ", "\napplies_to: []\nreviewed: ", 1)
+            text = text.replace("\n---\n", "\napplies_to: []\n---\n", 1)
     else:
         print(f"error: unknown kind '{kind}'")
         return 1
+    if kind in ("agent", "skill", "page") and not args.core:
+        # Overlay files stay untracked by freshness until their author adds both fields («Metadata» in freshness-policy.md).
+        head, sep, body = text.partition("\n---\n")
+        text = "\n".join(line for line in head.split("\n") if not line.startswith(("volatility:", "reviewed:"))) + sep + body
     if dest.exists():
         print(f"error: {rel(dest, kit.project)} already exists")
         return 1
