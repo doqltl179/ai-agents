@@ -32,9 +32,11 @@ The single owner of how agentkit terms are written in each README language. Sour
 | worktree | A Git worktree for one work unit | 워크트리 | ワークツリー | |
 | issue | A hosting-platform issue | 이슈 | Issue | |
 | pull request | A hosting-platform pull request | PR | プルリクエスト | |
-| promotion | `develop` → `main` pull request at release | 승격(promotion) | 昇格(promotion) | |
+| integration branch | The branch every unit starts from and merges into (`policy.integration_branch`) | 통합 브랜치 | 統合ブランチ | |
+| release branch | The branch releases come from (`policy.release_branch`) | 릴리스 브랜치 | リリースブランチ | |
+| promotion | Pull request from the integration branch into a separate release branch at release | 승격(promotion) | 昇格(promotion) | |
 | translation | Producing text in another language | 번역 | 翻訳 | |
-| work unit | One bounded piece of work with one owner, issue, and worktree | 작업 단위 | 作業単位 | |
+| work unit | One bounded piece of work with one owner, and its own issue and worktree when the profile uses them | 작업 단위 | 作業単位 | |
 | capacity | CPU and memory available for running units at the same time | 가용 자원 | 利用可能なリソース | |
 | install / update | The `install` and `update` commands and what they do | 설치 / 업데이트 | インストール / 更新 | Command names stay in code format |
 | instruction file | A file a tool reads as standing instructions (`AGENTS.md`, `CLAUDE.md`) | 지침 파일 | 指示ファイル | |
