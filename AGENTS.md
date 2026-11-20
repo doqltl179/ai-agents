@@ -61,7 +61,7 @@ Each line's full rule lives on the linked page.
 
 ### Project Rules
 
-A rule here that names a core policy section replaces that section in this project, per «Layers and Precedence» in [ssot.md](core/wiki/principles/ssot.md).
+An entry that starts with `Replaces «<Section>» in <page>.md:` replaces, in this project, the rules of that core section it contradicts, including their summary lines in «Stop First», per «Layers and Precedence» in [ssot.md](core/wiki/principles/ssot.md).
 
 - When README.md changes, update docs/ko/README.md and docs/ja/README.md in the same unit; localization-specialist translates each directly from README.md.
 

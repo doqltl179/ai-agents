@@ -38,7 +38,7 @@ reviewed: 2026-10-09
 - `update` reports each key the profile leaves unset whose default changes, with the line that keeps the previous value; each key the profile sets that the kit no longer reads; and each key that still holds an old default the update changed.
 - Activate only the agents and skills the project needs: every active agent and skill costs context in tools that list them.
 - Bind each active execution agent to the paths it owns, the stack packs it applies, and the named commands that verify its paths with `[bindings.<agent>]`; the binding is rendered into that agent's files.
-- Put the few rules that hold for every task in `project.guardrails`, one line each; they appear in `AGENTS.md` and count against its line budget.
+- Put the few rules that hold for every task in `project.guardrails`, one line each; they appear in `AGENTS.md` and count against its line budget. A replacement of a core policy section is such an entry, per «Layers and Precedence» in [ssot.md](../principles/ssot.md).
 - Leave a command empty when it does not exist; agents then report the gap instead of guessing.
 - After editing, run `agentkit.py sync` and `agentkit.py check`.
 
@@ -56,7 +56,7 @@ reviewed: 2026-10-09
 
 - Record project facts the kit leaves open: architecture overview, domain glossary, module map, local conventions, environments, and the product planning values of «Project Values» in [idea-evaluation.md](../workflows/idea-evaluation.md).
 - Same page shape as core pages ([page-spec.md](../authoring/page-spec.md)); the index region in `wiki/README.md` is generated.
-- Never restate a core rule here; link to it. A page that details a replacement of a core policy («Layers and Precedence» in [ssot.md](../principles/ssot.md)) names the core section it replaces and states only the project's rule.
+- Never restate a core rule here; link to it. A page holds the detail of a replacement only when the replacement's `project.guardrails` entry links it; the page states only the project's rule and replaces nothing by itself.
 
 ## Lessons
 

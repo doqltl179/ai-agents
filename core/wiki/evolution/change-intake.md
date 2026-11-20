@@ -46,7 +46,7 @@ When the hosting platform is unavailable, append the same fields to `.ai/project
 ## Triage
 
 - `kit-librarian` triages: accept, merge into an existing record, defer with a reason, or reject with a reason.
-- Changes to roles, routing, structure, or invariants also need `role-governor`.
+- Whether a change also needs `role-governor`: its row in «Choosing Gates» in [review.md](../workflows/review.md).
 - An accepted record becomes one bounded update unit, or several if it touches unrelated owners.
 
 ## Impact Classes

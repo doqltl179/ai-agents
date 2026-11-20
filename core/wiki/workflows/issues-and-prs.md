@@ -20,7 +20,7 @@ Applies when `hosting.platform` is `github`; the `github-*` skills walk these ru
 
 ## Platform Preflight
 
-Before the first `gh` command of a task, confirm `gh auth status` passes and `gh repo view --json nameWithOwner` names the repository in scope. Stop on either failure; never fall back to another account or repository.
+Before the first `gh` command of a task, confirm `gh auth status` passes and `gh repo view --json nameWithOwner` names the repository in scope. Stop on either failure; «Confirm Before Irreversible Or Outward Actions» in [integrity.md](../principles/integrity.md) rules out falling back to another account or repository.
 
 ## Repository Settings
 

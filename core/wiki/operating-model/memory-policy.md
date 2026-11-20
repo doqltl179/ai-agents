@@ -26,6 +26,7 @@ reviewed: 2026-10-09
 | Idea proposals, defer records, and their reference files | `.ai/tasks/ideas/` in the main checkout, per «Location» in [idea-records.md](../workflows/idea-records.md) | Until the user deletes them |
 | A durable project fact (architecture, domain terms, local convention) | A page in `.ai/project/wiki/` | Until it stops being true |
 | A project parameter (commands, branches, languages, roles) | `.ai/project/profile.toml` | Until changed |
+| A project rule that departs from a core policy | A `project.guardrails` replacement in `.ai/project/profile.toml`, per «Layers and Precedence» in [ssot.md](../principles/ssot.md) | Until changed |
 | A rule a tool can check mechanically (a banned pattern or API, an import shape, a file location, a format) | An automated check in the project's lint, test, or CI configuration | Until the rule changes |
 | A project-specific lesson from a correction | `.ai/project/lessons.md` | Until promoted or obsolete |
 | A lesson or rule that would help every project | `.ai/project/lessons.md`, and the kit via the `kit-upstream-propose` skill when step 4 of «Promotion» allows it | Until a kit release contains it |

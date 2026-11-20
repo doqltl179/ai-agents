@@ -538,8 +538,9 @@ class Renderer:
         guardrails = [g for g in project.get("guardrails", []) if str(g).strip()]
         if guardrails:
             ssot = rel(CORE / "wiki" / "principles" / "ssot.md", self.p)
-            lines += ["### Project Rules", "", "A rule here that names a core policy section replaces that section in this "
-                      f"project, per «Layers and Precedence» in [ssot.md]({ssot}).", "", *[f"- {g}" for g in guardrails], ""]
+            lines += ["### Project Rules", "", "An entry that starts with `Replaces «<Section>» in <page>.md:` replaces, in this "
+                      "project, the rules of that core section it contradicts, including their summary lines in «Stop First», "
+                      f"per «Layers and Precedence» in [ssot.md]({ssot}).", "", *[f"- {g}" for g in guardrails], ""]
         lines += ["### Commands", ""]
         commands = prof.get("commands", {})
         present = {k: v for k, v in commands.items() if v}
