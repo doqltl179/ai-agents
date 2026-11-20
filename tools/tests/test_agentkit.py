@@ -297,7 +297,6 @@ class InstallTests(unittest.TestCase):
         self.install()
         profile = self.project / ".ai" / "project" / "profile.toml"
         base = profile.read_text(encoding="utf-8")
-        self.assertNotIn("locale_pattern", base)
         profile.write_text(base + '\n[hosting]\nci = false\n'
                            '\n[docs.translations]\n"README.md" = "docs/{lang}/README.md"\n'
                            '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\n'
@@ -306,6 +305,7 @@ class InstallTests(unittest.TestCase):
         agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
         self.assertIn("| `hosting.ci` | false |", agents_md)
         self.assertIn("| `docs.translations` | README.md → docs/{lang}/README.md |", agents_md)
+        self.assertNotIn("docs.locale_pattern", agents_md)
         self.assertIn("| `release.packages` | core |", agents_md)
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
         profile.write_text(base + '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\ntag_pattern = "core"\n',

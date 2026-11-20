@@ -59,6 +59,10 @@ Each line's full rule lives on the linked page.
 - Overlay: `.ai/project/` · Owners and skills: `.ai/generated/catalog.md` · Project wiki: `.ai/project/wiki/README.md` · Lessons: `.ai/project/lessons.md`
 - Human-facing language: `ko`
 
+### Project Rules
+
+- When README.md changes, update docs/ko/README.md and docs/ja/README.md in the same unit; localization-specialist translates each directly from README.md.
+
 ### Commands
 
 | Key | Command |

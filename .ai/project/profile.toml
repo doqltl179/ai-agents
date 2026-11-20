@@ -5,6 +5,7 @@
 name = "agentkit"
 summary = "Portable, single-source-of-truth agent documentation kit (rules, roles, skills, stack packs, and a renderer) installed into other projects."
 language = "ko"
+guardrails = ["When README.md changes, update docs/ko/README.md and docs/ja/README.md in the same unit; localization-specialist translates each directly from README.md."]
 
 [policy]
 commit_language = "ko"
@@ -37,7 +38,7 @@ notes = "Edit sources only; run `python tools/agentkit.py sync` and `check` afte
 
 [bindings.technical-writer]
 paths = ["README.md"]
-notes = "README.md is the English source of the localized READMEs; hand every change to localization-specialist in the same unit."
+notes = "README.md is the English source of the READMEs in docs/ko and docs/ja; the translation rule is in project.guardrails."
 
 [bindings.localization-specialist]
 paths = ["docs/**"]

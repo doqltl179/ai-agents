@@ -17,7 +17,7 @@ reviewed: 2026-10-09
 
 ## Inputs
 - The source files or strings and their source language, per «Source Language» in [translation.md](../../wiki/workflows/translation.md).
-- Target locales as BCP 47 tags, and for files each target's path, as the request or the project's overlay names them.
+- Target locales as BCP 47 tags, and for files each target's path, as the request or the project's overlay names them; when neither names them, ask the requester.
 - The glossary at `docs.glossary`, and any style notes it records for this text type.
 
 ## Steps

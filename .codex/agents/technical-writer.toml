@@ -40,5 +40,5 @@ Mission: give human readers accurate, findable documentation that matches the be
 ## Project Binding
 
 - Paths: `README.md`
-- Notes: README.md is the English source of the localized READMEs; hand every change to localization-specialist in the same unit.
+- Notes: README.md is the English source of the READMEs in docs/ko and docs/ja; the translation rule is in project.guardrails.
 '''
