@@ -20,14 +20,26 @@ Lens-specific checklists live in the review skills (`code-review-perform`, `secu
 
 ## Choosing Gates
 
+`policy.review_gate` decides which review-ready changes go through the gates:
+
+| Value | Changes that go through the gates |
+|---|---|
+| `all` | Every review-ready change |
+| `non-trivial` (default) | Every review-ready change except a trivial one |
+| `none` | None; the agents use no review gate, and the project's own review of the pull request is the only review |
+
+For this gate, a trivial change is only one of: a typo or formatting fix that changes no meaning, a comment-only edit, or regenerated output with no source change. Any other change is non-trivial, whatever its size.
+
+A change that goes through the gates gets each gate whose row matches:
+
 | The change… | Gate |
 |---|---|
 | Is review-ready code, configuration, or docs | `code-reviewer` |
 | Touches a trust boundary: authentication, authorization, input parsing, secrets, cryptography, dependencies, data exposure | `security-reviewer` in addition |
 | Changes user-facing UI | `accessibility-reviewer` in addition |
-| Changes roles, routing, or kit structure | `role-governor` in addition |
+| Changes roles, routing, or structure of the kit's core, in the kit repository | `role-governor` in addition |
 
-Trivial changes (typo fixes, comment-only edits) may skip review when the project allows it; say so in the report.
+When a matching gate is skipped, the report names the gate and why: the `policy.review_gate` value, and for a trivial change which kind it is.
 
 ## Review Protocol
 

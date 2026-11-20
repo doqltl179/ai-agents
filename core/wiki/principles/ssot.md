@@ -56,10 +56,12 @@ Why: a duplicated fact drifts, because only one copy gets fixed, and an agent th
 | Rank | Layer | May |
 |---|---|---|
 | 1 | The current user request | Override anything for that request only |
-| 2 | Project overlay `.ai/project/` | Set parameters the core exposes, add project facts, narrow roles with local agents |
+| 2 | Project overlay `.ai/project/` | Set parameters the core exposes, add project facts, narrow roles with local agents, replace a core policy |
 | 3 | Core kit | Define invariants and defaults |
 
-- The overlay never contradicts a core invariant. When a project needs a core rule changed, propose it upstream with the `kit-upstream-propose` skill instead of forking the rule locally.
+- The overlay never contradicts a core invariant: a rule on a page under `core/wiki/principles/`, or a rule its owning page calls an invariant.
+- The overlay may replace a core rule of type policy («Rule Types») for its project. The replacement is an entry in `project.guardrails`, rendered in `AGENTS.md` «Project Rules» where every agent reads it. The entry names the replaced page and section exactly and states only the project's rule, for example "Replaces «Integrating Base Changes» in git-workflow.md: rebase task branches onto the integration branch." It may link a page in `.ai/project/wiki/` for detail.
+- Propose a core rule change upstream with `kit-upstream-propose` only when it changes an invariant or should reach every project, and only when «Promotion» in [memory-policy.md](../operating-model/memory-policy.md) allows it.
 - Kit files inside an installed project (`.ai/kit/`) are read-only; `agentkit.py check` reports local edits.
 
 ## Rule Types

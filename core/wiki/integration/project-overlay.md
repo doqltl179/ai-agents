@@ -28,7 +28,7 @@ reviewed: 2026-10-09
 | `wiki/` | Project knowledge pages; `wiki/README.md` is the project wiki index |
 | `wiki/rules/` | Path-scoped project rules (`applies_to`), loaded automatically when matching files are touched |
 | `lessons.md` | Project-specific lessons from corrections |
-| `intake-pending.md` | Kit change proposals waiting to be filed upstream; exists only while the platform is unreachable ([change-intake.md](../evolution/change-intake.md)) |
+| `intake-pending.md` | Kit change proposals, made as «Promotion» in [memory-policy.md](../operating-model/memory-policy.md) allows, waiting to be filed upstream; exists only while the platform is unreachable ([change-intake.md](../evolution/change-intake.md)) |
 
 ## Profile
 
@@ -45,7 +45,7 @@ reviewed: 2026-10-09
 ## Local Agents
 
 - Use `extends: <core-agent>` to narrow a core role to part of this project (for example one engine's editor tooling, or one service). The local card states only the narrowing; the base card is rendered first.
-- A local card without `extends` is for a surface no core card covers; also propose it upstream if other projects would need it.
+- A local card without `extends` is for a surface no core card covers. When other projects would need it too, it is an upstream candidate per «Promotion» in [memory-policy.md](../operating-model/memory-policy.md).
 - Local agents are always active and must have names distinct from core agents.
 
 ## Local Skills
@@ -56,7 +56,7 @@ reviewed: 2026-10-09
 
 - Record project facts the kit leaves open: architecture overview, domain glossary, module map, local conventions, environments, and the product planning values of «Project Values» in [idea-evaluation.md](../workflows/idea-evaluation.md).
 - Same page shape as core pages ([page-spec.md](../authoring/page-spec.md)); the index region in `wiki/README.md` is generated.
-- Never restate a core rule here; link to it.
+- Never restate a core rule here; link to it. A page that details a replacement of a core policy («Layers and Precedence» in [ssot.md](../principles/ssot.md)) names the core section it replaces and states only the project's rule.
 
 ## Lessons
 

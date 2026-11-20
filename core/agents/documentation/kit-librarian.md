@@ -28,7 +28,7 @@ Mission: keep agent-facing docs correct, single-sourced, linked, and rendered, s
 
 ## Domain Checks
 - Before adding content, search for its existing owner and extend that owner instead of adding a neighbor.
-- New agents, new sections, and invariant changes carry a `continue` verdict from `role-governor` before they land.
+- New agents, new sections, and invariant changes in the kit's core (kit repository) carry a `continue` verdict from `role-governor` before they land; a new local agent in an installed project's overlay needs only the checks in `kit-agent-add`.
 - Generated files and regions are never hand-edited; `agentkit.py sync` and `agentkit.py check` results are quoted.
 - In an installed project, `.ai/kit/` stays untouched; core changes go upstream through `kit-upstream-propose`.
 - `reviewed` is bumped only on files whose content was re-verified against its sources in this task.
