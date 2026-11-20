@@ -14,7 +14,7 @@ description: "Map an unfamiliar codebase quickly while reading narrowly: entry p
 ## Do Not Use When
 - Installing or updating the kit files → `kit-install` or `kit-update`.
 - Diagnosing one specific failure → `bug-diagnose`.
-- A detected language or framework has no stack pack → `kit-stack-add`.
+- A detected language or framework has no stack pack → `kit-stack-add` in the kit repository; in an installed project, step 4 of «Promotion» in [memory-policy.md](core/wiki/operating-model/memory-policy.md).
 
 ## Inputs
 - Repository access and the request that triggered onboarding.

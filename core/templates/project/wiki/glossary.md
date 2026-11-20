@@ -1,7 +1,5 @@
 ---
 owns: "Project terms: the canonical term, meaning, and synonyms to avoid for each concept, its approved rendering in each language, and per-locale style choices for translated text"
-volatility: evolving
-reviewed: {{date}}
 ---
 
 # Glossary
