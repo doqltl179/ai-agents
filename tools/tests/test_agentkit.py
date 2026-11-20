@@ -1,6 +1,7 @@
 """Tests for tools/agentkit.py. Run: python -m unittest discover -s tools/tests -v"""
 from __future__ import annotations
 
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -219,6 +220,23 @@ class KitRepositoryTests(unittest.TestCase):
                 agentkit.validate_profile(kit, report)
                 errors = [e for e in report.errors if e.startswith("profile hosting.platform:")]
                 self.assertEqual(errors, [] if ok else [f'profile hosting.platform: "{value}" is not one of "github", "none"'])
+
+    def test_new_core_scaffolds_keep_freshness_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for part in ("core", "tools", ".ai/project"):
+                shutil.copytree(agentkit.KIT_ROOT / part, root / part, ignore=shutil.ignore_patterns("__pycache__"))
+            shutil.copy(agentkit.KIT_ROOT / "VERSION", root / "VERSION")
+            script = root / "tools" / "agentkit.py"
+            cases = ((["page", "probe-page"], root / "core" / "wiki" / "probe-page.md"),
+                     (["skill", "probe-skill", "--category", "docs"], root / "core" / "skills" / "probe-skill" / "SKILL.md"),
+                     (["agent", "probe-agent", "--department", "quality"], root / "core" / "agents" / "quality" / "probe-agent.md"))
+            for args, path in cases:
+                with self.subTest(kind=args[0]):
+                    result = run(script, "new", *args, "--core", cwd=root)
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    meta, _ = agentkit.parse_frontmatter(path.read_text(encoding="utf-8"))
+                    self.assertTrue({"volatility", "reviewed"} <= set(meta), path)
 
     def test_kit_repository_renders_its_own_skills(self) -> None:
         files = agentkit.Renderer(agentkit.Kit(agentkit.KIT_ROOT)).render().files
@@ -663,9 +681,6 @@ class InstallTests(unittest.TestCase):
         for path in (overlay / "agents" / "editor-tools.md", overlay / "skills" / "demo" / "SKILL.md", overlay / "wiki" / "facts.md"):
             meta, _ = agentkit.parse_frontmatter(path.read_text(encoding="utf-8"))
             self.assertFalse({"volatility", "reviewed"} & set(meta), path)
-        for template in ("agent.md", "skill/SKILL.md", "page.md"):  # `--core` keeps them
-            meta, _ = agentkit.parse_frontmatter((agentkit.CORE / "templates" / template).read_text(encoding="utf-8"))
-            self.assertTrue({"volatility", "reviewed"} <= set(meta), template)
         self.assertNotIn("freshness tracks", run(self.script, "check", cwd=self.project).stdout)
         self.assertEqual(run(self.script, "new", "plan", "demo-task", cwd=self.project).returncode, 0)
         self.assertEqual(len(list((self.project / ".ai" / "tasks").glob("*-demo-task.md"))), 1)
