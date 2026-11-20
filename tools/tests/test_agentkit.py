@@ -317,10 +317,11 @@ class InstallTests(unittest.TestCase):
         self.set_switches(True, True, "github", '\n[agents]\nenabled = ["@documentation", "@evolution"]\n')
         self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
         catalog = (self.project / ".ai" / "generated" / "catalog.md").read_text(encoding="utf-8")
-        for name in ("kit-install", "kit-stack-add", "kit-trend-scan"):
+        for name in ("kit-stack-add", "kit-trend-scan"):
             self.assertFalse((self.project / ".claude" / "skills" / name).exists(), name)
             self.assertNotIn(f"[`{name}`]", catalog)
-        self.assertTrue((self.project / ".claude" / "skills" / "kit-update" / "SKILL.md").exists())
+        # kit-install configures the project right after `install`, so it stays.
+        self.assertTrue((self.project / ".claude" / "skills" / "kit-install" / "SKILL.md").exists())
         check = run(self.script, "check", cwd=self.project)
         self.assertEqual(check.returncode, 0, check.stdout)
         self.assertNotIn("lists inactive skill", check.stdout)  # kit-librarian and trend-scout list kit-repo skills
