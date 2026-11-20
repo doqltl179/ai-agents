@@ -17,7 +17,7 @@ reviewed: 2026-10-09
 - Overdue `reviewed` dates on kit files → `kit-freshness-review`.
 - Adapting one known article, prompt, or policy → `kit-external-adapt`.
 - Applying a change already in an intake record → the owning `kit-*` skill.
-- You are in an installed project, where the radar under `.ai/kit/` is read-only → hand findings to `kit-librarian` for `kit-upstream-propose`.
+- You are in an installed project, where the radar under `.ai/kit/` is read-only → handle findings per step 4 of «Promotion» in [memory-policy.md](../../wiki/operating-model/memory-policy.md).
 
 ## Inputs
 - Today's date and the radar's «Watchlist».

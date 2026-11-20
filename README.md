@@ -77,7 +77,7 @@ Commit `.ai/kit/`, `.ai/project/`, `.ai/generated/`, and the generated files (`A
 
 ### 5. Work With It
 
-Ask your AI tool for work as usual: the agent reads `AGENTS.md` and follows [How Work Flows](#how-work-flows). You can also run a skill directly, for example `/translate` in Claude Code. Keep project-specific facts in `.ai/project/` and run `sync` after changing them; never edit `.ai/kit/` or the generated files.
+Ask your AI tool for work as usual: the agent reads `AGENTS.md` and follows [How Work Flows](#how-work-flows). You can also run a skill directly, for example `/translate` in Claude Code. Keep project-specific facts in `.ai/project/` and run `sync` after changing them; never edit `.ai/kit/` or the generated files. To replace one of the kit's wiki policy rules for your project only, add an entry to `project.guardrails` as «Layers and Precedence» in [ssot.md](core/wiki/principles/ssot.md) describes.
 
 ### 6. Update
 

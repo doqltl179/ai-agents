@@ -77,7 +77,7 @@ AI 도구로 프로젝트를 열고 **`kit-install` 스킬을 실행해 달라�
 
 ### 5. 사용
 
-평소처럼 AI 도구에 작업을 요청하면 됩니다. 에이전트가 `AGENTS.md`를 읽고 [작업 흐름](#작업-흐름)을 따릅니다. 스킬을 직접 실행할 수도 있습니다(예: Claude Code에서 `/translate`). 프로젝트 고유 정보는 `.ai/project/`에만 두고, 바꾼 뒤에는 `sync`를 실행합니다. `.ai/kit/`와 생성 파일은 직접 고치지 않습니다.
+평소처럼 AI 도구에 작업을 요청하면 됩니다. 에이전트가 `AGENTS.md`를 읽고 [작업 흐름](#작업-흐름)을 따릅니다. 스킬을 직접 실행할 수도 있습니다(예: Claude Code에서 `/translate`). 프로젝트 고유 정보는 `.ai/project/`에만 두고, 바꾼 뒤에는 `sync`를 실행합니다. `.ai/kit/`와 생성 파일은 직접 고치지 않습니다. 키트 wiki의 policy 규칙을 이 프로젝트에서만 대체하려면 [ssot.md](../../core/wiki/principles/ssot.md)의 «Layers and Precedence»에 따라 `project.guardrails`에 항목을 추가합니다.
 
 ### 6. 업데이트
 
