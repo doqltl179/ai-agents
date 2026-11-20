@@ -9,7 +9,7 @@ Every core agent card. Projects activate a subset in `.ai/project/profile.toml`.
 | Agent | Tier | Access | Use when |
 |---|---|---|---|
 | [`orchestrator`](governance/orchestrator.md) | deep | read-only | Decomposes a request into bounded units, selects the owner for each, orders them as a dependency graph, and sequences review gates through closeout. Use when a request spans several owners or surfaces, or when the right owner is unclear; not for implementing, writing plans, or approving quality. |
-| [`role-governor`](governance/role-governor.md) | deep | read-only | Judges the structural fitness of the agent, skill, and stack catalog and its routing: overlap, missing ownership, routing ambiguity, and boundary violations. Returns `continue` or `rework` on framework changes and approves new agents and sections. Use when a catalog or routing change is proposed or no owner fits a task; not for writing the docs, content quality review, or task decomposition. |
+| [`role-governor`](governance/role-governor.md) | deep | read-only | Judges the structural fitness of the agent, skill, and stack catalog and its routing: overlap, missing ownership, routing ambiguity, and boundary violations. Returns `continue` or `rework` on kit-core changes and approves new core agents and sections. Use when a catalog or routing change is proposed or no owner fits a task; not for writing docs, content quality review, or task decomposition. |
 | [`task-planner`](governance/task-planner.md) | standard | read-write | Records and updates plan files and progress in `.ai/tasks/` for units whose scope and owner are already decided. Use when a decomposed request needs a durable plan, or a unit's status, blocker, decision, or verification result changes; not for choosing owners or dependency order, structural verdicts, or implementing. |
 
 ## product (execution)
@@ -93,4 +93,4 @@ Every core agent card. Projects activate a subset in `.ai/project/profile.toml`.
 
 | Agent | Tier | Access | Use when |
 |---|---|---|---|
-| [`trend-scout`](evolution/trend-scout.md) | standard | read-write | Monitors the sources listed in the tech radar (AI coding tools, model families, agent standards, stack-pack languages and frameworks), records dated, sourced intake items with impact, and keeps the entries of `core/wiki/evolution/tech-radar.md`. Use when a scan is due or an external release, deprecation, or format change may affect the kit; not for editing other kit files or structural decisions. |
+| [`trend-scout`](evolution/trend-scout.md) | standard | read-write | Monitors the sources the tech radar lists (AI coding tools, model families, agent standards, stack-pack languages and frameworks), records dated, sourced intake items, and keeps `core/wiki/evolution/tech-radar.md` entries. Use in the kit repository when a scan is due or an external release, deprecation, or format change may affect the kit; not for editing other kit files or structural decisions. |

@@ -29,7 +29,7 @@ This page owns the order of steps. Each step links to the page or skill that own
 7. **Execute.** Each owner works inside its write scope under the role protocol in [delegation.md](delegation.md), and keeps each edit within [change-scope.md](../workflows/change-scope.md); units run at the same time only as [concurrency.md](concurrency.md) allows. Read the bound stack packs before editing their files.
 8. **Sync docs.** Behavior changes update their owning docs in the same unit: [documentation.md](../workflows/documentation.md) for human docs, [authoring/README.md](../authoring/README.md) for agent docs.
 9. **Verify.** Run the checks [verification.md](../workflows/verification.md) selects for the touched surfaces.
-10. **Review.** Send review-ready work through the gates per «Choosing Gates» in [review.md](../workflows/review.md).
+10. **Review.** Send review-ready work through the gates that «Choosing Gates» in [review.md](../workflows/review.md) selects for `policy.review_gate`, which may be none.
 11. **Pull request.** Commit with `git-commit`, then open the pull request into the integration branch with `github-pr-create`, linking the unit's issue when it has one, per «Pull Request Targets» in [issues-and-prs.md](../workflows/issues-and-prs.md).
 12. **Follow-ups.** Register work discovered along the way as new issues per «Leftovers Become Issues» with `github-issue-create`; do not widen the current unit to absorb it.
 13. **Report.** Report per «Report Shape» in [handoff-contract.md](handoff-contract.md), including the issue and pull request numbers the unit has.

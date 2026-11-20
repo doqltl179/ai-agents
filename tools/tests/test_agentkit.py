@@ -344,7 +344,12 @@ class InstallTests(unittest.TestCase):
         result = run(self.script, "sync", cwd=self.project)
         self.assertEqual(result.returncode, 0, result.stdout)
         agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
-        self.assertIn("### Project Rules\n\n- Features live in the packages.", agents_md)
+        self.assertIn("### Project Rules\n\nAn entry that starts with `Replaces «<Section>» in <page>.md:` replaces, in this "
+                      "project, the rules of that core section it contradicts, including their summary lines in «Stop First», "
+                      "per «Layers and Precedence» in [ssot.md](.ai/kit/core/wiki/principles/ssot.md).\n\n"
+                      "- Features live in the packages.", agents_md)
+        self.assertIn("| `policy.review_gate` | non-trivial |", agents_md)
+        self.assertIn("| `evolution.propose_upstream` | false |", agents_md)
         rule = (self.project / ".claude" / "rules" / "project-packages.md").read_text(encoding="utf-8")
         self.assertIn('  - "Packages/**"', rule)
         self.assertIn("Keep runtime code free of editor APIs.", rule)

@@ -77,7 +77,7 @@ The reserve is the larger of the two: a fraction of total memory or the minimum.
 
 ## Fan-In
 
-1. Each unit returns focused commits and evidence in its own pull request into the integration branch; its reviewer approves the exact commit IDs.
+1. Each unit returns focused commits and evidence in its own pull request into the integration branch; the gates «Choosing Gates» in [review.md](../workflows/review.md) selects for it approve the exact commit IDs.
 2. Pull requests merge in dependency order. A dependent unit's worktree is cut after its predecessors merged, or stacked on a predecessor's branch with the merge order stated in both pull requests.
-3. When units must be verified together before merging, `release-manager` combines the approved branches in dependency order on one temporary branch and stops on any conflict it cannot resolve from both sides' stated intent; the plan's named owner runs combined verification there and the reviewer gates it.
+3. When units must be verified together before merging, `release-manager` combines the approved branches in dependency order on one temporary branch and stops on any conflict it cannot resolve from both sides' stated intent; the plan's named owner runs combined verification there, and the same gates review it.
 4. A dependent unit becomes ready only after its predecessors are merged.

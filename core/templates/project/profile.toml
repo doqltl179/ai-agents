@@ -7,8 +7,11 @@
 name = ""                       # Project name shown to agents.
 summary = ""                    # One sentence: what the project is and who uses it.
 language = "en"                 # Language for human-facing output: reports, commits, pull requests, issues (for example "ko", "en").
-guardrails = []                 # One-line project rules every agent follows on every task, shown in AGENTS.md «This Project»;
+guardrails = []                 # One-line project rules every agent follows on every task, shown in AGENTS.md «Project Rules»;
                                 # for example "Features live in the packages; the sample projects only consume them".
+                                # An entry that starts with "Replaces «<Section>» in <page>.md:" replaces the rules of that core wiki section
+                                # it contradicts (ssot.md «Layers and Precedence»), for example
+                                # "Replaces «When To Plan» in planning.md: a plan file starts at five steps instead of three".
 
 [tools]
 # AI tools to render adapter files for: "claude", "codex", "copilot", "cursor", "gemini".
@@ -33,6 +36,8 @@ branch_pattern = "<type>/<scope>-<summary>"   # Task branch name; <type> is a Co
                                               # otherwise a short kind word such as "fix" or "feat" (git-workflow.md «Branch Policy»).
 commit_convention = "none"      # "conventional" (Conventional Commits) or "none".
 commit_language = ""            # Language of commit subjects and bodies; empty means project.language.
+review_gate = "non-trivial"     # Which review-ready changes go through the agent review gates (review.md «Choosing Gates»): "all";
+                                # "non-trivial", where trivial changes skip them; or "none", where only the project's own pull request review applies.
 
 [hosting]
 platform = "none"               # "github" or "none". Selects whether github-category skills apply; "none" also stops rendering them.
@@ -113,3 +118,5 @@ active = []
 
 [evolution]
 upstream = "https://github.com/doqltl179/ai-agents"   # Kit repository used by kit-update and kit-upstream-propose.
+propose_upstream = false        # true: agents propose kit changes upstream on their own when a lesson or fix holds for every project.
+                                # false: kit-upstream-propose runs only when the user asks (memory-policy.md «Promotion»).

@@ -76,7 +76,7 @@ Instruction files the kit did not generate keep being loaded by the tools next t
 
 For each file:
 
-1. Sort its content: rules the kit already owns (drop them), project facts and parameters (move to `.ai/project/profile.toml` or `.ai/project/wiki/`), and rules that would help every project (propose upstream).
+1. Sort its content: rules the kit already owns (drop them), project rules that depart from a core policy (record each as a `project.guardrails` replacement per «Layers and Precedence» in [ssot.md](../principles/ssot.md)), project facts and parameters (move to `.ai/project/profile.toml` or `.ai/project/wiki/`), and rules that would help every project (keep them in the overlay, then follow step 4 of «Promotion» in [memory-policy.md](../operating-model/memory-policy.md)).
 2. Show the user what will be dropped and get confirmation before deleting the file.
 3. Run `sync` again. A file that stays on purpose goes into `tools.keep_unmanaged` with a note in the project wiki saying why.
 

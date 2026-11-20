@@ -537,7 +537,10 @@ class Renderer:
         ]
         guardrails = [g for g in project.get("guardrails", []) if str(g).strip()]
         if guardrails:
-            lines += ["### Project Rules", "", *[f"- {g}" for g in guardrails], ""]
+            ssot = rel(CORE / "wiki" / "principles" / "ssot.md", self.p)
+            lines += ["### Project Rules", "", "An entry that starts with `Replaces «<Section>» in <page>.md:` replaces, in this "
+                      "project, the rules of that core section it contradicts, including their summary lines in «Stop First», "
+                      f"per «Layers and Precedence» in [ssot.md]({ssot}).", "", *[f"- {g}" for g in guardrails], ""]
         lines += ["### Commands", ""]
         commands = prof.get("commands", {})
         present = {k: v for k, v in commands.items() if v}
@@ -548,7 +551,7 @@ class Renderer:
         if missing:
             lines += ["", f"Not available (report the gap, do not guess): {', '.join(f'`{k}`' for k in missing)}"]
         lines += ["", "### Parameters", "", "| Key | Value |", "|---|---|"]
-        for section in ("policy", "hosting", "docs", "release"):
+        for section in ("policy", "hosting", "docs", "release", "evolution"):
             for key, value in prof.get(section, {}).items():
                 lines.append(f"| `{section}.{key}` | {table_cell(param_text(value)) or '—'} |")
         return "\n".join(lines).rstrip() + "\n"

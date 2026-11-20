@@ -61,6 +61,8 @@ Each line's full rule lives on the linked page.
 
 ### Project Rules
 
+An entry that starts with `Replaces «<Section>» in <page>.md:` replaces, in this project, the rules of that core section it contradicts, including their summary lines in «Stop First», per «Layers and Precedence» in [ssot.md](core/wiki/principles/ssot.md).
+
 - When README.md changes, update docs/ko/README.md and docs/ja/README.md in the same unit; localization-specialist translates each directly from README.md.
 
 ### Commands
@@ -88,6 +90,7 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `policy.branch_pattern` | <type>/<scope>-<summary> |
 | `policy.commit_convention` | conventional |
 | `policy.commit_language` | ko |
+| `policy.review_gate` | non-trivial |
 | `hosting.platform` | github |
 | `hosting.ci` | true |
 | `hosting.area_labels` | core, tooling, repo |
@@ -98,3 +101,5 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `docs.adr_dir` | .ai/project/wiki/decisions |
 | `docs.glossary` | docs/glossary.md |
 | `release.tag_pattern` | v{version} |
+| `evolution.upstream` | https://github.com/doqltl179/ai-agents |
+| `evolution.propose_upstream` | false |

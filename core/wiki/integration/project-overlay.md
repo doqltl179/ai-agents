@@ -28,7 +28,7 @@ reviewed: 2026-10-09
 | `wiki/` | Project knowledge pages; `wiki/README.md` is the project wiki index |
 | `wiki/rules/` | Path-scoped project rules (`applies_to`), loaded automatically when matching files are touched |
 | `lessons.md` | Project-specific lessons from corrections |
-| `intake-pending.md` | Kit change proposals waiting to be filed upstream; exists only while the platform is unreachable ([change-intake.md](../evolution/change-intake.md)) |
+| `intake-pending.md` | Kit change proposals, made as «Promotion» in [memory-policy.md](../operating-model/memory-policy.md) allows, waiting to be filed upstream; exists only while the platform is unreachable ([change-intake.md](../evolution/change-intake.md)) |
 
 ## Profile
 
@@ -38,14 +38,14 @@ reviewed: 2026-10-09
 - `update` reports each key the profile leaves unset whose default changes, with the line that keeps the previous value; each key the profile sets that the kit no longer reads; and each key that still holds an old default the update changed.
 - Activate only the agents and skills the project needs: every active agent and skill costs context in tools that list them.
 - Bind each active execution agent to the paths it owns, the stack packs it applies, and the named commands that verify its paths with `[bindings.<agent>]`; the binding is rendered into that agent's files.
-- Put the few rules that hold for every task in `project.guardrails`, one line each; they appear in `AGENTS.md` and count against its line budget.
+- Put the few rules that hold for every task in `project.guardrails`, one line each; they appear in `AGENTS.md` and count against its line budget. A replacement of a core policy section is such an entry, per «Layers and Precedence» in [ssot.md](../principles/ssot.md).
 - Leave a command empty when it does not exist; agents then report the gap instead of guessing.
 - After editing, run `agentkit.py sync` and `agentkit.py check`.
 
 ## Local Agents
 
 - Use `extends: <core-agent>` to narrow a core role to part of this project (for example one engine's editor tooling, or one service). The local card states only the narrowing; the base card is rendered first.
-- A local card without `extends` is for a surface no core card covers; also propose it upstream if other projects would need it.
+- A local card without `extends` is for a surface no core card covers. When other projects would need it too, it is an upstream candidate per «Promotion» in [memory-policy.md](../operating-model/memory-policy.md).
 - Local agents are always active and must have names distinct from core agents.
 
 ## Local Skills
@@ -56,7 +56,7 @@ reviewed: 2026-10-09
 
 - Record project facts the kit leaves open: architecture overview, domain glossary, module map, local conventions, environments, and the product planning values of «Project Values» in [idea-evaluation.md](../workflows/idea-evaluation.md).
 - Same page shape as core pages ([page-spec.md](../authoring/page-spec.md)); the index region in `wiki/README.md` is generated.
-- Never restate a core rule here; link to it.
+- Never restate a core rule here; link to it. A page holds the detail of a replacement only when the replacement's `project.guardrails` entry links it; the page states only the project's rule and replaces nothing by itself.
 
 ## Lessons
 
