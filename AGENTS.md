@@ -59,6 +59,10 @@ Each line's full rule lives on the linked page.
 - Overlay: `.ai/project/` · Owners and skills: `.ai/generated/catalog.md` · Project wiki: `.ai/project/wiki/README.md` · Lessons: `.ai/project/lessons.md`
 - Human-facing language: `ko`
 
+### Project Rules
+
+- When README.md changes, update docs/ko/README.md and docs/ja/README.md in the same unit; localization-specialist translates each directly from README.md.
+
 ### Commands
 
 | Key | Command |
@@ -90,8 +94,6 @@ Not available (report the gap, do not guess): `install`, `format`, `typecheck`, 
 | `docs.readme` | README.md |
 | `docs.changelog` | CHANGELOG.md |
 | `docs.source_locale` | en |
-| `docs.locales` | ko, ja |
-| `docs.locale_pattern` | docs/{locale}/{name} |
 | `docs.specs_dir` | .ai/project/wiki |
 | `docs.adr_dir` | .ai/project/wiki/decisions |
 | `docs.glossary` | docs/glossary.md |

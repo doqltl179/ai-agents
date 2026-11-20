@@ -10,7 +10,6 @@ reviewed: 2026-10-09
 
 ## Use When
 - A text needs a version in another language, or its source changed and existing translations must follow.
-- Localized variants in `docs.locales` must be brought in sync with their primary doc.
 
 ## Do Not Use When
 - The source itself must be written or corrected → its owner first (docs: `project-docs-sync`; UI copy: the `ux-designer` role).
@@ -18,7 +17,7 @@ reviewed: 2026-10-09
 
 ## Inputs
 - The source files or strings and their source language, per «Source Language» in [translation.md](../../wiki/workflows/translation.md).
-- Target locales as BCP 47 tags (for docs, `docs.locales`).
+- Target locales as BCP 47 tags, and for files each target's path, as the request or the project's overlay names them; when neither names them, ask the requester.
 - The glossary at `docs.glossary`, and any style notes it records for this text type.
 
 ## Steps
@@ -28,8 +27,8 @@ reviewed: 2026-10-09
 4. For each target locale, translate directly from the source per «Direct From Source». Work section by section so nothing is skipped. When both Chinese scripts are targets, translate one and derive the other with the regional vocabulary review.
 5. Localize per «Localization Over Literal Translation»: restructure for the target language, adapt idioms and references, and apply target conventions for dates, numbers, units, and punctuation.
 6. Keep everything in «Protected Content» intact; point links at localized pages when they exist.
-7. Verify each target per «Verification». For docs, also confirm the structure matches the primary per «Localized Variants» in [documentation.md](../../wiki/workflows/documentation.md).
-8. For files, write each target at its locale path (for docs, `docs.locale_pattern`) in the same unit as the source change.
+7. Verify each target per «Verification».
+8. For files, write each target at its path from «Inputs».
 
 ## Output
 - The translated files or strings per locale.

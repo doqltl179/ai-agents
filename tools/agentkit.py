@@ -919,21 +919,8 @@ def section_names(body: str, heading: str, arrow: bool = False) -> list[str]:
     return names
 
 
-LOCALE_PLACEHOLDERS = {"locale", "name", "stem", "ext"}
-
-
 def validate_profile(kit: Kit, report: Report) -> None:
     prof = kit.profile
-    docs = prof.get("docs", {})
-    patterns = {"docs.locale_pattern": docs.get("locale_pattern", "")}
-    patterns.update({f"docs.locale_paths.{k}": v for k, v in docs.get("locale_paths", {}).items()})
-    for key, pattern in patterns.items():
-        unknown = set(re.findall(r"\{(\w+)\}", str(pattern))) - LOCALE_PLACEHOLDERS
-        if unknown:
-            report.error(f"profile {key}: unknown placeholder(s) {', '.join(sorted(unknown))} "
-                         f"(supported: {', '.join(sorted(LOCALE_PLACEHOLDERS))})")
-        elif pattern and "{locale}" not in str(pattern):
-            report.error(f"profile {key}: the pattern must contain {{locale}}")
     release = prof.get("release", {})
     if "{version}" not in str(release.get("tag_pattern", "{version}")):
         report.error("profile release.tag_pattern: must contain {version}")

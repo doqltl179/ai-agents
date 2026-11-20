@@ -14,17 +14,17 @@ Translation here means producing text in another language that reads as if it ha
 
 ## Route Away When
 
-- which documents must have localized variants and when they are updated: «Localized Variants» in [documentation.md](documentation.md),
+- which texts have translations, where they live, and when they follow a changed source: the project decides and records it in its overlay (`.ai/project/`); the kit sets no rule,
 - writing the source text itself: `technical-writer` for docs, `ux-designer` for UI copy.
 
 ## Language Tags
 
-Name languages with BCP 47 tags (`en`, `ko`, `ja`, `zh-Hans`, `zh-Hant`, `pt-BR`), and use the same tags in `docs.locales`, file paths, and the glossary.
+Name languages with BCP 47 tags (`en`, `ko`, `ja`, `zh-Hans`, `zh-Hant`, `pt-BR`), and use the same tags in file paths and the glossary.
 
 ## Source Language
 
 - Every translatable text has exactly one source language: `docs.source_locale` in the profile, or `project.language` when that key is empty. A text written in another language states its source explicitly.
-- Translate only from a final source. When the source changes, update every target from the new source; never patch one target and let the others drift.
+- Translate only from a final source. When a target follows a changed source, translate it from the new source, never from another target's update.
 - When the source is wrong or ambiguous, fix or clarify the source first; never repair meaning only in a translation.
 
 ## Direct From Source
