@@ -53,7 +53,7 @@ Releases of the project the kit is installed in. Kit releases follow [versioning
 ## Tags And Notes
 
 - Tag names come from `release.tag_pattern` (default `v{version}`), or from each package's `tag_pattern`. Use annotated tags.
-- Release notes summarize the changelog section for that version or, without a changelog, the pull requests merged since the previous tag; do not invent content beyond that source.
+- Release notes summarize the changelog section for that version or, without a changelog, the pull requests merged since the previous tag (the commits, with `hosting.platform = "none"`; since the first commit for a first release); do not invent content beyond that source.
 
 ## Publishing
 

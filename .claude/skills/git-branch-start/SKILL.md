@@ -1,6 +1,6 @@
 ---
 name: git-branch-start
-description: "Start a unit's workspace: run the preflight in the main checkout, then create the unit's own worktree and task branch from the freshly fetched integration branch (or, with worktrees off and no other unit running at the same time, cut the branch in place), named from the unit's issue, stopping on any unexpected repository state. Use when a unit with an issue is about to change tracked files and has no worktree or task branch yet."
+description: "Start a unit's workspace: run the preflight in the main checkout, then create the unit's own worktree and task branch from the freshly fetched integration branch (or, with worktrees off and no other unit running at the same time, cut the branch in place), named from the unit's issue when it has one, stopping on any unexpected repository state. Use when a unit is about to change tracked files and has no worktree or task branch yet."
 ---
 <!-- agentkit:generated from core/skills/git-branch-start/SKILL.md. Do not edit: change the source, then run `python tools/agentkit.py sync`. Paths are relative to the project root. -->
 
@@ -31,5 +31,5 @@ description: "Start a unit's workspace: run the preflight in the main checkout, 
 7. Confirm `git branch --show-current` prints `<name>` and `git status --short` prints nothing.
 
 ## Output
-- The worktree path (or "in place"), the task branch name, the issue number, and the integration-branch commit it starts from (`git rev-parse --short HEAD`).
+- The worktree path (or "in place"), the task branch name, the issue number when the unit has one, and the integration-branch commit it starts from (`git rev-parse --short HEAD`).
 - Any preflight finding that stopped or changed the procedure.
