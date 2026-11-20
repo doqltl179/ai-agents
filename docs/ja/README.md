@@ -77,7 +77,7 @@ AI ツールでプロジェクトを開き、**`kit-install` スキルの実行�
 
 ### 5. 使い方
 
-いつもどおり AI ツールに作業を依頼するだけです。エージェントが `AGENTS.md` を読み、[作業の流れ](#作業の流れ)に従います。スキルを直接実行することもできます(例: Claude Code で `/translate`)。プロジェクト固有の情報は `.ai/project/` にだけ置き、変更したら `sync` を実行します。`.ai/kit/` と生成ファイルは直接編集しません。
+いつもどおり AI ツールに作業を依頼するだけです。エージェントが `AGENTS.md` を読み、[作業の流れ](#作業の流れ)に従います。スキルを直接実行することもできます(例: Claude Code で `/translate`)。プロジェクト固有の情報は `.ai/project/` にだけ置き、変更したら `sync` を実行します。`.ai/kit/` と生成ファイルは直接編集しません。キットの wiki ルールをこのプロジェクトだけで変えるには、`.ai/project/profile.toml` の `project.guardrails` に `Replaces «<Section>» in <page>.md:` で始まる項目を追加します。`core/wiki/principles/` 配下のルールは置き換えられません。
 
 ### 6. 更新
 

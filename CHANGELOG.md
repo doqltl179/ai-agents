@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+- `kit-trend-scan` and `kit-freshness-review` handle a kit defect found in an installed project per step 4 of «Promotion» in `memory-policy.md`, like every other place that may lead to an upstream proposal. Before, both sent it straight to `kit-upstream-propose`; its own «Use When» still held the proposal back unless the user asked or `evolution.propose_upstream` was on, but the two skills did not name the rule that decides. (patch)
+
 ## [1.0.0] - 2026-11-20
 
 ### Added

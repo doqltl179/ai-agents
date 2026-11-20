@@ -77,7 +77,7 @@ Commit `.ai/kit/`, `.ai/project/`, `.ai/generated/`, and the generated files (`A
 
 ### 5. Work With It
 
-Ask your AI tool for work as usual: the agent reads `AGENTS.md` and follows [How Work Flows](#how-work-flows). You can also run a skill directly, for example `/translate` in Claude Code. Keep project-specific facts in `.ai/project/` and run `sync` after changing them; never edit `.ai/kit/` or the generated files.
+Ask your AI tool for work as usual: the agent reads `AGENTS.md` and follows [How Work Flows](#how-work-flows). You can also run a skill directly, for example `/translate` in Claude Code. Keep project-specific facts in `.ai/project/` and run `sync` after changing them; never edit `.ai/kit/` or the generated files. To change a kit wiki rule for your project only, add an entry to `project.guardrails` in `.ai/project/profile.toml` that starts with `Replaces «<Section>» in <page>.md:`; rules under `core/wiki/principles/` cannot be replaced.
 
 ### 6. Update
 
