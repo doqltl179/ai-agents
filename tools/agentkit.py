@@ -1493,7 +1493,7 @@ def cmd_install(target_arg: str, tools: str | None) -> int:
     if fresh:
         for path in overlay_templates():
             dest = overlay / rel(path, CORE / "templates" / "project")
-            write_text(dest, fill(read_text(path), {"date": today().isoformat()}))
+            write_text(dest, read_text(path))
     # The worktree root is ignored even with policy.worktrees off: units running at the same time still use it.
     worktree_root = str(profile.get("policy", {}).get("worktree_root", "")).strip("/")
     wanted = [".ai/tasks/"] + ([f"{worktree_root}/"] if worktree_root else [])

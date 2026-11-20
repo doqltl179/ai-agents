@@ -11,7 +11,7 @@ description: "Add an agent card: confirm no existing owner fits, choose between 
 - One project needs a narrower owner inside a surface an existing card owns.
 
 ## Do Not Use When
-- The gap is language or framework knowledge → `kit-stack-add`.
+- The gap is language or framework knowledge → `kit-stack-add` in the kit repository; in an installed project, step 4 of «Promotion» in [memory-policy.md](core/wiki/operating-model/memory-policy.md).
 - The need is a repeatable procedure → `kit-skill-add`; a rule → `kit-page-add`.
 - An existing card's boundaries are wrong → `kit-role-audit`, then edit that card.
 - A core card is needed but you are in an installed project → `kit-upstream-propose`.
