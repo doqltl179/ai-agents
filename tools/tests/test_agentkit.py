@@ -107,6 +107,14 @@ class ProfileUpdateNoticeTests(unittest.TestCase):
                 "docs": {"glossary": "docs/glossary.md"}}
         self.assertEqual(self.notices(user), [
             'profile: policy.integration_branch still holds the old default "develop"; the new default is "main". '
+            'Set integration_branch = "main" under [policy] to adopt it, or keep it on purpose.'])
+
+    def test_set_key_holding_old_default_outside_explicit_sections(self) -> None:
+        notices = agentkit.profile_update_notices({"release": {"tag_pattern": "v{version}"}},
+                                                  {"release": {"tag_pattern": "v{version}"}},
+                                                  {"release": {"tag_pattern": "{version}"}})
+        self.assertEqual(notices, [
+            'profile: release.tag_pattern still holds the old default "v{version}"; the new default is "{version}". '
             "Remove the key to adopt it, or keep it on purpose."])
 
     def test_toml_values(self) -> None:
@@ -117,16 +125,13 @@ class ProfileUpdateNoticeTests(unittest.TestCase):
 
 
 class OverlayTemplateTests(unittest.TestCase):
-    def test_glossary_only_when_named(self) -> None:
-        def names(glossary: str) -> list[str]:
-            return [agentkit.rel(p, agentkit.CORE / "templates" / "project")
-                    for p in agentkit.overlay_templates({"docs": {"glossary": glossary}})]
-
-        self.assertNotIn("wiki/glossary.md", names(""))
-        self.assertNotIn("wiki/glossary.md", names("docs/glossary.md"))
-        self.assertIn("wiki/glossary.md", names(".ai/project/wiki/glossary.md"))
-        self.assertIn("wiki/README.md", names(""))
-        self.assertNotIn("profile.toml", names(".ai/project/wiki/glossary.md"))
+    def test_profile_and_glossary_left_out(self) -> None:
+        root = agentkit.CORE / "templates" / "project"
+        names = [agentkit.rel(p, root) for p in agentkit.overlay_templates()]
+        self.assertTrue((root / agentkit.GLOSSARY_TEMPLATE).is_file(), "the glossary template stays in the kit")
+        self.assertNotIn(agentkit.GLOSSARY_TEMPLATE, names)
+        self.assertNotIn("profile.toml", names)
+        self.assertIn("wiki/README.md", names)
 
 
 class CapacityTests(unittest.TestCase):
@@ -194,7 +199,7 @@ class InstallTests(unittest.TestCase):
                         ".github/instructions/stack-react.instructions.md", ".cursor/rules/stack-react.mdc",
                         ".ai/generated/catalog.md", ".ai/project/profile.toml", ".claude/skills/translate/SKILL.md"]:
             self.assertTrue((self.project / relpath).exists(), relpath)
-        self.assertFalse((self.project / ".ai" / "project" / "wiki" / "glossary.md").exists(), "docs.glossary is empty")
+        self.assertFalse((self.project / ".ai" / "project" / "wiki" / "glossary.md").exists(), "install never copies the glossary")
         self.assertFalse((self.project / ".github" / "skills").exists(), "copilot skills duplicate claude/codex skills")
         agent = (self.project / ".claude" / "agents" / "web-frontend-engineer.md").read_text(encoding="utf-8")
         self.assertIn("`web/**`", agent)

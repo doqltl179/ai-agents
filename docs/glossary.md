@@ -43,7 +43,7 @@ The single owner of how agentkit terms are written in each README language. Sour
 | entry file | A generated file a tool reads at session start | 진입 파일 | エントリファイル | |
 | generated file | A file `sync` renders; never edited by hand | 생성 파일 | 生成ファイル | |
 | default branch | The hosting platform's default branch | 기본 브랜치 | デフォルトブランチ | |
-| release / release tag | A promoted version and its `v<version>` tag | 릴리스 / 릴리스 태그 | リリース / リリースタグ | |
+| release / release tag | A published version and its `v<version>` tag | 릴리스 / 릴리스 태그 | リリース / リリースタグ | |
 | tech radar | The watchlist page | = | = | |
 | change intake | The kit's change-entry flow | = | = | |
 

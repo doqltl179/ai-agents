@@ -92,7 +92,7 @@ GITATTRIBUTES_LINES = [f"{glob} text=auto eol=lf" for glob in AGENT_FILE_GLOBS]
 # Profile sections that hold the project's own policy: values there stay explicit even when they equal a kit default,
 # so a changed default never changes a project's branches, hosting, or doc paths («Profile» in project-overlay.md).
 EXPLICIT_SECTIONS = ("policy", "hosting", "docs")
-GLOSSARY_TEMPLATE = "wiki/glossary.md"   # Under core/templates/project/; install copies it only when docs.glossary names it.
+GLOSSARY_TEMPLATE = "wiki/glossary.md"   # Under core/templates/project/; install never copies it (see overlay_templates).
 READ_ONLY_TOOLS = {
     "claude": "Edit, Write, NotebookEdit",
     "copilot": '["read", "search", "execute", "web"]',
@@ -1403,13 +1403,14 @@ def report_gitattributes(project: Path) -> None:
               ".gitattributes («Line Endings» in installation.md):\n" + "\n".join(missing))
 
 
-def overlay_templates(profile: dict) -> list[Path]:
-    """Templates install copies into a new overlay: all but the profile, and the glossary only when docs.glossary names its copy."""
+def overlay_templates() -> list[Path]:
+    """Templates install copies into a new overlay: all but the profile and the glossary.
+
+    A new profile leaves docs.glossary empty; a project that sets it copies the glossary template itself.
+    """
     root = CORE / "templates" / "project"
-    glossary = str(profile.get("docs", {}).get("glossary", ""))
     return [path for path in sorted(root.rglob("*"))
-            if path.is_file() and path.name != "profile.toml"
-            and (rel(path, root) != GLOSSARY_TEMPLATE or glossary == f".ai/project/{GLOSSARY_TEMPLATE}")]
+            if path.is_file() and path.name != "profile.toml" and rel(path, root) != GLOSSARY_TEMPLATE]
 
 
 def cmd_install(target_arg: str, tools: str | None) -> int:
@@ -1437,7 +1438,7 @@ def cmd_install(target_arg: str, tools: str | None) -> int:
                                                   {"name": json.dumps(target.name), "tools": tools_block}))
     profile = Kit(target).profile
     if fresh:
-        for path in overlay_templates(profile):
+        for path in overlay_templates():
             dest = overlay / rel(path, CORE / "templates" / "project")
             write_text(dest, fill(read_text(path), {"date": today().isoformat()}))
     # The worktree root is ignored even with policy.worktrees off: units running at the same time still use it.
@@ -1603,8 +1604,11 @@ def profile_update_notices(user: dict, old_defaults: dict, new_defaults: dict) -
                                 f"{toml_value(new_section[key])}; setting {key} = {toml_value(old)} under [{section}] in "
                                 ".ai/project/profile.toml keeps the previous behavior.")
             elif set_here[key] == old:
+                # Policy, hosting, and docs values stay explicit («Profile» in project-overlay.md), so adopting means setting.
+                adopt = (f"Set {key} = {toml_value(new_section[key])} under [{section}] to adopt it"
+                         if section in EXPLICIT_SECTIONS else "Remove the key to adopt it")
                 messages.append(f"profile: {name} still holds the old default {toml_value(old)}; the new default is "
-                                f"{toml_value(new_section[key])}. Remove the key to adopt it, or keep it on purpose.")
+                                f"{toml_value(new_section[key])}. {adopt}, or keep it on purpose.")
     return messages
 
 
