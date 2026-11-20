@@ -35,7 +35,7 @@ A skill links to the policy it applies instead of restating it. Example: `git-co
 | Category | Covers |
 |---|---|
 | `git` | Local Git operations: branches, commits, conflicts |
-| `github` | Hosting-platform operations: issues, pull requests, reviews on the platform |
+| `github` | Hosting-platform operations: issues, pull requests, reviews on the platform. Inactive when `hosting.platform` is `"none"` |
 | `code-change` | Procedures that change code safely: refactor, migrate, upgrade, diagnose, test, optimize |
 | `review` | Review procedures for each review lens |
 | `docs` | Project documentation and decision records |
@@ -55,6 +55,7 @@ A skill links to the policy it applies instead of restating it. Example: `git-co
 | `category` | yes | A value from «Categories» |
 | `volatility` | yes | See [freshness-policy.md](../evolution/freshness-policy.md) |
 | `reviewed` | yes | `YYYY-MM-DD` |
+| `scope` | no | `kit-repo`: the skill is active only in the kit's own repository, so installed projects neither render nor catalog it. Set it when «Do Not Use When» rules out every installed project |
 
 Only `name` and `description` are rendered into tool folders; the other fields are kit metadata.
 

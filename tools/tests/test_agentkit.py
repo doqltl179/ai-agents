@@ -182,6 +182,10 @@ class KitRepositoryTests(unittest.TestCase):
         result = run(TOOLS / "agentkit.py", "check", cwd=agentkit.KIT_ROOT)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_kit_repository_renders_its_own_skills(self) -> None:
+        files = agentkit.Renderer(agentkit.Kit(agentkit.KIT_ROOT)).render().files
+        self.assertIn(".claude/skills/kit-stack-add/SKILL.md", files)
+
 
 class InstallTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -272,6 +276,50 @@ class InstallTests(unittest.TestCase):
                 self.assertIn(commit_line, lines)
                 self.assertFalse(any("{{" in line for line in lines))
                 self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+
+    def test_platform_none_drops_github_skills(self) -> None:
+        self.install()
+        skills = [".claude/skills/github-pr-create/SKILL.md", ".agents/skills/github-issue-create/SKILL.md"]
+        self.set_switches(True, True, "none")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        for relpath in skills:
+            self.assertFalse((self.project / relpath).exists(), relpath)
+        self.assertNotIn("[`github-pr-create`]", (self.project / ".ai" / "generated" / "catalog.md").read_text(encoding="utf-8"))
+        check = run(self.script, "check", cwd=self.project)
+        self.assertEqual(check.returncode, 0, check.stdout)
+        self.assertNotIn("lists inactive skill", check.stdout)  # release-manager lists github-pr-create
+        self.set_switches(True, True, "github")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        for relpath in skills:
+            self.assertTrue((self.project / relpath).exists(), relpath)
+
+    def test_kit_repository_skills_and_disabled_skills(self) -> None:
+        self.install()
+        self.set_switches(True, True, "github", '\n[agents]\nenabled = ["@documentation", "@evolution"]\n')
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        catalog = (self.project / ".ai" / "generated" / "catalog.md").read_text(encoding="utf-8")
+        for name in ("kit-install", "kit-stack-add", "kit-trend-scan"):
+            self.assertFalse((self.project / ".claude" / "skills" / name).exists(), name)
+            self.assertNotIn(f"[`{name}`]", catalog)
+        self.assertTrue((self.project / ".claude" / "skills" / "kit-update" / "SKILL.md").exists())
+        check = run(self.script, "check", cwd=self.project)
+        self.assertEqual(check.returncode, 0, check.stdout)
+        self.assertNotIn("lists inactive skill", check.stdout)  # kit-librarian and trend-scout list kit-repo skills
+        self.set_switches(True, True, "github", '\n[agents]\nenabled = ["@documentation"]\n\n[skills]\ndisabled = ["kit-update"]\n')
+        self.assertNotIn("lists inactive skill", run(self.script, "check", cwd=self.project).stdout)
+        self.set_switches(True, True, "github", '\n[agents]\nenabled = ["@documentation"]\n\n[skills]\nenabled = ["@git"]\n')
+        out = run(self.script, "check", cwd=self.project).stdout
+        line = next(x for x in out.split("\n") if "active agent 'kit-librarian' lists inactive skill(s)" in x)
+        self.assertIn("kit-page-add", line)
+        self.assertNotIn("kit-stack-add", line)
+
+    def test_skill_scope_values_are_validated(self) -> None:
+        self.install()
+        self.assertEqual(run(self.script, "new", "skill", "demo", "--category", "docs", cwd=self.project).returncode, 0)
+        skill = self.project / ".ai" / "project" / "skills" / "demo" / "SKILL.md"
+        skill.write_text(skill.read_text(encoding="utf-8").replace("category: docs\n", "category: docs\nscope: anywhere\n"),
+                         encoding="utf-8")
+        self.assertIn("unknown scope 'anywhere'", run(self.script, "check", cwd=self.project).stdout)
 
     def test_drift_and_local_kit_edits_fail_check(self) -> None:
         self.install()

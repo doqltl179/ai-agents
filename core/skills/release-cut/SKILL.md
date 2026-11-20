@@ -24,17 +24,17 @@ reviewed: 2026-10-09
 
 ## Steps
 1. Confirm the release was requested and its scope fits «Release Unit» in [release.md](../../wiki/workflows/release.md). If either is unclear, stop and ask.
-2. Run «Preflight» in [git-workflow.md](../../wiki/workflows/git-workflow.md) in the main checkout. Confirm the integration head is verified per «Promotion» in release.md: the latest CI run passed (`gh run list --branch <integration_branch> --limit 1`), or with `hosting.ci = false` the full verification passed on a fresh checkout of it.
+2. Run «Preflight» in [git-workflow.md](../../wiki/workflows/git-workflow.md) in the main checkout. Confirm the integration head is verified per «Promotion» in release.md: the latest CI run passed (with `hosting.platform = "github"`, `gh run list --branch <integration_branch> --limit 1`; otherwise the project's CI shows it), or with `hosting.ci = false` the full verification passed on a fresh checkout of it.
 3. Fix the scope per «Release Scope» in release.md. For each package in scope, or the repository as a whole, list what ships (`git log --oneline <previous-tag>..origin/<integration_branch> -- <package path>`). When it keeps a changelog per «Changelog» in [documentation.md](../../wiki/workflows/documentation.md), also list its Unreleased section and flag commits with no entry.
 4. Choose each version in scope per «Version Numbers» in release.md.
 5. Start the version unit per «Release Unit» in release.md: its issue (when `policy.issue_first` is on), then its task branch with `git-branch-start`.
 6. Finalize each changelog in scope per «Changelog Finalization» in release.md; skip this step when the project keeps none.
 7. Bump every version declaration: find them with `rg -n "<current-version>"`, and change only the project's own version fields, never dependency versions.
 8. Run `commands.build` and `commands.test` and record results per «Evidence Format» in [verification.md](../../wiki/workflows/verification.md). Stop on any failure.
-9. Commit with `git-commit`, open the pull request into the integration branch with `github-pr-create`, and wait until it merges. When `policy.release_branch` differs, open the promotion pull request per «Promotion» in release.md (`gh pr create --base <release_branch> --head <integration_branch>`) and wait until it merges.
+9. Commit with `git-commit`. With `hosting.platform = "github"`, open the pull request into the integration branch with `github-pr-create`, and wait until it merges; when `policy.release_branch` differs, open the promotion pull request per «Promotion» in release.md (`gh pr create --base <release_branch> --head <integration_branch>`) and wait until it merges. With `"none"`, «Scaling The Order» in [request-lifecycle.md](../../wiki/operating-model/request-lifecycle.md) skips the pull request steps: ask the user how the version commit reaches the integration branch, and the integration branch the release branch, and wait until both are merged.
 10. Draft the tag and release notes per «Tags And Notes» in release.md for the release commit on `policy.release_branch` (the commit the promotion produced, or the merged version commit when both branches are the same). Create the annotated tag locally: `git tag -a <tag> <commit> --cleanup=verbatim -F <notes-file>`; the default cleanup deletes lines starting with `#`, such as the notes' Markdown headings.
 11. Show the user the version, tag, commit ID, notes, and publish targets, and get explicit confirmation per «Confirm Before Irreversible Or Outward Actions» in [integrity.md](../../wiki/principles/integrity.md). Approval covers only the actions shown.
-12. After confirmation, push the tag (`git push origin <tag>`) and publish per «Publishing» in release.md. Verify the result, for example `gh release view <tag>`.
+12. After confirmation, push the tag (`git push origin <tag>`) and publish per «Publishing» in release.md. Verify the result, for example `gh release view <tag>` with `hosting.platform = "github"`, or `git ls-remote --tags origin <tag>` with `"none"`.
 
 ## Output
 - The version, tag, release commit ID, and finalized changelog section.

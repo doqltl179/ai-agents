@@ -35,6 +35,7 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 LINK_RE = re.compile(r"(!?\[[^\]\n]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 REGION_RE = re.compile(r"(<!-- agentkit:begin (?P<name>[\w-]+) -->\n)(?P<body>.*?)(<!-- agentkit:end (?P=name) -->)", re.S)
 CONDITION_RE = re.compile(r"\{\{([a-z][a-z-]*)\|([^|{}\n]*)(?:\|([^|{}\n]*))?\}\}")
+SKILL_SCOPES = ["kit-repo"]  # Values of the optional skill field `scope`; skill-spec.md «Frontmatter» owns their meaning.
 
 # Adapter table: the single owner of which files each AI tool reads. Rendered into tool-adapters.md.
 ADAPTERS: dict[str, dict[str, str | None]] = {
@@ -364,7 +365,14 @@ class Kit:
         return self._select(self.agents, "agents", "department", report)
 
     def active_skills(self, report: Report | None = None) -> list[str]:
-        return self._select(self.skills, "skills", "category", report)
+        return [n for n in self._select(self.skills, "skills", "category", report) if self.skill_applies(n)]
+
+    def skill_applies(self, name: str) -> bool:
+        """Whether the profile allows the skill at all, whatever [skills] selects."""
+        meta = self.skills[name].meta
+        if meta.get("scope") == "kit-repo" and not self.kit_repo:
+            return False
+        return meta.get("category") != "github" or profile_conditions(self.profile)["platform"]
 
     def bindings(self) -> dict[str, dict]:
         return self.profile.get("bindings", {})
@@ -866,8 +874,11 @@ def validate(kit: Kit, report: Report) -> None:
                 report.error(f"{where}: 'Skills' names unknown skill '{skill}'")
         _check_name(doc, names_seen, report, kit)
     active_skills = set(kit.active_skills())
+    disabled = set(kit.profile.get("skills", {}).get("disabled", []))
     for name in kit.active_agents():
-        missing = [s for s in section_names(kit.agents[name].body, "Skills") if s in kit.skills and s not in active_skills]
+        # A skill the profile disables by name or rules out (platform, scope) is a choice, not an oversight.
+        missing = [s for s in section_names(kit.agents[name].body, "Skills")
+                   if s in kit.skills and s not in active_skills and s not in disabled and kit.skill_applies(s)]
         if missing:
             report.warn(f"active agent '{name}' lists inactive skill(s) {', '.join(missing)}; enable them in "
                         "[skills] or accept that the role runs without them")
@@ -882,6 +893,8 @@ def validate(kit: Kit, report: Report) -> None:
             report.error(f"{where}: name must equal the folder name")
         if m.get("category") and m["category"] not in kit.categories:
             report.error(f"{where}: unknown category '{m['category']}'")
+        if "scope" in m and m["scope"] not in SKILL_SCOPES:
+            report.error(f"{where}: unknown scope '{m['scope']}' (allowed: {', '.join(SKILL_SCOPES)})")
         if len(m.get("description", "")) > 600:
             report.error(f"{where}: description longer than 600 characters")
         _check_name(doc, names_seen, report, kit)

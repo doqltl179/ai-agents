@@ -2,6 +2,7 @@
 name: kit-install
 description: "Install the kit into a project as one tracked unit: open its issue and task branch, run the installer, adopt every hand-written or unmanaged instruction file it reports into the overlay (deleting them only with user confirmation), fill the profile through codebase onboarding with the policy the user confirms, render and validate, open the pull request, and after it merges propose repository settings and a label review. Use when a project has no `.ai/kit/` yet and should start using the kit."
 category: kit
+scope: kit-repo
 volatility: evolving
 reviewed: 2026-10-09
 ---
