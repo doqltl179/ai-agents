@@ -2,6 +2,7 @@
 name: kit-trend-scan
 description: "Scan the tech radar watchlist for trend-scout: for each item due, read official release notes and changelogs, identify changes that affect kit files (tool formats, model capabilities, deprecations, new major versions, new practices), file an intake record per change with source and date, and update the radar's last-checked date and status. Edits nothing outside the radar. Use when watchlist items are due for a check, or a major release lands in a watched tool, standard, or model."
 category: kit
+scope: kit-repo
 volatility: evolving
 reviewed: 2026-10-09
 ---

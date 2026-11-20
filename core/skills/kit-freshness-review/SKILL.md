@@ -15,7 +15,7 @@ reviewed: 2026-10-09
 
 ## Do Not Use When
 - A specific defect is already known → `kit-page-update`.
-- The question is what changed in the outside world since the last scan → `kit-trend-scan`.
+- The question is what changed in the outside world since the last scan → `kit-trend-scan` in the kit repository; in an installed project, `kit-update`, since kit releases carry what the kit's scans found.
 
 ## Inputs
 - Scope: the kit repository, or `.ai/project/` in an installed project.

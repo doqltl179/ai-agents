@@ -64,6 +64,34 @@ class GlobTests(unittest.TestCase):
         self.assertFalse(agentkit.glob_re("core/*.md").match("core/wiki/a.md"))
 
 
+class ConditionTests(unittest.TestCase):
+    def test_segments_follow_conditions(self) -> None:
+        text = "a{{x| on}}{{y|Y|N}}{{x|1|0}}"
+        self.assertEqual(agentkit.apply_conditions(text, {"x": True, "y": False}), "a onN1")
+        self.assertEqual(agentkit.apply_conditions(text, {"x": False, "y": True}), "aY0")
+        self.assertEqual(agentkit.condition_problems(text, {"x": True, "y": True}), [])
+
+    def test_unknown_and_malformed_segments(self) -> None:
+        problems = agentkit.condition_problems("{{z|a}} {{x|open", {"x": True})
+        self.assertEqual(len(problems), 2)
+        self.assertIn("unknown condition 'z'", problems[0])
+        self.assertIn("malformed segment", problems[1])
+
+    def test_issue_first_needs_a_platform(self) -> None:
+        conditions = agentkit.profile_conditions({"policy": {"issue_first": True, "worktrees": True},
+                                                  "hosting": {"platform": "none"}})
+        self.assertEqual(conditions, {"platform": False, "issue-first": False, "worktrees": True})
+
+
+class SkillListTests(unittest.TestCase):
+    def test_without_skills_drops_names_bullets_and_sections(self) -> None:
+        body = "# A\n\n## Skills\n- `a`, `b`\n- `c`\n\n## Output\n- x\n"
+        self.assertEqual(agentkit.without_skills(body, {"b", "c"}), "# A\n\n## Skills\n- `a`\n\n## Output\n- x\n")
+        self.assertEqual(agentkit.without_skills(body, {"a", "b", "c"}), "# A\n\n## Output\n- x\n")
+        self.assertEqual(agentkit.without_skills(body, set()), body)
+        self.assertEqual(agentkit.without_skills("# A\n", {"a"}), "# A\n")
+
+
 class ReleaseTagTests(unittest.TestCase):
     def test_picks_highest_semver_tag(self) -> None:
         output = ("a1\trefs/tags/v0.9.0\nb2\trefs/tags/v0.10.0\nc3\trefs/tags/v0.2.1\n"
@@ -73,6 +101,65 @@ class ReleaseTagTests(unittest.TestCase):
     def test_no_release_tag(self) -> None:
         self.assertIsNone(agentkit.latest_release_tag("a1\trefs/tags/nightly\n"))
         self.assertIsNone(agentkit.latest_release_tag(""))
+
+
+class ProfileUpdateNoticeTests(unittest.TestCase):
+    OLD = {"policy": {"integration_branch": "develop", "issue_first": True, "worktree_root": ".worktrees"},
+           "docs": {"locales": [], "glossary": ".ai/project/wiki/glossary.md"}}
+    NEW = {"policy": {"integration_branch": "main", "issue_first": False, "worktree_root": ".worktrees"},
+           "docs": {"glossary": ""}}
+
+    def notices(self, user: dict) -> list[str]:
+        return agentkit.profile_update_notices(user, self.OLD, self.NEW)
+
+    def test_unset_key_whose_default_changes(self) -> None:
+        notices = self.notices({})
+        self.assertEqual(len(notices), 3, notices)
+        self.assertIn('the default of policy.integration_branch changes from "develop" to "main"; '
+                      'setting integration_branch = "develop" under [policy]', notices[0])
+        self.assertIn("issue_first = true under [policy]", notices[1])
+        self.assertIn('glossary = ".ai/project/wiki/glossary.md" under [docs]', notices[2])
+        self.assertFalse(any("worktree_root" in n or "locales" in n for n in notices), notices)
+
+    def test_set_key_the_kit_no_longer_reads(self) -> None:
+        user = {"docs": {"locales": ["ko"]}, "commands": {"test_editmode": "unity"}, "bindings": {"x": {"paths": []}}}
+        notices = self.notices(user)
+        removed = [n for n in notices if "locales" in n]
+        self.assertEqual(len(removed), 1, notices)
+        self.assertIn("sets docs.locales, which the kit no longer reads; follow the Migration notes", removed[0])
+        self.assertNotIn("None", removed[0])
+        self.assertFalse(any("test_editmode" in n or "bindings" in n for n in notices), notices)
+
+    def test_set_key_holding_old_or_own_value(self) -> None:
+        user = {"policy": {"integration_branch": "develop", "issue_first": False},
+                "docs": {"glossary": "docs/glossary.md"}}
+        self.assertEqual(self.notices(user), [
+            'profile: policy.integration_branch still holds the old default "develop"; the new default is "main". '
+            'Set integration_branch = "main" under [policy] to adopt it, or keep it on purpose.'])
+
+    def test_set_key_holding_old_default_outside_explicit_sections(self) -> None:
+        notices = agentkit.profile_update_notices({"release": {"tag_pattern": "v{version}"}},
+                                                  {"release": {"tag_pattern": "v{version}"}},
+                                                  {"release": {"tag_pattern": "{version}"}})
+        self.assertEqual(notices, [
+            'profile: release.tag_pattern still holds the old default "v{version}"; the new default is "{version}". '
+            "Remove the key to adopt it, or keep it on purpose."])
+
+    def test_toml_values(self) -> None:
+        self.assertEqual(agentkit.toml_value(["develop", "main"]), '["develop", "main"]')
+        self.assertEqual(agentkit.toml_value({"README.md": "docs/{locale}/README.md"}),
+                         '{ "README.md" = "docs/{locale}/README.md" }')
+        self.assertEqual(agentkit.toml_value(0), "0")
+
+
+class OverlayTemplateTests(unittest.TestCase):
+    def test_profile_and_glossary_left_out(self) -> None:
+        root = agentkit.CORE / "templates" / "project"
+        names = [agentkit.rel(p, root) for p in agentkit.overlay_templates()]
+        self.assertTrue((root / agentkit.GLOSSARY_TEMPLATE).is_file(), "the glossary template stays in the kit")
+        self.assertNotIn(agentkit.GLOSSARY_TEMPLATE, names)
+        self.assertNotIn("profile.toml", names)
+        self.assertIn("wiki/README.md", names)
 
 
 class CapacityTests(unittest.TestCase):
@@ -103,6 +190,39 @@ class KitRepositoryTests(unittest.TestCase):
     def test_kit_repository_is_consistent(self) -> None:
         result = run(TOOLS / "agentkit.py", "check", cwd=agentkit.KIT_ROOT)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_freshness_fields_are_required_only_in_the_kit(self) -> None:
+        kit = agentkit.Kit(agentkit.KIT_ROOT)
+        for doc in kit.pages:
+            if doc.path.name == "README.md":
+                doc.meta.pop("reviewed", None)
+        report = agentkit.Report()
+        agentkit.validate(kit, report)
+        missing = [e for e in report.errors if "missing frontmatter 'reviewed'" in e]
+        self.assertIn("core/wiki/README.md: missing frontmatter 'reviewed'", missing)
+        self.assertFalse([e for e in missing if e.startswith(".ai/project/")], missing)
+
+    def test_budget_overruns_are_errors_only_in_kit_files(self) -> None:
+        kit = agentkit.Kit(agentkit.KIT_ROOT)
+        kit.budgets = [(agentkit.glob_re(p), p, 1) for p in ("core/START.md", ".ai/project/lessons.md", "AGENTS.md")]
+        report = agentkit.Report()
+        agentkit.check_budgets(kit, report, {"AGENTS.md": "a\nb\n"})
+        self.assertEqual([e.split(":")[0] for e in report.errors], ["core/START.md"])
+        self.assertEqual(sorted(w.split(":")[0] for w in report.warnings), [".ai/project/lessons.md", "AGENTS.md"])
+
+    def test_platform_must_be_github_or_none(self) -> None:
+        for value, ok in (("github", True), ("none", True), ("gitlab", False), ("", False), ("None", False)):
+            with self.subTest(platform=value):
+                kit = agentkit.Kit(agentkit.KIT_ROOT)
+                kit.profile["hosting"]["platform"] = value
+                report = agentkit.Report()
+                agentkit.validate_profile(kit, report)
+                errors = [e for e in report.errors if e.startswith("profile hosting.platform:")]
+                self.assertEqual(errors, [] if ok else [f'profile hosting.platform: "{value}" is not one of "github", "none"'])
+
+    def test_kit_repository_renders_its_own_skills(self) -> None:
+        files = agentkit.Renderer(agentkit.Kit(agentkit.KIT_ROOT)).render().files
+        self.assertIn(".claude/skills/kit-stack-add/SKILL.md", files)
 
 
 class InstallTests(unittest.TestCase):
@@ -138,9 +258,9 @@ class InstallTests(unittest.TestCase):
                         ".codex/agents/web-frontend-engineer.toml", ".claude/skills/git-commit/SKILL.md",
                         ".agents/skills/git-commit/SKILL.md", ".claude/rules/stack-typescript.md",
                         ".github/instructions/stack-react.instructions.md", ".cursor/rules/stack-react.mdc",
-                        ".ai/generated/catalog.md", ".ai/project/profile.toml", ".ai/project/wiki/glossary.md",
-                        ".claude/skills/translate/SKILL.md"]:
+                        ".ai/generated/catalog.md", ".ai/project/profile.toml", ".claude/skills/translate/SKILL.md"]:
             self.assertTrue((self.project / relpath).exists(), relpath)
+        self.assertFalse((self.project / ".ai" / "project" / "wiki" / "glossary.md").exists(), "install never copies the glossary")
         self.assertFalse((self.project / ".github" / "skills").exists(), "copilot skills duplicate claude/codex skills")
         agent = (self.project / ".claude" / "agents" / "web-frontend-engineer.md").read_text(encoding="utf-8")
         self.assertIn("`web/**`", agent)
@@ -150,10 +270,194 @@ class InstallTests(unittest.TestCase):
         gitignore = (self.project / ".gitignore").read_text(encoding="utf-8")
         self.assertIn(".ai/tasks/", gitignore)
         self.assertIn(".worktrees/", gitignore)
-        self.assertIn("| `policy.integration_branch` | develop |",
+        self.assertIn("| `policy.integration_branch` | main |",
                       (self.project / "AGENTS.md").read_text(encoding="utf-8"))
         import tomllib
         tomllib.loads((self.project / ".codex" / "agents" / "code-reviewer.toml").read_text(encoding="utf-8"))
+
+    def set_switches(self, issue_first: bool, worktrees: bool, platform: str, extra: str = "") -> None:
+        """Rewrite the profile from its installed form with these switches set explicitly, so tests do not depend
+        on the template defaults."""
+        profile = self.project / ".ai" / "project" / "profile.toml"
+        if not hasattr(self, "installed_profile"):
+            self.installed_profile = profile.read_text(encoding="utf-8")
+        profile.write_text(self.installed_profile + f"\n[policy]\nissue_first = {str(issue_first).lower()}\n"
+                           f'worktrees = {str(worktrees).lower()}\n\n[hosting]\nplatform = "{platform}"\n' + extra,
+                           encoding="utf-8")
+
+    def test_stop_first_follows_profile_switches(self) -> None:
+        self.install()
+        lifecycle = "[request-lifecycle.md](.ai/kit/core/wiki/operating-model/request-lifecycle.md)"
+        git_workflow = "[git-workflow.md](.ai/kit/core/wiki/workflows/git-workflow.md)"
+        cases = [
+            ((True, True, "github"),
+             f"- Each unit: issue first, its own worktree from the integration branch, pull request back into it — {lifecycle}",
+             f"- Never commit directly to a protected branch or edit files in the main checkout — {git_workflow}"),
+            ((True, False, "github"),
+             "- Each unit: issue first, its own task branch (in its own worktree when units run at the same time) from the "
+             f"integration branch, pull request back into it — {lifecycle}",
+             f"- Never commit directly to a protected branch — {git_workflow}"),
+            ((True, True, "none"),
+             "- Each unit: its own worktree from the integration branch, merged back with a recorded merge commit after "
+             f"the user approves («Scaling The Order») — {lifecycle}",
+             f"- Never commit directly to a protected branch or edit files in the main checkout — {git_workflow}"),
+            ((False, False, "none"),
+             "- Each unit: its own task branch (in its own worktree when units run at the same time) from the integration "
+             f"branch, merged back with a recorded merge commit after the user approves («Scaling The Order») — {lifecycle}",
+             f"- Never commit directly to a protected branch — {git_workflow}"),
+        ]
+        for switches, unit_line, commit_line in cases:
+            with self.subTest(switches=switches):
+                self.set_switches(*switches)
+                self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+                lines = (self.project / "AGENTS.md").read_text(encoding="utf-8").split("\n")
+                self.assertIn(unit_line, lines)
+                self.assertIn(commit_line, lines)
+                self.assertFalse(any("{{" in line for line in lines))
+                self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
+
+    def test_platform_none_drops_github_skills(self) -> None:
+        self.install()
+        skills = [".claude/skills/github-pr-create/SKILL.md", ".agents/skills/github-issue-create/SKILL.md"]
+        self.set_switches(True, True, "github")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        for relpath in skills:
+            self.assertTrue((self.project / relpath).exists(), relpath)
+        self.set_switches(True, True, "none")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        for relpath in skills:
+            self.assertFalse((self.project / relpath).exists(), relpath)
+            self.assertFalse((self.project / relpath).parent.exists(), relpath)
+        self.assertNotIn("[`github-pr-create`]", (self.project / ".ai" / "generated" / "catalog.md").read_text(encoding="utf-8"))
+        check = run(self.script, "check", cwd=self.project)
+        self.assertEqual(check.returncode, 0, check.stdout)
+        self.assertNotIn("lists inactive skill", check.stdout)  # release-manager lists github-pr-create
+        self.set_switches(True, True, "github")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        for relpath in skills:
+            self.assertTrue((self.project / relpath).exists(), relpath)
+
+    def skills_section(self, agent: str) -> str:
+        text = (self.project / ".claude" / "agents" / f"{agent}.md").read_text(encoding="utf-8")
+        start = text.find("\n## Skills\n")
+        return "" if start < 0 else text[start:text.index("\n## ", start + 1)]
+
+    def test_agent_cards_list_only_rendered_skills(self) -> None:
+        self.install()
+        self.set_switches(True, True, "none", '\n[agents]\nenabled = ["@documentation", "@release", "@evolution"]\n')
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        release = self.skills_section("release-manager")
+        self.assertIn("`release-cut`, `git-conflict-resolve`, `ci-failure-triage`", release)
+        self.assertNotIn("github-pr-create", release)
+        librarian = self.skills_section("kit-librarian")
+        self.assertIn("`kit-page-add`", librarian)
+        self.assertNotIn("kit-stack-add", librarian)
+        self.assertEqual(self.skills_section("trend-scout"), "")  # both of its skills are ruled out
+        codex = (self.project / ".codex" / "agents" / "release-manager.toml").read_text(encoding="utf-8")
+        self.assertNotIn("github-pr-create", codex)
+        self.set_switches(True, True, "github", '\n[agents]\nenabled = ["@release"]\n')
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        self.assertIn("`github-pr-create`", self.skills_section("release-manager"))
+
+    def test_named_skills_that_do_not_apply_warn(self) -> None:
+        self.install()
+        self.set_switches(True, True, "none", '\n[skills]\nenabled = ["@git", "github-pr-create", "kit-stack-add"]\n')
+        local = self.project / ".ai" / "project" / "skills" / "github-demo"
+        local.mkdir(parents=True)
+        (local / "SKILL.md").write_text(
+            '---\nname: github-demo\ndescription: "Runs the demo. Use when a demo is due."\ncategory: github\n---\n\n# Demo\n',
+            encoding="utf-8")
+        sync = run(self.script, "sync", cwd=self.project)
+        self.assertEqual(sync.returncode, 0, sync.stdout)
+        self.assertIn("profile [skills].enabled: 'github-pr-create' is not rendered, since its category is github", sync.stdout)
+        check = run(self.script, "check", cwd=self.project).stdout
+        self.assertIn("profile [skills].enabled: 'kit-stack-add' is not rendered, since its scope is kit-repo", check)
+        self.assertIn(".ai/project/skills/github-demo/SKILL.md: not rendered, since its category is github", check)
+        self.set_switches(True, True, "none", '\n[skills]\nenabled = ["*"]\n')
+        (local / "SKILL.md").unlink()
+        self.assertNotIn("is not rendered", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_kit_repository_skills_and_disabled_skills(self) -> None:
+        self.install()
+        self.set_switches(True, True, "github", '\n[agents]\nenabled = ["@documentation", "@evolution"]\n')
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        catalog = (self.project / ".ai" / "generated" / "catalog.md").read_text(encoding="utf-8")
+        for name in ("kit-stack-add", "kit-trend-scan"):
+            self.assertFalse((self.project / ".claude" / "skills" / name).exists(), name)
+            self.assertNotIn(f"[`{name}`]", catalog)
+        # kit-install configures the project right after `install`, so it stays.
+        self.assertTrue((self.project / ".claude" / "skills" / "kit-install" / "SKILL.md").exists())
+        check = run(self.script, "check", cwd=self.project)
+        self.assertEqual(check.returncode, 0, check.stdout)
+        self.assertNotIn("lists inactive skill", check.stdout)  # kit-librarian and trend-scout list kit-repo skills
+        self.set_switches(True, True, "github", '\n[agents]\nenabled = ["@documentation"]\n\n[skills]\ndisabled = ["kit-update"]\n')
+        self.assertNotIn("lists inactive skill", run(self.script, "check", cwd=self.project).stdout)
+        self.set_switches(True, True, "github", '\n[agents]\nenabled = ["@documentation"]\n\n[skills]\nenabled = ["@git"]\n')
+        out = run(self.script, "check", cwd=self.project).stdout
+        line = next(x for x in out.split("\n") if "active agent 'kit-librarian' lists inactive skill(s)" in x)
+        self.assertIn("kit-page-add", line)
+        self.assertNotIn("kit-stack-add", line)
+
+    def test_skill_scope_values_are_validated(self) -> None:
+        self.install()
+        self.assertEqual(run(self.script, "new", "skill", "demo", "--category", "docs", cwd=self.project).returncode, 0)
+        skill = self.project / ".ai" / "project" / "skills" / "demo" / "SKILL.md"
+        skill.write_text(skill.read_text(encoding="utf-8").replace("category: docs\n", "category: docs\nscope: anywhere\n"),
+                         encoding="utf-8")
+        self.assertIn("unknown scope 'anywhere'", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_overlay_freshness_fields_are_optional(self) -> None:
+        self.install()
+        self.assertNotIn(".ai/project/", run(self.script, "freshness", "--all", cwd=self.project).stdout)
+        overlay = self.project / ".ai" / "project"
+        (overlay / "wiki" / "plain.md").write_text('---\nowns: "Plain facts"\n---\n\n# Plain\n\nA fact.\n', encoding="utf-8")
+        (overlay / "wiki" / "old.md").write_text('---\nowns: "Old facts"\nvolatility: evolving\nreviewed: 2020-01-01\n---\n\n'
+                                                 '# Old\n\nAn old fact.\n', encoding="utf-8")
+        (overlay / "wiki" / "half.md").write_text('---\nowns: "Half facts"\nreviewed: 2020-01-01\n---\n\n# Half\n\nA fact.\n',
+                                                  encoding="utf-8")
+        (overlay / "skills" / "demo").mkdir(parents=True)
+        (overlay / "skills" / "demo" / "SKILL.md").write_text(
+            '---\nname: demo\ndescription: "Runs the demo. Use when a demo is due."\ncategory: docs\n---\n\n# Demo\n',
+            encoding="utf-8")
+        (overlay / "skills" / "half-skill").mkdir(parents=True)
+        (overlay / "skills" / "half-skill" / "SKILL.md").write_text(
+            '---\nname: half-skill\ndescription: "Runs half. Use when half is due."\ncategory: docs\nvolatility: evolving\n---\n\n'
+            '# Half\n', encoding="utf-8")
+        (overlay / "agents").mkdir()
+        for name, extra in (("demo-writer", ""), ("half-writer", "reviewed: 2020-01-01\n")):
+            (overlay / "agents" / f"{name}.md").write_text(
+                f'---\nname: {name}\ndescription: "Writes demos. Use when a demo changes; not for code."\n'
+                f'department: documentation\nextends: technical-writer\n{extra}---\n\n# Demo Writer\n\n## Owns\n- Demos.\n',
+                encoding="utf-8")
+        sync = run(self.script, "sync", cwd=self.project)
+        self.assertEqual(sync.returncode, 0, sync.stdout)
+        check = run(self.script, "check", cwd=self.project)
+        self.assertEqual(check.returncode, 0, check.stdout)
+        self.assertNotIn("missing frontmatter", check.stdout)
+        for half in ("wiki/half.md", "skills/half-skill/SKILL.md", "agents/half-writer.md"):
+            self.assertIn(f".ai/project/{half}: freshness tracks an overlay file only with both", check.stdout)
+        self.assertIn("1 file(s) overdue for review", check.stdout)
+        fresh = run(self.script, "freshness", "--all", cwd=self.project).stdout
+        self.assertIn(".ai/project/wiki/old.md", fresh)
+        for name in ("plain.md", "half.md", "skills/demo", "skills/half-skill", "agents/demo-writer", "agents/half-writer"):
+            self.assertNotIn(name, fresh)
+        (overlay / "wiki" / "plain.md").write_text("---\nvolatility: evolving\n---\n\n# Plain\n", encoding="utf-8")
+        self.assertIn(".ai/project/wiki/plain.md: missing frontmatter 'owns'", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_project_budget_overruns_are_warnings(self) -> None:
+        self.install()
+        profile = self.project / ".ai" / "project" / "profile.toml"
+        rules = ", ".join(f'"Project rule {i}."' for i in range(60))
+        profile.write_text(profile.read_text(encoding="utf-8").replace('language = "en"', f'language = "en"\nguardrails = [{rules}]'),
+                           encoding="utf-8")
+        page = self.project / ".ai" / "project" / "wiki" / "long.md"
+        page.write_text('---\nowns: "A long page"\n---\n\n# Long\n\n' + "".join(f"Fact {i}.\n\n" for i in range(80)),
+                        encoding="utf-8")
+        self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+        check = run(self.script, "check", cwd=self.project)
+        self.assertEqual(check.returncode, 0, check.stdout)
+        self.assertRegex(check.stdout, r"warning: AGENTS\.md: \d+ lines exceeds budget 120")
+        self.assertRegex(check.stdout, r"warning: \.ai/project/wiki/long\.md: \d+ lines exceeds budget 150")
 
     def test_drift_and_local_kit_edits_fail_check(self) -> None:
         self.install()
@@ -168,6 +472,16 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("kit file edited locally", result.stdout)
 
+    def test_check_reports_malformed_start_conditions(self) -> None:
+        self.install()
+        start = self.project / ".ai" / "kit" / "core" / "START.md"
+        start.write_text(start.read_text(encoding="utf-8") + "\n- {{worktrees|open\n- {{nope|x}}\n", encoding="utf-8")
+        result = run(self.script, "check", cwd=self.project)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn(".ai/kit/core/START.md: malformed segment", result.stdout)
+        self.assertIn(".ai/kit/core/START.md: unknown condition 'nope'", result.stdout)
+        self.assertIn("sync aborted", run(self.script, "sync", cwd=self.project).stdout)
+
     def test_refuses_to_overwrite_hand_written_entry(self) -> None:
         (self.project / "AGENTS.md").write_text("# Hand-written rules\n", encoding="utf-8")
         result = self.install()
@@ -178,12 +492,14 @@ class InstallTests(unittest.TestCase):
     def test_minimal_profile_takes_defaults(self) -> None:
         self.install()
         profile = (self.project / ".ai" / "project" / "profile.toml").read_text(encoding="utf-8")
-        self.assertNotIn("[policy]", profile)
+        self.assertNotIn("\n[policy]", profile)
         self.assertIn('name = "demo"', profile)
-        self.assertIn("| `policy.integration_branch` | develop |", (self.project / "AGENTS.md").read_text(encoding="utf-8"))
+        self.assertIn("| `policy.integration_branch` | main |", (self.project / "AGENTS.md").read_text(encoding="utf-8"))
         path = self.project / ".ai" / "project" / "profile.toml"
-        path.write_text(profile + '\n[policy]\nintegration_branch = "develop"\n', encoding="utf-8")
-        self.assertIn("profile repeats 1 kit default(s): policy.integration_branch", run(self.script, "check", cwd=self.project).stdout)
+        # Policy, hosting, and docs values stay explicit even when they equal a default; other sections stay minimal.
+        path.write_text(profile + '\n[policy]\nintegration_branch = "main"\n\n[hosting]\nplatform = "none"\n'
+                        '\n[docs]\nchangelog = ""\n\n[skills]\nenabled = ["*"]\n', encoding="utf-8")
+        self.assertIn("profile repeats 1 kit default(s): skills.enabled;", run(self.script, "check", cwd=self.project).stdout)
 
     def test_unmanaged_instruction_files_are_reported(self) -> None:
         self.install()
@@ -226,13 +542,16 @@ class InstallTests(unittest.TestCase):
         refused = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), "--ref", "main", cwd=self.project)
         self.assertEqual(refused.returncode, 1)
         self.assertIn("--ref applies to a git URL", refused.stdout)
-        # An install from before «Line Endings» has no .gitattributes section; update adds it.
+        # A project without the «Line Endings» section: update names the missing lines and leaves the file alone.
         (self.project / ".gitattributes").unlink()
         result = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), cwd=self.project)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("kit updated", result.stdout)
-        self.assertIn("added an agentkit section to .gitattributes", result.stdout)
-        self.assertIn(".ai/** text=auto eol=lf\n", (self.project / ".gitattributes").read_text(encoding="utf-8"))
+        self.assertIn(f".gitattributes lacks {len(agentkit.GITATTRIBUTES_LINES)} agentkit line(s)", result.stdout)
+        self.assertIn("\n.ai/** text=auto eol=lf\n", result.stdout)
+        self.assertNotIn("added an agentkit section to .gitattributes", result.stdout)
+        self.assertFalse((self.project / ".gitattributes").exists())
+        self.assertNotIn("profile:", result.stdout)
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
 
     def test_converting_checkout_does_not_list_agent_files_as_modified(self) -> None:
@@ -280,7 +599,12 @@ class InstallTests(unittest.TestCase):
         result = run(self.script, "sync", cwd=self.project)
         self.assertEqual(result.returncode, 0, result.stdout)
         agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
-        self.assertIn("### Project Rules\n\n- Features live in the packages.", agents_md)
+        self.assertIn("### Project Rules\n\nAn entry that starts with `Replaces «<Section>» in <page>.md:` replaces, in this "
+                      "project, the rules of that core section it contradicts, including their summary lines in «Stop First», "
+                      "per «Layers and Precedence» in [ssot.md](.ai/kit/core/wiki/principles/ssot.md).\n\n"
+                      "- Features live in the packages.", agents_md)
+        self.assertIn("| `policy.review_gate` | non-trivial |", agents_md)
+        self.assertIn("| `evolution.propose_upstream` | false |", agents_md)
         rule = (self.project / ".claude" / "rules" / "project-packages.md").read_text(encoding="utf-8")
         self.assertIn('  - "Packages/**"', rule)
         self.assertIn("Keep runtime code free of editor APIs.", rule)
@@ -293,25 +617,24 @@ class InstallTests(unittest.TestCase):
                            encoding="utf-8")
         self.assertIn("unknown command 'nope'", run(self.script, "check", cwd=self.project).stdout)
 
-    def test_locale_paths_and_release_packages(self) -> None:
+    def test_project_keys_and_release_packages(self) -> None:
         self.install()
         profile = self.project / ".ai" / "project" / "profile.toml"
         base = profile.read_text(encoding="utf-8")
         profile.write_text(base + '\n[hosting]\nci = false\n'
-                           '\n[docs.locale_paths]\n"README.md" = "docs/readme/README.{locale}{ext}"\n'
+                           '\n[docs.translations]\n"README.md" = "docs/{lang}/README.md"\n'
                            '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\n'
                            'changelog = "core/CHANGELOG.md"\ntag_pattern = "core/v{version}"\n', encoding="utf-8")
         self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
         agents_md = (self.project / "AGENTS.md").read_text(encoding="utf-8")
         self.assertIn("| `hosting.ci` | false |", agents_md)
-        self.assertIn("| `docs.locale_paths` | README.md → docs/readme/README.{locale}{ext} |", agents_md)
+        self.assertIn("| `docs.translations` | README.md → docs/{lang}/README.md |", agents_md)
+        self.assertNotIn("docs.locale_pattern", agents_md)
         self.assertIn("| `release.packages` | core |", agents_md)
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
-        profile.write_text(base + '\n[docs]\nlocale_pattern = "docs/{lang}/{name}"\n'
-                           '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\ntag_pattern = "core"\n',
+        profile.write_text(base + '\n[[release.packages]]\nname = "core"\nversion_file = "core/package.json"\ntag_pattern = "core"\n',
                            encoding="utf-8")
         out = run(self.script, "check", cwd=self.project).stdout
-        self.assertIn("unknown placeholder(s) lang", out)
         self.assertIn("tag_pattern must contain {version}", out)
 
     def test_unfilled_scaffolds_are_reported(self) -> None:
@@ -320,7 +643,7 @@ class InstallTests(unittest.TestCase):
                      ["page", "rules/packages"]):
             self.assertEqual(run(self.script, "new", *args, cwd=self.project).returncode, 0)
         page = self.project / ".ai" / "project" / "wiki" / "rules" / "packages.md"
-        self.assertIn("applies_to: []", page.read_text(encoding="utf-8"))
+        self.assertIn("applies_to: []\n---\n", page.read_text(encoding="utf-8"))
         out = run(self.script, "check", cwd=self.project).stdout
         self.assertIn(".ai/project/agents/one.md: unfilled scaffold placeholder(s)", out)
         self.assertIn(".ai/project/agents/two.md: unfilled scaffold placeholder(s)", out)
@@ -334,6 +657,16 @@ class InstallTests(unittest.TestCase):
         card = (self.project / ".ai" / "project" / "agents" / "editor-tools.md").read_text(encoding="utf-8")
         self.assertIn("extends: game-tools-engineer", card)
         self.assertIn("department: client", card)
+        self.assertEqual(run(self.script, "new", "skill", "demo", "--category", "docs", cwd=self.project).returncode, 0)
+        self.assertEqual(run(self.script, "new", "page", "facts", cwd=self.project).returncode, 0)
+        overlay = self.project / ".ai" / "project"
+        for path in (overlay / "agents" / "editor-tools.md", overlay / "skills" / "demo" / "SKILL.md", overlay / "wiki" / "facts.md"):
+            meta, _ = agentkit.parse_frontmatter(path.read_text(encoding="utf-8"))
+            self.assertFalse({"volatility", "reviewed"} & set(meta), path)
+        for template in ("agent.md", "skill/SKILL.md", "page.md"):  # `--core` keeps them
+            meta, _ = agentkit.parse_frontmatter((agentkit.CORE / "templates" / template).read_text(encoding="utf-8"))
+            self.assertTrue({"volatility", "reviewed"} <= set(meta), template)
+        self.assertNotIn("freshness tracks", run(self.script, "check", cwd=self.project).stdout)
         self.assertEqual(run(self.script, "new", "plan", "demo-task", cwd=self.project).returncode, 0)
         self.assertEqual(len(list((self.project / ".ai" / "tasks").glob("*-demo-task.md"))), 1)
         refused = run(self.script, "new", "page", "x", "--core", cwd=self.project)
