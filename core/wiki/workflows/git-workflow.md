@@ -26,7 +26,7 @@ Branch names and switches come from the profile: `policy.integration_branch`, `p
 | `policy.release_branch` | Release. When it differs from the integration branch, changes arrive only through a promotion from it («Promotion» in [release.md](release.md)) |
 | Task branch | One per unit, named by `policy.branch_pattern`, in the unit's own worktree when «Worktrees» gives it one |
 
-- Never commit directly to a branch in `policy.protected_branches`; changes arrive through merged pull requests or, with `hosting.platform = "none"`, through the approved merge commit of «Scaling The Order» in [request-lifecycle.md](../operating-model/request-lifecycle.md).
+- Never commit directly to a branch in `policy.protected_branches`; changes arrive through merged pull requests or, with `hosting.platform = "none"`, through the approved merge commit of «Scaling The Order» in [request-lifecycle.md](../operating-model/request-lifecycle.md) or of «Promotion» in [release.md](release.md).
 - With `policy.commit_convention = "conventional"`, the branch `<type>` is one of `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, and the scope matches the commit scope. Otherwise `<type>` is a short lowercase word for the kind of change, such as `fix` or `feat`.
 - One task branch carries one bounded unit and, when `policy.issue_first` is on, one issue.
 
