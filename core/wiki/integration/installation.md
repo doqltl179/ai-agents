@@ -45,7 +45,7 @@ The kit is copied, not linked as a Git submodule: tools load instruction files f
   .ai/project/                 the overlay, owned by the project
   .ai/generated/               catalog and manifest, generated
   .ai/tasks/                   plans and idea records, not committed
-  .worktrees/                  one worktree per unit, not committed
+  .worktrees/                  unit worktrees («Worktrees» in git-workflow.md), not committed
 ```
 
 ## Editor Settings
