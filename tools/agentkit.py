@@ -34,6 +34,7 @@ NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 LINK_RE = re.compile(r"(!?\[[^\]\n]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 REGION_RE = re.compile(r"(<!-- agentkit:begin (?P<name>[\w-]+) -->\n)(?P<body>.*?)(<!-- agentkit:end (?P=name) -->)", re.S)
+CONDITION_RE = re.compile(r"\{\{([a-z][a-z-]*)\|([^|{}\n]*)(?:\|([^|{}\n]*))?\}\}")
 
 # Adapter table: the single owner of which files each AI tool reads. Rendered into tool-adapters.md.
 ADAPTERS: dict[str, dict[str, str | None]] = {
@@ -454,6 +455,29 @@ def table_cell(text: str) -> str:
     return " ".join(str(text).split()).replace("|", "\\|")
 
 
+def profile_conditions(profile: dict) -> dict[str, bool]:
+    """The profile switches that `{{condition|text|other text}}` segments in START.md test."""
+    policy, hosting = profile.get("policy", {}), profile.get("hosting", {})
+    platform = str(hosting.get("platform", "")) != "none"
+    return {
+        "platform": platform,
+        "issue-first": bool(policy.get("issue_first")) and platform,
+        "worktrees": bool(policy.get("worktrees")),
+    }
+
+
+def apply_conditions(text: str, conditions: dict[str, bool]) -> str:
+    return CONDITION_RE.sub(lambda m: m.group(2) if conditions[m.group(1)] else (m.group(3) or ""), text)
+
+
+def condition_problems(text: str, conditions: dict[str, bool]) -> list[str]:
+    problems = [f"unknown condition '{name}' (known: {', '.join(conditions)})"
+                for name in sorted({m.group(1) for m in CONDITION_RE.finditer(text)} - set(conditions))]
+    if "{{" in CONDITION_RE.sub("", text):
+        problems.append("malformed segment; write {{condition|text|other text}}")
+    return problems
+
+
 # --------------------------------------------------------------------------- rendering
 
 class Renderer:
@@ -519,8 +543,8 @@ class Renderer:
         kit = self.kit
         start = CORE / "START.md"
         _, body = parse_frontmatter(read_text(start))
-        body = rewrite_links(body.strip("\n"), start.parent, self.p)
         prof = kit.profile
+        body = rewrite_links(apply_conditions(body.strip("\n"), profile_conditions(prof)), start.parent, self.p)
         project = prof.get("project", {})
         lines = [md_marker(kit, [self.src(start), ".ai/project/profile.toml"]), "", body, "", "## This Project", ""]
         title = project.get("name") or self.p.name
@@ -892,6 +916,9 @@ def validate(kit: Kit, report: Report) -> None:
             report.error(f"{where}: only project wiki pages take 'applies_to'; core path knowledge belongs in stack packs")
         if doc.meta.get("applies_to") and doc.origin == "project" and doc.path.parent != kit.overlay / "wiki" / "rules":
             report.error(f"{where}: pages with 'applies_to' load automatically and live in .ai/project/wiki/rules/")
+    start = CORE / "START.md"
+    for problem in condition_problems(parse_frontmatter(read_text(start))[1], profile_conditions(kit.profile)):
+        report.error(f"{rel(start, kit.project)}: {problem}")
     for doc in [*kit.agents.values(), *kit.skills.values(), *kit.stacks.values(), *kit.pages]:
         where = rel(doc.path, kit.project)
         vol, rev = doc.meta.get("volatility"), doc.meta.get("reviewed", "")

@@ -64,6 +64,25 @@ class GlobTests(unittest.TestCase):
         self.assertFalse(agentkit.glob_re("core/*.md").match("core/wiki/a.md"))
 
 
+class ConditionTests(unittest.TestCase):
+    def test_segments_follow_conditions(self) -> None:
+        text = "a{{x| on}}{{y|Y|N}}{{x|1|0}}"
+        self.assertEqual(agentkit.apply_conditions(text, {"x": True, "y": False}), "a onN1")
+        self.assertEqual(agentkit.apply_conditions(text, {"x": False, "y": True}), "aY0")
+        self.assertEqual(agentkit.condition_problems(text, {"x": True, "y": True}), [])
+
+    def test_unknown_and_malformed_segments(self) -> None:
+        problems = agentkit.condition_problems("{{z|a}} {{x|open", {"x": True})
+        self.assertEqual(len(problems), 2)
+        self.assertIn("unknown condition 'z'", problems[0])
+        self.assertIn("malformed segment", problems[1])
+
+    def test_issue_first_needs_a_platform(self) -> None:
+        conditions = agentkit.profile_conditions({"policy": {"issue_first": True, "worktrees": True},
+                                                  "hosting": {"platform": "none"}})
+        self.assertEqual(conditions, {"platform": False, "issue-first": False, "worktrees": True})
+
+
 class ReleaseTagTests(unittest.TestCase):
     def test_picks_highest_semver_tag(self) -> None:
         output = ("a1\trefs/tags/v0.9.0\nb2\trefs/tags/v0.10.0\nc3\trefs/tags/v0.2.1\n"
@@ -213,6 +232,46 @@ class InstallTests(unittest.TestCase):
                       (self.project / "AGENTS.md").read_text(encoding="utf-8"))
         import tomllib
         tomllib.loads((self.project / ".codex" / "agents" / "code-reviewer.toml").read_text(encoding="utf-8"))
+
+    def set_switches(self, issue_first: bool, worktrees: bool, platform: str, extra: str = "") -> None:
+        """Rewrite the profile from its installed form with these switches set explicitly, so tests do not depend
+        on the template defaults."""
+        profile = self.project / ".ai" / "project" / "profile.toml"
+        if not hasattr(self, "installed_profile"):
+            self.installed_profile = profile.read_text(encoding="utf-8")
+        profile.write_text(self.installed_profile + f"\n[policy]\nissue_first = {str(issue_first).lower()}\n"
+                           f'worktrees = {str(worktrees).lower()}\n\n[hosting]\nplatform = "{platform}"\n' + extra,
+                           encoding="utf-8")
+
+    def test_stop_first_follows_profile_switches(self) -> None:
+        self.install()
+        lifecycle = "[request-lifecycle.md](.ai/kit/core/wiki/operating-model/request-lifecycle.md)"
+        git_workflow = "[git-workflow.md](.ai/kit/core/wiki/workflows/git-workflow.md)"
+        cases = [
+            ((True, True, "github"),
+             f"- Each unit: issue first, its own worktree from the integration branch, pull request back into it — {lifecycle}",
+             f"- Never commit directly to a protected branch or edit files in the main checkout — {git_workflow}"),
+            ((True, False, "github"),
+             f"- Each unit: issue first, its own task branch from the integration branch, pull request back into it — {lifecycle}",
+             f"- Never commit directly to a protected branch — {git_workflow}"),
+            ((True, True, "none"),
+             "- Each unit: its own worktree from the integration branch, recorded in its plan instead of a pull request "
+             f"(«Scaling The Order») — {lifecycle}",
+             f"- Never commit directly to a protected branch or edit files in the main checkout — {git_workflow}"),
+            ((False, False, "none"),
+             "- Each unit: its own task branch from the integration branch, recorded in its plan instead of a pull request "
+             f"(«Scaling The Order») — {lifecycle}",
+             f"- Never commit directly to a protected branch — {git_workflow}"),
+        ]
+        for switches, unit_line, commit_line in cases:
+            with self.subTest(switches=switches):
+                self.set_switches(*switches)
+                self.assertEqual(run(self.script, "sync", cwd=self.project).returncode, 0)
+                lines = (self.project / "AGENTS.md").read_text(encoding="utf-8").split("\n")
+                self.assertIn(unit_line, lines)
+                self.assertIn(commit_line, lines)
+                self.assertFalse(any("{{" in line for line in lines))
+                self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
 
     def test_drift_and_local_kit_edits_fail_check(self) -> None:
         self.install()
