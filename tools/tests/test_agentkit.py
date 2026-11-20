@@ -275,15 +275,16 @@ class InstallTests(unittest.TestCase):
              f"- Each unit: issue first, its own worktree from the integration branch, pull request back into it — {lifecycle}",
              f"- Never commit directly to a protected branch or edit files in the main checkout — {git_workflow}"),
             ((True, False, "github"),
-             f"- Each unit: issue first, its own task branch from the integration branch, pull request back into it — {lifecycle}",
+             "- Each unit: issue first, its own task branch (in its own worktree when units run at the same time) from the "
+             f"integration branch, pull request back into it — {lifecycle}",
              f"- Never commit directly to a protected branch — {git_workflow}"),
             ((True, True, "none"),
              "- Each unit: its own worktree from the integration branch, recorded in its plan instead of a pull request "
              f"(«Scaling The Order») — {lifecycle}",
              f"- Never commit directly to a protected branch or edit files in the main checkout — {git_workflow}"),
             ((False, False, "none"),
-             "- Each unit: its own task branch from the integration branch, recorded in its plan instead of a pull request "
-             f"(«Scaling The Order») — {lifecycle}",
+             "- Each unit: its own task branch (in its own worktree when units run at the same time) from the integration "
+             f"branch, recorded in its plan instead of a pull request («Scaling The Order») — {lifecycle}",
              f"- Never commit directly to a protected branch — {git_workflow}"),
         ]
         for switches, unit_line, commit_line in cases:
