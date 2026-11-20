@@ -81,3 +81,5 @@ The reserve is the larger of the two: a fraction of total memory or the minimum.
 2. Pull requests merge in dependency order. A dependent unit's worktree is cut after its predecessors merged, or stacked on a predecessor's branch with the merge order stated in both pull requests.
 3. When units must be verified together before merging, `release-manager` combines the approved branches in dependency order on one temporary branch and stops on any conflict it cannot resolve from both sides' stated intent; the plan's named owner runs combined verification there, and the same gates review it.
 4. A dependent unit becomes ready only after its predecessors are merged.
+
+With `hosting.platform = "none"`, each unit returns through its approved merge per «Scaling The Order» in [request-lifecycle.md](request-lifecycle.md) instead of a pull request, in the same dependency order.

@@ -36,6 +36,7 @@ Releases of the project the kit is installed in. Kit releases follow [versioning
 - A promotion pull request carries everything merged into the integration branch since the last promotion; its body lists the included pull requests and, when the project keeps a changelog, the changelog section.
 - Open one only on request, when no unit planned for the release is still open and the integration branch's head is verified: CI passed on it, or with `hosting.ci = false` the full verification (every relevant `commands.*`) passed on a fresh checkout of it, with the results in the promotion pull request body.
 - Promotion without a version bump is allowed when the project does not version its releases; the rest of this page still applies.
+- With `hosting.platform = "none"` there is no promotion pull request: under the same conditions, after the user approves the merge and the push, switch the main checkout to the release branch and bring it up to date (`git pull --ff-only` when it has a remote), merge the integration branch into it with `git merge --no-ff`, put in the merge commit body what the promotion pull request body would hold, push the release branch when it has a remote, and switch back to the integration branch.
 
 ## Version Numbers
 
@@ -53,7 +54,7 @@ Releases of the project the kit is installed in. Kit releases follow [versioning
 ## Tags And Notes
 
 - Tag names come from `release.tag_pattern` (default `v{version}`), or from each package's `tag_pattern`. Use annotated tags.
-- Release notes summarize the changelog section for that version or, without a changelog, the pull requests merged since the previous tag (the commits, with `hosting.platform = "none"`; since the first commit for a first release); do not invent content beyond that source.
+- Release notes summarize the changelog section for that version or, without a changelog, the pull requests merged since the previous tag (the units' merge commits, with `hosting.platform = "none"`; since the first commit for a first release); do not invent content beyond that source.
 
 ## Publishing
 

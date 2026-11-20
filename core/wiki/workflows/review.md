@@ -26,7 +26,7 @@ Lens-specific checklists live in the review skills (`code-review-perform`, `secu
 |---|---|
 | `all` | Every review-ready change |
 | `non-trivial` (default) | Every review-ready change except a trivial one |
-| `none` | None: no agent gate runs, the security and accessibility gates included. The only review is the project's own review of the pull request, if it has one; with `hosting.platform = "none"` there may be none |
+| `none` | None: no agent gate runs, the security and accessibility gates included. The only review is the project's own review of the pull request, if it has one; with `hosting.platform = "none"`, the user's approval of the merge («Scaling The Order» in [request-lifecycle.md](../operating-model/request-lifecycle.md)) |
 
 Under every value, `none` included, a change in the kit repository that the `role-governor` row below matches still gets that gate: no other review checks the kit's structure.
 
