@@ -847,7 +847,7 @@ def validate(kit: Kit, report: Report) -> None:
     for doc in kit.agents.values():
         m = doc.meta
         where = rel(doc.path, kit.project)
-        for key in ("name", "description", "department", "tier", "access", "volatility", "reviewed"):
+        for key in ("name", "description", "department", "tier", "access", *freshness_keys(doc)):
             if not m.get(key) and not (doc.meta.get("extends") and key in ("tier", "access")):
                 report.error(f"{where}: missing frontmatter '{key}'")
         if m.get("name") != doc.path.stem:
@@ -886,7 +886,7 @@ def validate(kit: Kit, report: Report) -> None:
     for doc in kit.skills.values():
         m = doc.meta
         where = rel(doc.path, kit.project)
-        for key in ("name", "description", "category", "volatility", "reviewed"):
+        for key in ("name", "description", "category", *freshness_keys(doc)):
             if not m.get(key):
                 report.error(f"{where}: missing frontmatter '{key}'")
         if m.get("name") != doc.path.parent.name:
@@ -920,7 +920,7 @@ def validate(kit: Kit, report: Report) -> None:
         if not doc.meta:
             report.error(f"{where}: missing frontmatter")
             continue
-        for key in ("owns", "volatility", "reviewed"):
+        for key in ("owns", *freshness_keys(doc)):
             if not doc.meta.get(key):
                 report.error(f"{where}: missing frontmatter '{key}'")
         if doc.meta.get("volatility") == "volatile" and not doc.meta.get("sources"):
@@ -939,7 +939,15 @@ def validate(kit: Kit, report: Report) -> None:
             report.error(f"{where}: unknown volatility '{vol}'")
         if rev and not DATE_RE.match(str(rev)):
             report.error(f"{where}: reviewed must be YYYY-MM-DD")
+        if doc.origin == "project" and bool(vol) != bool(rev):
+            report.warn(f"{where}: freshness tracks an overlay file only with both 'volatility' and 'reviewed'; add the "
+                        f"missing one or remove '{'volatility' if vol else 'reviewed'}'")
     validate_profile(kit, report)
+
+
+def freshness_keys(doc: Doc) -> tuple[str, ...]:
+    """Freshness fields a file must have: required in the kit, optional in the overlay (freshness-policy.md «Metadata»)."""
+    return ("volatility", "reviewed") if doc.origin == "core" else ()
 
 
 def _check_name(doc: Doc, seen: dict[str, Path], report: Report, kit: Kit) -> None:

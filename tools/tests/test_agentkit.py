@@ -182,6 +182,17 @@ class KitRepositoryTests(unittest.TestCase):
         result = run(TOOLS / "agentkit.py", "check", cwd=agentkit.KIT_ROOT)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_freshness_fields_are_required_only_in_the_kit(self) -> None:
+        kit = agentkit.Kit(agentkit.KIT_ROOT)
+        for doc in kit.pages:
+            if doc.path.name == "README.md":
+                doc.meta.pop("reviewed", None)
+        report = agentkit.Report()
+        agentkit.validate(kit, report)
+        missing = [e for e in report.errors if "missing frontmatter 'reviewed'" in e]
+        self.assertIn("core/wiki/README.md: missing frontmatter 'reviewed'", missing)
+        self.assertFalse([e for e in missing if e.startswith(".ai/project/")], missing)
+
     def test_kit_repository_renders_its_own_skills(self) -> None:
         files = agentkit.Renderer(agentkit.Kit(agentkit.KIT_ROOT)).render().files
         self.assertIn(".claude/skills/kit-stack-add/SKILL.md", files)
@@ -320,6 +331,37 @@ class InstallTests(unittest.TestCase):
         skill.write_text(skill.read_text(encoding="utf-8").replace("category: docs\n", "category: docs\nscope: anywhere\n"),
                          encoding="utf-8")
         self.assertIn("unknown scope 'anywhere'", run(self.script, "check", cwd=self.project).stdout)
+
+    def test_overlay_freshness_fields_are_optional(self) -> None:
+        self.install()
+        self.assertNotIn(".ai/project/", run(self.script, "freshness", "--all", cwd=self.project).stdout)
+        overlay = self.project / ".ai" / "project"
+        (overlay / "wiki" / "plain.md").write_text('---\nowns: "Plain facts"\n---\n\n# Plain\n\nA fact.\n', encoding="utf-8")
+        (overlay / "wiki" / "old.md").write_text('---\nowns: "Old facts"\nvolatility: evolving\nreviewed: 2020-01-01\n---\n\n'
+                                                 '# Old\n\nAn old fact.\n', encoding="utf-8")
+        (overlay / "wiki" / "half.md").write_text('---\nowns: "Half facts"\nreviewed: 2020-01-01\n---\n\n# Half\n\nA fact.\n',
+                                                  encoding="utf-8")
+        (overlay / "skills" / "demo").mkdir(parents=True)
+        (overlay / "skills" / "demo" / "SKILL.md").write_text(
+            '---\nname: demo\ndescription: "Runs the demo. Use when a demo is due."\ncategory: docs\n---\n\n# Demo\n',
+            encoding="utf-8")
+        (overlay / "agents").mkdir()
+        (overlay / "agents" / "demo-writer.md").write_text(
+            '---\nname: demo-writer\ndescription: "Writes demos. Use when a demo changes; not for code."\n'
+            'department: documentation\nextends: technical-writer\n---\n\n# Demo Writer\n\n## Owns\n- Demos.\n', encoding="utf-8")
+        sync = run(self.script, "sync", cwd=self.project)
+        self.assertEqual(sync.returncode, 0, sync.stdout)
+        check = run(self.script, "check", cwd=self.project)
+        self.assertEqual(check.returncode, 0, check.stdout)
+        self.assertNotIn("missing frontmatter", check.stdout)
+        self.assertIn(".ai/project/wiki/half.md: freshness tracks an overlay file only with both", check.stdout)
+        self.assertIn("1 file(s) overdue for review", check.stdout)
+        fresh = run(self.script, "freshness", "--all", cwd=self.project).stdout
+        self.assertIn(".ai/project/wiki/old.md", fresh)
+        for name in ("plain.md", "half.md", "skills/demo", "agents/demo-writer"):
+            self.assertNotIn(name, fresh)
+        (overlay / "wiki" / "plain.md").write_text("---\nvolatility: evolving\n---\n\n# Plain\n", encoding="utf-8")
+        self.assertIn(".ai/project/wiki/plain.md: missing frontmatter 'owns'", run(self.script, "check", cwd=self.project).stdout)
 
     def test_drift_and_local_kit_edits_fail_check(self) -> None:
         self.install()

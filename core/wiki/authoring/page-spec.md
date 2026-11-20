@@ -29,8 +29,8 @@ A wiki page owns one question. Section indexes are generated from page frontmatt
 | Field | Required | Rule |
 |---|---|---|
 | `owns` | yes | One sentence naming the question this page answers. Section indexes show it verbatim |
-| `volatility` | yes | See [freshness-policy.md](../evolution/freshness-policy.md) |
-| `reviewed` | yes | `YYYY-MM-DD` of the last verification against reality and sources |
+| `volatility` | core pages | See «Metadata» in [freshness-policy.md](../evolution/freshness-policy.md), which makes it optional on project pages |
+| `reviewed` | core pages | `YYYY-MM-DD` of the last verification against reality and sources |
 | `sources` | when `volatile` | URLs of the primary sources the page depends on |
 | `applies_to` | project rules only | Path globs; the page is rendered as a path-scoped rule that tools load whenever matching files are touched. Only pages in `.ai/project/wiki/rules/` take it |
 
