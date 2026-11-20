@@ -38,7 +38,7 @@ This page owns the order of steps. Each step links to the page or skill that own
 ## Scaling The Order
 
 - A question or analysis with no tracked file changes, judging an idea included, needs only steps 1, 2, and 13.
-- With `hosting.platform = "none"`, skip the issue and pull request steps and record the unit in its plan instead.
+- With `hosting.platform = "none"`, skip the issue and pull request steps. The goal and its done-when, which the issue would hold, stay in the unit's plan while it runs, when it has one. To finish, show the user the change and its record, and only after the user approves, merge the task branch into the integration branch with `git merge --no-ff <branch>`, then push the integration branch when it has a remote. The merge commit body is the unit's record: the goal, the done-when, and what «Pull Request Body» in [issues-and-prs.md](../workflows/issues-and-prs.md) asks of a pull request body. Why the merge commit: it stays on the integration branch, while the plan is deleted at «Closeout» in [planning.md](../workflows/planning.md) and a small unit has none.
 - With `hosting.platform = "none"`, `github-issue-create` is not rendered: an item that a step, page, or skill would register with it, such as a leftover, a follow-up, or a deferred change, is listed in the unit's report to the user instead, and in its plan while the unit runs, when it has one.
 - With `policy.worktrees` off, step 5 cuts the task branch in the current checkout, unless «Worktrees» in [git-workflow.md](../workflows/git-workflow.md) still gives the unit a worktree.
 - Promotion from the integration branch to the release branch is never part of a unit; it is a release, started only on request ([release.md](../workflows/release.md)).
