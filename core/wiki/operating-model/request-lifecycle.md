@@ -30,10 +30,10 @@ This page owns the order of steps. Each step links to the page or skill that own
 8. **Sync docs.** Behavior changes update their owning docs in the same unit: [documentation.md](../workflows/documentation.md) for human docs, [authoring/README.md](../authoring/README.md) for agent docs.
 9. **Verify.** Run the checks [verification.md](../workflows/verification.md) selects for the touched surfaces.
 10. **Review.** Send review-ready work through the gates per «Choosing Gates» in [review.md](../workflows/review.md).
-11. **Pull request.** Commit with `git-commit`, then open the pull request into the integration branch with `github-pr-create`, linking the unit's issue, per «Pull Request Targets» in [issues-and-prs.md](../workflows/issues-and-prs.md).
+11. **Pull request.** Commit with `git-commit`, then open the pull request into the integration branch with `github-pr-create`, linking the unit's issue when it has one, per «Pull Request Targets» in [issues-and-prs.md](../workflows/issues-and-prs.md).
 12. **Follow-ups.** Register work discovered along the way as new issues per «Leftovers Become Issues» with `github-issue-create`; do not widen the current unit to absorb it.
-13. **Report.** Report per «Report Shape» in [handoff-contract.md](handoff-contract.md), including the issue and pull request numbers.
-14. **Close.** After a correction or durable discovery, run `kit-lesson-capture`. Close the plan per «Closeout» in [planning.md](../workflows/planning.md). Once the pull request merges, run `git-worktree-cleanup` (for a unit without a worktree it cleans up the task branch and work folders only).
+13. **Report.** Report per «Report Shape» in [handoff-contract.md](handoff-contract.md), including the issue and pull request numbers the unit has.
+14. **Close.** After a correction or durable discovery, run `kit-lesson-capture` when it is active in the project (listed under Skills in `.ai/generated/catalog.md`). Close the plan per «Closeout» in [planning.md](../workflows/planning.md). Once the pull request merges, run `git-worktree-cleanup` (for a unit without a worktree it cleans up the task branch and work folders only).
 
 ## Scaling The Order
 

@@ -13,7 +13,7 @@ description: "Open a GitHub issue with the gh CLI: search for duplicates first, 
 ## Do Not Use When
 - `hosting.platform` is not `"github"` → list the item in the task report instead.
 - Reviewing, relabeling, or closing existing issues → `github-issue-triage`.
-- The request needs a full requirements specification → `requirements-spec-write`, then link the spec from the issue.
+- The request needs a full requirements specification → `requirements-spec-write`, then link the spec from the issue, or keep it in the issue body when `docs.specs_dir` is empty.
 
 ## Inputs
 - What is wrong or wanted, and the evidence: reproduction steps, command output, paths, links.
