@@ -1362,10 +1362,16 @@ def copy_payload(src_root: Path, dest: Path) -> dict[str, str]:
     return digests
 
 
+def missing_lines(path: Path, entries: list[str]) -> list[str]:
+    """Return the entries the file lacks as whole lines."""
+    present = {line.strip() for line in read_text(path).split("\n")} if path.exists() else set()
+    return [entry for entry in entries if entry not in present]
+
+
 def append_missing_lines(path: Path, comment: str, entries: list[str]) -> list[str]:
     """Append the entries the file lacks under one comment line; return the appended entries."""
     lines = read_text(path).split("\n") if path.exists() else []
-    missing = [entry for entry in entries if entry not in [line.strip() for line in lines]]
+    missing = missing_lines(path, entries)
     if missing:
         prefix = "" if not lines or lines[-1] == "" else "\n"
         with open(path, "a", encoding="utf-8", newline="\n") as fh:
@@ -1382,6 +1388,19 @@ def ensure_gitattributes(project: Path) -> None:
         return
     if added:
         print("added an agentkit section to .gitattributes: agent files check out with LF line endings")
+
+
+def report_gitattributes(project: Path) -> None:
+    """On update: name the agentkit .gitattributes lines the project lacks, without writing the file."""
+    try:
+        missing = missing_lines(project / ".gitattributes", GITATTRIBUTES_LINES)
+    except UnicodeDecodeError:
+        missing = GITATTRIBUTES_LINES
+    if missing:
+        print(f"warning: .gitattributes lacks {len(missing)} agentkit line(s); update does not write that file. Without them, "
+              "a checkout that converts line endings (for example core.autocrlf=true on Windows) lists every file the "
+              "update rewrote as modified while git diff stays empty. To add them, append these lines at the end of "
+              ".gitattributes («Line Endings» in installation.md):\n" + "\n".join(missing))
 
 
 def overlay_templates(profile: dict) -> list[Path]:
@@ -1546,6 +1565,49 @@ def latest_release_tag(ls_remote_output: str) -> str | None:
     return max(tags, key=parse_version) if tags else None
 
 
+def toml_value(value: object) -> str:
+    """Write a profile value as a TOML literal, for messages that tell the user what to set."""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        return str(value)
+    if isinstance(value, list):
+        return "[" + ", ".join(toml_value(v) for v in value) + "]"
+    if isinstance(value, dict):
+        return "{ " + ", ".join(f"{json.dumps(k, ensure_ascii=False)} = {toml_value(v)}" for k, v in value.items()) + " }"
+    return json.dumps(str(value), ensure_ascii=False)
+
+
+def profile_update_notices(user: dict, old_defaults: dict, new_defaults: dict) -> list[str]:
+    """Messages about profile keys a kit update affects, in template order.
+
+    A key the profile leaves unset whose default changes; a key the profile sets that the new kit no longer reads;
+    a key the profile sets that still holds the old default while the default changes.
+    """
+    messages = []
+    for section, old_section in old_defaults.items():
+        if not isinstance(old_section, dict):
+            continue
+        set_here = user.get(section) if isinstance(user.get(section), dict) else {}
+        new_section = new_defaults.get(section) if isinstance(new_defaults.get(section), dict) else {}
+        for key, old in old_section.items():
+            name = f"{section}.{key}"
+            if key not in new_section:
+                if key in set_here:
+                    messages.append(f"profile: .ai/project/profile.toml sets {name}, which the kit no longer reads; "
+                                    "follow the Migration notes in the changelog.")
+            elif new_section[key] == old:
+                continue
+            elif key not in set_here:
+                messages.append(f"profile: the default of {name} changes from {toml_value(old)} to "
+                                f"{toml_value(new_section[key])}; setting {key} = {toml_value(old)} under [{section}] in "
+                                ".ai/project/profile.toml keeps the previous behavior.")
+            elif set_here[key] == old:
+                messages.append(f"profile: {name} still holds the old default {toml_value(old)}; the new default is "
+                                f"{toml_value(new_section[key])}. Remove the key to adopt it, or keep it on purpose.")
+    return messages
+
+
 def cmd_update(kit: Kit, source: str | None, ref: str | None) -> int:
     if kit.kit_repo:
         print("error: update runs in an installed project, not in the kit repository")
@@ -1597,16 +1659,9 @@ def cmd_update(kit: Kit, source: str | None, ref: str | None) -> int:
         copy_payload(src, KIT_ROOT)
         notes = changelog_between(src / "CHANGELOG.md", old_version, new_version)
     print(f"kit updated {old_version} -> {new_version}")
-    ensure_gitattributes(kit.project)
-    for section, values in kit.user_profile.items():
-        if not isinstance(values, dict):
-            continue
-        for key, value in values.items():
-            old = old_defaults.get(section, {}).get(key, None) if isinstance(old_defaults.get(section), dict) else None
-            new = new_defaults.get(section, {}).get(key, None) if isinstance(new_defaults.get(section), dict) else None
-            if old is not None and value == old and new != old:
-                print(f"profile: {section}.{key} still holds the old default {old!r}; the new default is {new!r}. "
-                      "Remove the key to adopt it, or keep it on purpose.")
+    report_gitattributes(kit.project)
+    for message in profile_update_notices(kit.user_profile, old_defaults, new_defaults):
+        print(message)
     if notes:
         print("\nChangelog since your version (apply every Migration note):\n")
         print(notes)

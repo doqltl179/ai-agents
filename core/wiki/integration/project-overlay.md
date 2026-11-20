@@ -34,7 +34,8 @@ reviewed: 2026-10-09
 
 - Only keys present in the template exist; a key missing from the project profile takes the template default.
 - Write every `[policy]`, `[hosting]`, and `[docs]` value the project confirmed, even one that equals the kit default. These values are the project's own branch, hosting, and document policy; an explicit value keeps it when a kit update changes a default.
-- In the other sections keep only the keys the project sets differently. A key there that repeats a default pins it: when a kit update changes that default, the project keeps the old value without noticing. `check` lists such keys, and `update` reports keys that still hold an old default the update changed.
+- In the other sections keep only the keys the project sets differently. A key there that repeats a default pins it: when a kit update changes that default, the project keeps the old value without noticing. `check` lists such keys.
+- `update` reports each key the profile leaves unset whose default changes, with the line that keeps the previous value; each key the profile sets that the kit no longer reads; and each key that still holds an old default the update changed.
 - Activate only the agents and skills the project needs: every active agent and skill costs context in tools that list them.
 - Bind each active execution agent to the paths it owns, the stack packs it applies, and the named commands that verify its paths with `[bindings.<agent>]`; the binding is rendered into that agent's files.
 - Put the few rules that hold for every task in `project.guardrails`, one line each; they appear in `AGENTS.md` and count against its line budget.

@@ -75,6 +75,47 @@ class ReleaseTagTests(unittest.TestCase):
         self.assertIsNone(agentkit.latest_release_tag(""))
 
 
+class ProfileUpdateNoticeTests(unittest.TestCase):
+    OLD = {"policy": {"integration_branch": "develop", "issue_first": True, "worktree_root": ".worktrees"},
+           "docs": {"locales": [], "glossary": ".ai/project/wiki/glossary.md"}}
+    NEW = {"policy": {"integration_branch": "main", "issue_first": False, "worktree_root": ".worktrees"},
+           "docs": {"glossary": ""}}
+
+    def notices(self, user: dict) -> list[str]:
+        return agentkit.profile_update_notices(user, self.OLD, self.NEW)
+
+    def test_unset_key_whose_default_changes(self) -> None:
+        notices = self.notices({})
+        self.assertEqual(len(notices), 3, notices)
+        self.assertIn('the default of policy.integration_branch changes from "develop" to "main"; '
+                      'setting integration_branch = "develop" under [policy]', notices[0])
+        self.assertIn("issue_first = true under [policy]", notices[1])
+        self.assertIn('glossary = ".ai/project/wiki/glossary.md" under [docs]', notices[2])
+        self.assertFalse(any("worktree_root" in n or "locales" in n for n in notices), notices)
+
+    def test_set_key_the_kit_no_longer_reads(self) -> None:
+        user = {"docs": {"locales": ["ko"]}, "commands": {"test_editmode": "unity"}, "bindings": {"x": {"paths": []}}}
+        notices = self.notices(user)
+        removed = [n for n in notices if "locales" in n]
+        self.assertEqual(len(removed), 1, notices)
+        self.assertIn("sets docs.locales, which the kit no longer reads; follow the Migration notes", removed[0])
+        self.assertNotIn("None", removed[0])
+        self.assertFalse(any("test_editmode" in n or "bindings" in n for n in notices), notices)
+
+    def test_set_key_holding_old_or_own_value(self) -> None:
+        user = {"policy": {"integration_branch": "develop", "issue_first": False},
+                "docs": {"glossary": "docs/glossary.md"}}
+        self.assertEqual(self.notices(user), [
+            'profile: policy.integration_branch still holds the old default "develop"; the new default is "main". '
+            "Remove the key to adopt it, or keep it on purpose."])
+
+    def test_toml_values(self) -> None:
+        self.assertEqual(agentkit.toml_value(["develop", "main"]), '["develop", "main"]')
+        self.assertEqual(agentkit.toml_value({"README.md": "docs/{locale}/README.md"}),
+                         '{ "README.md" = "docs/{locale}/README.md" }')
+        self.assertEqual(agentkit.toml_value(0), "0")
+
+
 class OverlayTemplateTests(unittest.TestCase):
     def test_glossary_only_when_named(self) -> None:
         def names(glossary: str) -> list[str]:
@@ -241,13 +282,16 @@ class InstallTests(unittest.TestCase):
         refused = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), "--ref", "main", cwd=self.project)
         self.assertEqual(refused.returncode, 1)
         self.assertIn("--ref applies to a git URL", refused.stdout)
-        # An install from before «Line Endings» has no .gitattributes section; update adds it.
+        # A project without the «Line Endings» section: update names the missing lines and leaves the file alone.
         (self.project / ".gitattributes").unlink()
         result = run(self.script, "update", "--from", str(agentkit.KIT_ROOT), cwd=self.project)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("kit updated", result.stdout)
-        self.assertIn("added an agentkit section to .gitattributes", result.stdout)
-        self.assertIn(".ai/** text=auto eol=lf\n", (self.project / ".gitattributes").read_text(encoding="utf-8"))
+        self.assertIn(f".gitattributes lacks {len(agentkit.GITATTRIBUTES_LINES)} agentkit line(s)", result.stdout)
+        self.assertIn("\n.ai/** text=auto eol=lf\n", result.stdout)
+        self.assertNotIn("added an agentkit section to .gitattributes", result.stdout)
+        self.assertFalse((self.project / ".gitattributes").exists())
+        self.assertNotIn("profile:", result.stdout)
         self.assertEqual(run(self.script, "check", cwd=self.project).returncode, 0)
 
     def test_converting_checkout_does_not_list_agent_files_as_modified(self) -> None:
