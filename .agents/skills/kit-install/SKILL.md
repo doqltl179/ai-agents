@@ -33,6 +33,6 @@ description: "Install the kit into a project as one tracked unit: open its issue
 12. From the next unit on, every unit follows request-lifecycle.md under the confirmed policy.
 
 ## Output
-- The installed kit version, the tools rendered, the issue and pull request numbers.
+- The installed kit version, the tools rendered, and the issue and pull request numbers when the unit has them.
 - Adopted facts with their new locations, deleted files with the user's confirmation, files kept in `tools.keep_unmanaged` with the reason, and conflicts with their resolution.
 - The confirmed policy, hosting, and docs values; repository settings and label changes applied or declined; profile keys left empty; and the `check` result.
