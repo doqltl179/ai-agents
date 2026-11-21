@@ -4,6 +4,17 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-21
+
+### Added
+- A feature map for a project whose user interface has navigable screens, windows, or scenes: «Project Wiki» in `project-overlay.md` keeps `wiki/features.md`, with one entry per screen, window, or scene and one per feature reached inside it, each with its canonical term, the file that defines it, and the steps or command (a `commands.*` key or a project script) that reach it in the running app, or a link to the spec whose user flow gives them. Steps nobody has run are marked unverified until a run follows them, a screen behind sign-in names where its test account comes from but never its values, a repository with several apps keeps one page per app linked from `features.md`, and a command-line tool keeps none. Once the page exists, a change that adds, renames, or removes a screen or feature, or changes how one is reached, updates it in the same unit. `codebase-onboard` drafts it in step 10, with every reach step unverified, and also runs when such a project has no `features.md`, drafting only the map when the profile and `overview.md` are in place; step 11 presents the drafted pages. `domain-terms.md` resolves a UI part the user names by its position or look by finding the screen in the map and the part in the file the entry cites or in the running app, and the first evidence item of «Evidence Format» in `verification.md` writes out the steps taken to each UI state from its screen's entry. Before, the project wiki had no place for the names and routes of screens, so agents guessed what a loosely described UI part meant and searched again for how to reach each changed state. (minor)
+
+### Changed
+- «Edit Boundaries» in `change-scope.md`: matching the surrounding code leaves out a workaround whose comment names the defect it masks; new code that needs the same workaround settles it under the workaround rule in «Before Editing» instead of copying it, and the maintainability check of `code-review-perform` follows the exception. Before, "match the surrounding code" also told agents to copy such a workaround into new code, spreading it as the project's pattern. (minor)
+
+### Migration
+1. If the project's user interface has navigable screens, windows, or scenes and `.ai/project/wiki/features.md` does not exist, ask the user whether to draft the feature map with `codebase-onboard`, which then drafts only the map when `.ai/project/profile.toml` and `.ai/project/wiki/overview.md` are already in place.
+
 ## [1.1.0] - 2026-11-21
 
 ### Changed
