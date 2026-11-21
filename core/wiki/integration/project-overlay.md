@@ -55,6 +55,7 @@ reviewed: 2026-10-09
 ## Project Wiki
 
 - Record project facts the kit leaves open: architecture overview, domain glossary, module map, local conventions, environments, and the product planning values of «Project Values» in [idea-evaluation.md](../workflows/idea-evaluation.md).
+- The feature map, `wiki/features.md`, which `codebase-onboard` drafts for a project with a user interface: each user-visible screen or feature under its canonical term per [domain-terms.md](../workflows/domain-terms.md), and the steps or project command that reach it in the running app, so an agent reaches a state without searching for it again. Once the page exists, a change that adds, renames, or removes a screen or feature, or changes how one is reached, updates it in the same unit.
 - Same page shape as core pages ([page-spec.md](../authoring/page-spec.md)); the index region in `wiki/README.md` is generated.
 - Never restate a core rule here; link to it. A page holds the detail of a replacement only when the replacement's `project.guardrails` entry links it; the page states only the project's rule and replaces nothing by itself.
 
