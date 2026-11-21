@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Changed
+- «Edit Boundaries» in `change-scope.md`: matching the surrounding code leaves out a workaround whose comment names the defect it masks; new code that needs the same workaround settles it under the workaround rule in «Before Editing» instead of copying it, and the maintainability check of `code-review-perform` follows the exception. Before, "match the surrounding code" also told agents to copy such a workaround into new code, spreading it as the project's pattern. (minor)
+
 ## [1.1.0] - 2026-11-21
 
 ### Changed

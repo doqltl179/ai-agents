@@ -37,7 +37,7 @@ Every changed line traces to the request. Unrequested changes cost review time, 
 ## Edit Boundaries
 
 - Change only the lines the request needs. Leave neighboring code, comments, formatting, and names as they are, even when you would write them differently.
-- Write new lines to the project's rules and the bound stack packs; where those leave a choice open, match the surrounding code.
+- Write new lines to the project's rules and the bound stack packs; where those leave a choice open, match the surrounding code, except a workaround whose comment names the defect it masks: new code that needs it masks the same defect, so settle it under the workaround rule in «Before Editing» instead of copying it.
 - Update a comment or doc that your change makes false; leave the others.
 - Restructure code the request does not name only when that makes the requested change simpler or safer, with `refactor-safely` and before the change: as its own unit when it is planned up front, as its own commits first when it is found mid-unit.
 - Formatting that the project's format check requires for the lines you touch is part of the change. A formatting or style sweep beyond that is its own unit, never part of a behavior change.
