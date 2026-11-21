@@ -4,6 +4,9 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+### Fixed
+- `install` no longer writes a `[tools]` block when `--tools` lists the default targets of the profile template, in any order. Before, the README's own command (`--tools claude,codex,copilot`) wrote `targets = ["claude", "codex", "copilot"]`, so the first `check` after installing warned that the profile repeats a kit default, and the key pinned the targets against later kit defaults. A list that differs from the default is written as before. (patch)
+
 ## [1.2.1] - 2026-11-21
 
 ### Fixed
