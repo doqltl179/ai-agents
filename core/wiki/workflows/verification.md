@@ -39,7 +39,13 @@ When a change must contain an escape sequence as literal text (for example a Uni
 
 ## Evidence Format
 
-For each check: the exact command, the result (pass or fail, counts), and for failures the first relevant error. For a UI state checked in the running app, also the artifact itself (a screenshot, recording, or captured output), saved as a file in a work folder per «Work Folders» in [git-workflow.md](git-workflow.md) and named by its absolute path, so a reviewer judges the behavior from it instead of rebuilding it from the diff. Never paraphrase a failing run as passing, and never report a check you did not run in this task. With `hosting.ci = false`, the pull request body is the only record of verification: it lists every command run on the final commit and its result.
+For each check: the exact command, the result (pass or fail, counts), and for failures the first relevant error. For a UI state checked in the running app, also the following, because its files last only as long as the work folder and only on the machine that made them:
+
+- What was done to reach the state and what it showed, written so it stands without the files, in the report and in the pull request body (the merge commit body with `hosting.platform = "none"`), which keep it after the files are gone.
+- The artifact itself (a screenshot, recording, or captured output), saved as a file in a work folder per «Work Folders» in [git-workflow.md](git-workflow.md) and named by its absolute path, so a reviewer on that machine judges the behavior from it instead of rebuilding it from the diff. Work with no task branch deletes its folder before its report, so that report names no path.
+- With a hosting platform (`hosting.platform` is not `"none"`), what lets its reviewers see each file: the link to the CI run when the project's CI runs the same check and publishes its artifacts; otherwise the file, listed by its absolute path in the report for the user to attach before the merge, since cleanup deletes the work folder after it. Never commit the file: a work folder is never staged («Staging» in git-workflow.md).
+
+Never paraphrase a failing run as passing, and never report a check you did not run in this task. With `hosting.ci = false`, the pull request body is the only record of verification: it lists every command run on the final commit and its result.
 
 ## Flaky Tests And Disabled Checks
 
