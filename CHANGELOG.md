@@ -6,6 +6,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 
 ### Fixed
 - `install` no longer writes a `[tools]` block when `--tools` lists the default targets of the profile template, in any order. Before, the README's own command (`--tools claude,codex,copilot`) wrote `targets = ["claude", "codex", "copilot"]`, so the first `check` after installing warned that the profile repeats a kit default, and the key pinned the targets against later kit defaults. A list that differs from the default is written as before. (patch)
+- `kit-install` step 2 covers a repository with no commit yet, which has no default branch to cut the task branch from: one empty bootstrap commit on the first branch the user names (the planned release branch), pushed when the repository has a remote, then the task branch as usual. «Branch Policy» in `git-workflow.md` allows that commit as its one exception to committing directly on a protected branch, provided the installation unit's pull request (or its merge commit with `hosting.platform = "none"`) names it, and «Stop Conditions» there no longer stops on it. Before, step 2 could not be followed, and agents worked around it differently. (patch)
 
 ## [1.2.1] - 2026-11-21
 
