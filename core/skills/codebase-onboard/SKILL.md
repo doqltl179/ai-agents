@@ -11,7 +11,7 @@ reviewed: 2026-10-09
 ## Use When
 - The kit was just installed and `.ai/project/profile.toml` still has empty `commands.*`, no `[policy]` values, no bindings, or no active stacks.
 - `.ai/project/wiki/overview.md` is missing or contradicts the code.
-- The project's user interface has navigable screens, windows, or scenes and `.ai/project/wiki/features.md` is missing; when the profile and `overview.md` are already in place, draft only the feature map (steps 1, 5, and 10).
+- The project's user interface has navigable screens, windows, or scenes and `.ai/project/wiki/features.md` is missing; when the profile and `overview.md` are already in place, draft only the feature map (steps 1, 5, 10, and 11).
 - Work starts in a repository area no project doc describes.
 
 ## Do Not Use When
