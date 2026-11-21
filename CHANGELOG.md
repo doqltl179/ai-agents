@@ -5,7 +5,7 @@ All notable changes to the kit. Format: [Keep a Changelog](https://keepachangelo
 ## [Unreleased]
 
 ### Fixed
-- «Changelog Finalization» in `release.md` exempts the kit's own `CHANGELOG.md` in the kit repository from "breaking changes and migration steps appear first": it keeps the order of «Changelog Format» in `versioning.md`, with the change-type sections and then `### Migration`. Before, `release-cut` applied that section to kit releases too, so following it literally moved `### Migration` ahead of the change sections, against the format block in `versioning.md` and every earlier kit release. (patch)
+- «Changelog Finalization» in `release.md` exempts the kit's own `CHANGELOG.md` in the kit repository from "breaking changes and migration steps appear first": it keeps the order of «Changelog Format» in `versioning.md`, with the change-type sections and then `### Migration`. Before, `release-cut` applied that section to kit releases too, so following it literally would move `### Migration` ahead of the change sections, against the format block in `versioning.md` and every earlier kit release. (patch)
 
 ## [1.2.0] - 2026-11-21
 
