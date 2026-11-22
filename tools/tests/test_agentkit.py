@@ -519,6 +519,25 @@ class InstallTests(unittest.TestCase):
                         '\n[docs]\nchangelog = ""\n\n[skills]\nenabled = ["*"]\n', encoding="utf-8")
         self.assertIn("profile repeats 1 kit default(s): skills.enabled;", run(self.script, "check", cwd=self.project).stdout)
 
+    def test_install_writes_tools_only_when_they_differ_from_the_default(self) -> None:
+        cases = (("claude,codex,copilot", None), ("copilot, claude,codex", None), ("claude", '["claude"]'),
+                 ("codex,claude", '["codex", "claude"]'))
+        for index, (tools, written) in enumerate(cases):
+            with self.subTest(tools=tools):
+                project = Path(self.tmp.name) / f"tools-{index}"
+                project.mkdir()
+                subprocess.run(["git", "init", "-q"], cwd=project, check=True)
+                result = run(TOOLS / "agentkit.py", "install", str(project), "--tools", tools, cwd=project)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                profile = (project / ".ai" / "project" / "profile.toml").read_text(encoding="utf-8")
+                if written is None:
+                    self.assertNotIn("[tools]", profile)
+                else:
+                    self.assertIn(f"\n[tools]\ntargets = {written}\n", profile)
+                check = run(project / ".ai" / "kit" / "tools" / "agentkit.py", "check", cwd=project)
+                self.assertEqual(check.returncode, 0, check.stdout)
+                self.assertNotIn("kit default", check.stdout)
+
     def test_unmanaged_instruction_files_are_reported(self) -> None:
         self.install()
         for relpath in (".github/prompts/old.prompt.md", ".claude/commands/legacy.md", "docs/AGENTS.md"):
